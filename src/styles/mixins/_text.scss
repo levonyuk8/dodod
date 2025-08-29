@@ -1,0 +1,55 @@
+@mixin base-text {
+  //text-align: center;
+  //background-color: red;
+  //display: inline-flex;
+  //align-items: center;
+  //justify-content: center;
+  //border: none;
+  //border-radius: 1rem;
+  //padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 300;
+  //font-weight: 800;
+  //line-height: 1.5;
+  //cursor: pointer;
+  //transition: all 0.3s ease;
+  //user-select: none;
+  //text-decoration: none;
+  //text-align: center;
+  //white-space: nowrap;
+  //vertical-align: middle;
+
+  //> svg {
+  //  width: 2rem;
+  //  height: 2rem;
+  //}
+  //
+  //&:disabled {
+  //  opacity: 0.6;
+  //  cursor: default;
+  //}
+}
+
+@mixin text-color-variant($color: #191919) {
+  //
+  //background: linear-gradient(#247e46, #9fd050);
+  //-webkit-background-clip: text;
+  //background-clip: text;
+  //-webkit-text-fill-color: transparent;
+
+  //background: $background;
+  color: $color;
+  //transition: all .5s linear;
+}
+
+@mixin text-size($size: 1.2rem, $weight: 300, ) {
+  font-size: $size;
+  font-weight: $weight;
+}
+
+@mixin text-gradient-color-variant($gradient) {
+  background: $gradient;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

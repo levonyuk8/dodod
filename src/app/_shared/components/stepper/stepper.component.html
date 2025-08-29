@@ -1,0 +1,14 @@
+<div class="stepper-container">
+  <div class="stepper-container__header">
+    <app-button [variant]="'primary'" [imageUrl]="'/img/svg/Play.svg'">Видео-инструкция</app-button>
+    <app-button (click)="restart.emit()" [variant]="'transparent'" [imageUrl]="'/img/svg/Vector.svg'">Начать заново</app-button>
+  </div>
+  <div class="stepper-container__steps">
+    @for (item of stepList; track item) {
+      <div class="step" [ngClass]="{'active' : item.step === step}">
+        <span class="text text-small">{{ item.name }}</span>
+        <label class="text text-small">{{ item.title }} </label>
+      </div>
+    }
+  </div>
+</div>

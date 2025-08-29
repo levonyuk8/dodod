@@ -1,0 +1,55 @@
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #005840;
+  border-radius: 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+
+  > svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+// Миксин для цветовых вариантов
+@mixin button-variant($background, $color, $hover-background, $hover-color) {
+  background: $background;
+  color: $color;
+  transition: all .5s linear;
+
+  &:hover:not(:disabled) {
+    color: $hover-color;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+}
+
+// Миксин для размера кнопок
+@mixin button-size($padding-y, $padding-x, $font-size) {
+  padding: $padding-y $padding-x;
+  font-size: $font-size;
+}
+
+@mixin button-size-all($padding-top, $padding-right, $padding-bottom, $padding-left, $font-size) {
+  padding: $padding-top $padding-right $padding-bottom $padding-left;
+  font-size: $font-size;
+}

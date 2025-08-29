@@ -1,0 +1,40 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'mixins/buttons' as button;
+
+$btn-icon-padding-r: .5rem;
+$btn-icon-width: 1.5rem;
+$btn-icon-height: 1.5rem;
+
+.btn {
+  @include button.button-base;
+
+  &-primary {
+    @include button.button-variant(#005840, #fff, #3700b3, #fff);
+  }
+
+  &-secondary {
+    @include button.button-variant(#000, #fff, #000, #9fd050);
+  }
+
+  &-danger {
+    @include button.button-variant(#b00020, #ffffff, #8e0000, #ffffff);
+  }
+
+  &-transparent {
+    //background: linear-gradient(#247e46, #9fd050);
+    @include button.button-variant(#fff, #005840, #fff, #005840);
+  }
+
+  //TODO variables
+  //&-image {
+  //  @include button.button-size-all(1rem, 1rem, 1rem, calc(1rem + 24px + 8px), 1rem);
+  //}
+
+  &-sm {
+    @include button.button-size(0.5rem, 1rem, 0.875rem);
+  }
+
+  &-lg {
+    @include button.button-size(1rem, 2rem, 1.125rem);
+  }
+}

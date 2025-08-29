@@ -1,0 +1,20 @@
+@use 'mixins/input' as input;
+
+.input {
+  @include input.base-input();
+
+  &-success {
+    @include input.input-border-color()
+  }
+
+  &-danger {
+    @include input.input-border-color(#FF0000FF, #FF0000FF)
+  }
+}
+
+
+input {
+  &.ng-invalid.ng-touched {
+    @include input.input-border-color(#FF0000FF, #FF0000FF)
+  }
+}

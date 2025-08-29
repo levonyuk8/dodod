@@ -1,0 +1,10 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: .5rem 3rem;
+
+  .title {
+    margin-bottom: 1rem;
+  }
+}

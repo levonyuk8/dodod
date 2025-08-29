@@ -1,0 +1,22 @@
+@mixin base-input {
+  text-align: center;
+  padding: 10px 15px;
+  border: 2px solid #F1F1F1;
+  border-radius: .25rem;
+  font-size: 1rem;
+  outline: none;
+}
+
+
+@mixin input-border-color($border-color: #247e46, $shadow-color: #1c8543) {
+  text-align: center;
+  padding: 10px 15px;
+  border: 2px solid $border-color;
+  border-radius: .25rem;
+  font-size: 1rem;
+  outline: none;
+
+  &:focus {
+    box-shadow: 0 0 5px 2px $shadow-color;
+  }
+}

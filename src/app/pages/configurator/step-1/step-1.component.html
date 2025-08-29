@@ -1,0 +1,47 @@
+<label class="text text-medium">Размеры и материалы</label>
+
+<div class="sizing-container panel">
+  <label class="text text-normal">Размеры</label>
+  <label class="text text-small text-color-gray">
+    Укажите желаемые размеры шкафа. Воспользуйтесь слайдером или введите размеры в полях для ввода.
+  </label>
+  <div>
+    <label class="text">Ширина</label>
+    <p-slider
+      [(ngModel)]="value" class="gradient-slider w-full"/>
+    <input [style.width.px]="100" pInputText [(ngModel)]="value"/>
+  </div>
+
+  <div>
+    <label class="text">Длина</label>
+    <p-slider [(ngModel)]="value" class="w-full"/>
+    <input [style.width.px]="100" pInputText [(ngModel)]="value"/>
+  </div>
+
+  <div>
+    <label class="text">Глубина (вместе с фасадами)</label>
+    <p-slider [(ngModel)]="value" class="w-full"/>
+    <input [style.width.px]="100" pInputText [(ngModel)]="value"/>
+  </div>
+
+</div>
+
+<div class="material-container panel">
+  <label class="text text-medium">Материалы</label>
+  <label class="text text-small text-color-gray">Выберите желаемый материал корпуса и дверей шкафа.</label>
+  <div class="material-container_row-content" style="display: flex">
+
+    <div>
+      <label class="text mb-2">Материал корпуса</label>
+      <p-select [options]="housingMaterials" [(ngModel)]="selectedHousingMaterial" optionLabel="name"
+                placeholder="Выберите материал" class="w-full"/>
+    </div>
+    <div>
+      <label class="text mb-2">Материал дверей</label>
+      <p-select [options]="doorMaterials" [(ngModel)]="selectedDoorMaterial" optionLabel="name"
+                placeholder="Выберите материал" class="w-full"/>
+    </div>
+  </div>
+</div>
+
+

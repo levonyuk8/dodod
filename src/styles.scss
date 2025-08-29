@@ -1,1 +1,95 @@
 /* You can add global styles to this file, and also import other style files */
+@use "index";
+@use '@angular/material' as mat;
+
+html, body {
+  display: block;
+  margin: 0;
+  padding: 0;
+  //overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background: #f1f1f1;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  color: #191919;
+  display: flex;
+  flex: 1;
+
+
+
+}
+
+* {
+  box-sizing: border-box;
+}
+
+
+.panel {
+  border: 1px solid transparent;
+  border-radius: 1rem;
+  background: white;
+  width: 100%;
+  padding: 1rem;
+}
+
+
+.p-slider {
+  margin: .7rem 0;
+  --p-slider-handle-background: #FFC835;
+  --p-slider-track-size: .5rem;
+  --p-slider-handle-content-background: #FFC835;
+  --p-slider-range-background: #FFC835;
+  --p-slider-handle-width: 20px;
+  --p-slider-handle-height: 20px;
+  //--p-slider-handle-content-hover-background: transparent;
+  --p-slider-handle-content-shadow: none;
+  --p-slider-handle-focus-ring-shadow: none;
+  --p-slider-handle-hover-background: #FFC835;
+  --p-slider-handle-content-hover-background: #FFC835;
+
+}
+
+//.p-slider-range
+//
+//.p-slider-handle
+
+//:host ::ng-deep .p-slider {
+//  width: 300px;
+//}
+//
+//:host ::ng-deep .gradient-slider .p-slider {
+//  height: 10px;
+//}
+//
+//:host ::ng-deep .gradient-slider .p-slider-track {
+//  background: #FFC835;
+//  height: 10px;
+//  border-radius: 6px;
+//}
+//
+//:host ::ng-deep .gradient-slider .p-slider-range {
+//  background: #FFC835;
+//  border-radius: 6px;
+//}
+//
+//:host ::ng-deep .gradient-slider .p-slider-handle {
+//  color: #FFC835;
+//  //border-radius: 6px;
+//}
+
+/*
+1 = 0.25rem (обычно 4px, если 1rem = 16px)
+2 = 0.5rem (8px)
+3 = 0.75rem (12px)
+4 = 1rem (16px)
+5 = 1.25rem (20px)
+6 = 1.5rem (24px)
+8 = 2rem (32px)
+ */
+
+.mb-2 {
+  margin-bottom: .5rem;
+}
