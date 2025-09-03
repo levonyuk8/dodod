@@ -33,6 +33,10 @@ body {
   background: white;
   width: 100%;
   padding: 1rem;
+
+  &--child {
+    background: #e5eeec;
+  }
 }
 
 
@@ -92,4 +96,8 @@ body {
 
 .mb-2 {
   margin-bottom: .5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
 }

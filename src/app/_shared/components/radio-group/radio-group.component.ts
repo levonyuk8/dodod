@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {NgOptimizedImage} from '@angular/common';
+import {NgClass, NgStyle} from '@angular/common';
 
 export interface IGroupData {
   groupName: string;
@@ -15,7 +15,8 @@ export interface ITestOption {
 @Component({
   selector: 'app-radio-group',
   imports: [
-    NgOptimizedImage
+    NgClass,
+    NgStyle
   ],
   templateUrl: './radio-group.component.html',
   styleUrl: './radio-group.component.scss'
@@ -23,13 +24,8 @@ export interface ITestOption {
 export class RadioGroupComponent {
 
   @Input() data!: IGroupData;
+  @Input() width = 70;
+  @Input() height = 150;
+  @Input() isRound = false;
 
-  // items1: IGroupData =
-  //   {
-  //     groupName: "test1",
-  //     options: [
-  //       {imgUrl: '/img/png/1.png', label: 'Да', value: true},
-  //       {imgUrl: '/img/png/2.png', label: 'Нет', value: false},
-  //     ]
-  //   }
 }

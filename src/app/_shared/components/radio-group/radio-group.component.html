@@ -2,10 +2,27 @@
   @for (item of data.options; track item; let idx = $index) {
     <div class="form_radio_btn">
       <input id="{{idx + data.groupName}}" type="radio" name="{{data.groupName}}}" value="{{item.value}}">
-      <label class="image-box" for="{{idx + data.groupName}}">
-        <img [ngSrc]="item.imgUrl" width="400" height="200" priority>
-      </label>
-      <label class="text text-small" for="{{idx + data.groupName}}">{{item.label}}</label>
+
+        <label
+          [ngStyle]="isRound ? {'border-radius': '50%'} : {'border-radius': '1rem'}"
+          class="image-box" for="{{idx + data.groupName}}">
+          @if (item.imgUrl) {
+          <div class="test"
+               [style.width]="width + 'px'"
+               [style.height]="height + 'px'"
+               [style.background-image]="item.imgUrl"></div>
+          <!--        <img [ngSrc]="item.imgUrl" width="400" height="200" priority>-->
+          }
+          @if (isRound) {
+            <label
+              [style.width]="'10px'"
+              [style.height]="'10px'"
+              class="text text-small" for="{{idx + data.groupName}}">{{item.label}}</label>
+          }
+        </label>
+      @if (!isRound) {
+        <label  class="text text-small" for="{{idx + data.groupName}}">{{item.label}}</label>
+      }
     </div>
   }
 </div>
