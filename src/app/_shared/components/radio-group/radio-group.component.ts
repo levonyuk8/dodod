@@ -24,8 +24,8 @@ export interface ITestOption {
 export class RadioGroupComponent {
 
   @Input() data!: IGroupData;
-  @Input() width = 70;
-  @Input() height = 150;
+  @Input() width = 50;
+  @Input() height = 100;
   @Input() isRound = false;
 
 }
