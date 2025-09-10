@@ -1,0 +1,24 @@
+:host {
+
+  > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+
+  > .block-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  > .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}

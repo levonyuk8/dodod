@@ -10,7 +10,8 @@ import {NgClass} from '@angular/common';
       [ngClass]="[
       'btn',
       'btn-' + variant,
-      'btn-' + size
+      'btn-' + size,
+      'btn-' + width
       ]"
       [disabled]="disabled"
       [type]="type"
@@ -28,9 +29,10 @@ import {NgClass} from '@angular/common';
   ]
 })
 export class ButtonComponent {
-  @Input() variant: 'primary' | 'secondary' | 'outline' | 'transparent' = 'primary';
+  @Input() variant: 'primary' | 'secondary' | 'outline' | 'transparent' | 'bg-transparent' = 'primary';
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
   @Input() disabled = false;
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() imageUrl!: string;
+  @Input() width!: string;
 }

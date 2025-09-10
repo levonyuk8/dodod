@@ -1,5 +1,7 @@
-import {AfterViewInit, Component, ElementRef, HostListener, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, inject, ViewChild} from '@angular/core';
 import {ButtonComponent} from '../button/button.component';
+import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
+import {filter} from 'rxjs';
 
 @Component({
   selector: 'app-wardrobe-designer',
@@ -10,6 +12,8 @@ import {ButtonComponent} from '../button/button.component';
   styleUrl: './wardrobe-designer.component.scss'
 })
 export class WardrobeDesignerComponent implements AfterViewInit {
+
+  cabinetConfiguratorService = inject(CabinetConfiguratorService);
 
   // Высота цоколя 80мм
   testH = 80;
@@ -33,6 +37,7 @@ export class WardrobeDesignerComponent implements AfterViewInit {
   private ctx!: CanvasRenderingContext2D;
 
   walls !: any;
+  doors !: any;
   parentSize: { width: number; height: number } | null = null;
   showWireframe = false;
 
@@ -55,19 +60,17 @@ export class WardrobeDesignerComponent implements AfterViewInit {
   }
 
   // Параметры камеры
-  fov = 700;
-  cameraZ = 4000;
+  fov = 200;
+  cameraZ = 1000;
 
   color = '#BBB1A7';
 
   // Функция создания объемной стены (параллелепипед)
   createWall(width: number, height: number, depth: number, position: any) {
-    console.log({position});
     const halfW = width / 2;
     const halfH = height / 2;
     const halfD = depth / 2;
 
-    console.log({halfW, halfH, halfD})
 
     return [
       // Передняя грань
@@ -92,7 +95,6 @@ export class WardrobeDesignerComponent implements AfterViewInit {
   // Обработчик изменения размера окна
   @HostListener('window:resize')
   onResize() {
-    console.log('resize');
     this.resizeCanvas();
     this.draw();
   }
@@ -102,26 +104,34 @@ export class WardrobeDesignerComponent implements AfterViewInit {
     this.getParentSize();
     this.setCanvasSize();
 
-    console.log(this.canvas);
-
-    console.log(this.parentSize)
-
-
-
     this.draw();
   }
 
 
-
-
-
   ngAfterViewInit(): void {
+
+    this.cabinetConfiguratorService.clearConf.subscribe(
+      () => {
+        this.clearCTX();
+      }
+    )
     if (this.canvasRef && this.canvasRef.nativeElement) {
       this.canvas = this.canvasRef.nativeElement;
       this.ctx = this.canvas.getContext('2d')!; // Use '2d' or 'webgl' as needed
     }
-    this.init();
-    this.draw();
+
+    this.cabinetConfiguratorService.data$
+      .pipe(
+        filter(data => !!data)
+      )
+      .subscribe(
+      data => {
+        this.init(data);
+        this.draw();
+      }
+    )
+
+
     // this.resizeCanvas();
 
     // Отслеживание положения курсора для отображения координат
@@ -162,7 +172,7 @@ export class WardrobeDesignerComponent implements AfterViewInit {
   }
 
 
-  init() {
+  init(data: any) {
 
     this.getParentSize();
     this.setCanvasSize();
@@ -174,13 +184,15 @@ export class WardrobeDesignerComponent implements AfterViewInit {
     // const centerY = this.canvas.height / 2;
 
 // Размеры шкафа (ширина, высота, глубина)
-    const w = 3000; // Width
-    const h = 3360; // Height
-    const d = 750; // Depth
+    this.fov = Math.ceil(data.srH * 0.1);
+
+    const w = data.srL; // Width
+    const h = data.srH; // Height
+    const d = data.srG; // Depth
     const thickness = 20;  // Толщина стенок
 
     this.walls = this.createWalls(w, h, d, thickness);
-    console.log(this.walls);
+    this.doors = this.createDoors(w, h, d, thickness);
   }
 
   // Функция поворота точки
@@ -300,7 +312,6 @@ export class WardrobeDesignerComponent implements AfterViewInit {
       this.ctx.beginPath();
       for (let i = 0; i < projected.length; i++) {
         this.ctx.moveTo(projected[i].x, projected[i].y);
-        console.log(projected[i].x, projected[i].y)
         this.ctx.arc(projected[i].x, projected[i].y, 3, 0, Math.PI * 2);
         this.ctx.stroke();
       }
@@ -308,9 +319,13 @@ export class WardrobeDesignerComponent implements AfterViewInit {
     }
   }
 
+  clearCTX() {
+    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+  }
+
   // Главная функция отрисовки
   draw() {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    this.clearCTX();
     this.ctx.fillStyle = '#fff';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -319,22 +334,54 @@ export class WardrobeDesignerComponent implements AfterViewInit {
       this.drawVolume(wall.vertices, wall.faces, wall.color);
     });
 
+    // todo empty
+    this.doors?.forEach((wall: any) => {
+      this.drawVolume(wall.vertices, wall.faces, wall.color);
+    });
+
     // Рисуем сетку
     // this.drawGrid();
 
     // Рисуем пользовательские направляющие
-    // this.draw3DAxes();
+    this.draw3DAxes();
+  }
+
+  // Создаем объемные двери шкафа
+  private createDoors(w: number, h: number, d: number, thickness: number) {
+    const doorW = w / 4;
+
+    let doors = []
+
+    for (let i = 1; i <= 4; i++) {
+      const door = {
+        name: 'дверь',
+        vertices: this.createWall(doorW, h - this.testH, d, {x: -w / 2 - (doorW / 2) + i * doorW , y: -(thickness / 2  + this.testH) / 2, z: 0}),
+        color: '#c3ac9f',
+        faces: [
+          [0, 1, 2, 3],
+          // [4, 5, 6, 7],
+          // [0,1, 5, 4], [2,3,7,6],
+          // [0, 3, 7, 4],
+          // [1, 2, 6,5]
+        ]
+      }
+      doors.push(door);
+    }
+    return doors;
   }
 
   // Создаем объемные стены шкафа
   private createWalls(w: number, h: number, d: number, thickness: number) {
+
+
     return [
+
       {
         name: 'левая боковая',
         vertices: this.createWall(thickness, h, d, {x: w / 2, y: 0, z: 0}),
         color: this.color,
         faces: [
-          [0, 1, 2, 3],
+          [0, 1, 2, 3], [4, 5, 6, 7],
           [0, 3, 7, 4]
         ]
       },
@@ -358,13 +405,25 @@ export class WardrobeDesignerComponent implements AfterViewInit {
       },
       {
         name: 'цоколь',
-        vertices: this.createWall(w - thickness, this.testH, d, {x: 0, y: h / 2 - this.testH / 2 , z: 0}),
+        vertices: this.createWall(w - thickness, this.testH, d, {x: 0, y: h / 2 - this.testH / 2, z: 0}),
         color: '#8B4513',
         faces: [
           [0, 1, 2, 3],
           [3, 2, 6, 7]
         ]
       },
+      // {
+      //   name: 'test',
+      //   vertices: this.createWall(w - thickness, this.testH, d, {x: 0,y: h / 2 + this.testH , z: 0}),
+      //   color: '#8B4513',
+      //   faces: [
+      //     [0, 1, 2, 3], [4, 5, 6, 7],
+      //     [0,1, 5, 4], [2,3,7,6],
+      //     [0, 3, 7, 4],
+      //     [1, 2, 6,5]
+      //     // [3, 2, 6, 7]
+      //   ]
+      // },
       {
         name: 'нижняя',
         vertices: this.createWall(w - thickness, thickness, d, {x: 0, y: h / 2 - thickness / 2 - this.testH, z: 0}),

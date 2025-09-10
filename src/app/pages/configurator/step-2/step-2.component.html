@@ -1,62 +1,100 @@
-<label class="text text-medium">Внешний вид</label>
+<form [formGroup]="stepTwoForm">
+  <label class="text text-medium">Внешний вид</label>
 
-
-<div class="sizing-container panel">
-  <label class="text">Количество дверей</label>
-  <app-radio-group [isRound]="true" [data]="items5"></app-radio-group>
-</div>
-
-<div class="sizing-container panel">
-  <label class="text">Внешние выдвижные ящики</label>
-  <app-radio-group [data]="items1"></app-radio-group>
-</div>
-
-<div class="sizing-container panel">
-  <label class="text">Цоколь</label>
-  <app-radio-group [width]="100" [height]="50" [data]="items4"></app-radio-group>
-</div>
-
-<div class="sizing-container panel">
-  <label class="text">Нижняя часть фасадов</label>
-  <app-radio-group [data]="items2"></app-radio-group>
-</div>
-
-<div class="sizing-container panel">
-
-  <label class="text">Антресоль</label>
-  <app-radio-group [data]="items3"></app-radio-group>
-
-  <div class="panel panel--child mb-4">
-    <label class="text">Высота антресоли</label>
-    <p-slider [(ngModel)]="value" class="w-full"/>
-    <input [style.width.px]="100" pInputText [(ngModel)]="value"/>
+  <div class="sizing-container panel">
+    <label class="text">Количество дверей</label>
+    <app-radio-group ngDefaultControl formControlName="srK" [isRound]="true" [data]="numberOfDoors"></app-radio-group>
   </div>
 
-  <div class="panel panel--child">
-    <label class="text">Конструкция антресоли</label>
-    <app-radio-group [data]="items6"></app-radio-group>
-  </div>
-</div>
+  <div class="sizing-container panel">
+    <label class="text">Внешние выдвижные ящики</label>
+    <app-radio-group formControlName="SR_yaschiki_vneshnie" [data]="externalDrawers"></app-radio-group>
 
-<div class="sizing-container panel">
-
-  <label class="text">Фальш-планки</label>
-  <app-radio-group [data]="items7"></app-radio-group>
-
-  <div class="panel panel--child">
-    <label class="text">Планка слева</label>
-    <app-radio-group [data]="items8"></app-radio-group>
-
-    <div class="panel">
-      <label class="text">Ширина планки</label>
-      <p-slider [(ngModel)]="value" class="w-full"/>
-      <input [style.width.px]="100" pInputText [(ngModel)]="value"/>
-    </div>
-
+    <!--    TODO -->
+    @if (stepTwoForm.get('SR_yaschiki_vneshnie')?.value > 0) {
+      <app-blocks (schemeChange)="updateScheme($event)" [doorCount]="stepTwoForm.get('srK')?.value"></app-blocks>
+    }
   </div>
 
-<!--  <div class="panel panel&#45;&#45;child">-->
-<!--    <label class="text">Конструкция антресоли</label>-->
-<!--    <app-radio-group [data]="items6"></app-radio-group>-->
-<!--  </div>-->
-</div>
+  <div class="sizing-container panel">
+    <label class="text">Цоколь</label>
+    <app-radio-group ngDefaultControl formControlName="SR_tsokol" [width]="100" [height]="50"
+                     [data]="items4"></app-radio-group>
+  </div>
+
+  <div class="sizing-container panel">
+    <label class="text">Нижняя часть фасадов</label>
+    <app-radio-group ngDefaultControl formControlName="SR_niz_dveri" [data]="baseS()"></app-radio-group>
+  </div>
+
+  <div class="sizing-container panel">
+
+    <label class="text">Антресоль</label>
+
+    <app-radio-group formControlName="SR_antr" [data]="items3"></app-radio-group>
+
+    @if (stepTwoForm.get('SR_antr')?.value > 0) {
+      <div class="panel panel--child mb-4">
+        <label class="text">Высота антресоли</label>
+        <p-slider
+          [min]="wardrobeParamsService.SR_H_MIN_ANTR"
+          [max]="wardrobeParamsService.SR_H_MAX_ANTR"
+          [ngModel]="stepTwoForm.get('SR_H_antr')?.value"
+          (ngModelChange)="stepTwoForm.get('SR_H_antr')?.setValue($event)"
+          [ngModelOptions]="{standalone:true}"/>
+        <input formControlName="SR_H_antr" [style.width.px]="100" pInputText/>
+      </div>
+
+      <div class="panel panel--child">
+        <label class="text">Конструкция антресоли</label>
+        <app-radio-group ngDefaultControl formControlName="SR_antr_blok" [data]="items6"></app-radio-group>
+      </div>
+    }
+  </div>
+
+  <div class="sizing-container panel">
+
+    <label class="text">Фальш-планки</label>
+    <app-radio-group ngDefaultControl formControlName="SR_PLANKA" [data]="items7"></app-radio-group>
+
+    @if (stepTwoForm.get('SR_PLANKA')?.value > 0) {
+
+      <div class="panel panel--child mb-4">
+        <label class="text">Высота верхней фальш-планки</label>
+        <p-slider
+          [min]="wardrobeParamsService.SR_H_MIN_PLANKA"
+          [max]="wardrobeParamsService.SR_H_MAX_PLANKA"
+          [ngModel]="stepTwoForm.get('SR_H_PLANKA_VERH')?.value"
+          (ngModelChange)="stepTwoForm.get('SR_H_PLANKA_VERH')?.setValue($event)"
+          [ngModelOptions]="{standalone:true}"/>
+        <input formControlName="SR_H_PLANKA_VERH" [style.width.px]="100" pInputText/>
+      </div>
+
+      <div class="panel panel--child mb-4">
+        <label class="text">Планка под потолок</label>
+        <div class="row-checkboxes">
+          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_LEV" [ind]="'srPlankaVerhLev'"
+                        [item]="srPlankaVerhLev"></app-checkbox>
+          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_CHENTR" [ind]="'srPlankaVerhCentr'"
+                        [item]="srPlankaVerhCentr"></app-checkbox>
+          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_PRAV" [ind]="'srPlankaVerhPrav'"
+                        [item]="srPlankaVerhPrav"></app-checkbox>
+        </div>
+
+      </div>
+
+      <div class="panel panel--child mb-4">
+        <label class="text">Планка по контуру шкафа</label>
+        <div class="row-checkboxes">
+          <app-checkbox ngDefaultControl formControlName="SR_H_PLANKA_BOK_LEV" [ind]="'srPlankaBokLev'"
+                        [item]="srPlankaBokLev"></app-checkbox>
+          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_BOK_CHENTR" [ind]="'srPlankaBokCentr'"
+                        [item]="srPlankaBokCentr"></app-checkbox>
+          <app-checkbox ngDefaultControl formControlName="SR_H_PLANKA_BOK_PRAV" [ind]="'srPlankaBokPrav'"
+                        [item]="srPlankaBokPrav"></app-checkbox>
+        </div>
+      </div>
+    }
+  </div>
+
+</form>

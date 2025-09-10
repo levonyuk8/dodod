@@ -1,27 +1,34 @@
 :host {
   display: flex;
-  flex-direction: column;
 
-  .sizing-container, .material-container {
-    display: flex;
+  > form {
     flex-direction: column;
+    flex: 1;
+    display: flex;
 
-    &_row-content {
+
+    .sizing-container, .material-container {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
 
-      > div {
+      &_row-content {
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
+
+        > div {
+          display: flex;
+          flex-direction: column;
+          flex: 0 0 48%;
+        }
+      }
+
+      > *:not(:last-child):not(:first-child) {
+        margin-bottom: 1rem;
       }
     }
 
-    > *:not(:last-child):not(:first-child) {
+    > *:not(:last-child) {
       margin-bottom: 1rem;
     }
-  }
-
-  > *:not(:last-child) {
-    margin-bottom: 2rem;
   }
 }

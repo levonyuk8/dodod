@@ -29,14 +29,15 @@
 }
 
 // Миксин для цветовых вариантов
-@mixin button-variant($background, $color, $hover-background, $hover-color) {
-  background: $background;
+@mixin button-variant($background: transparent, $color, $hover-background: transparent, $hover-color: transparent) {
+  background-color: $background;
   color: $color;
   transition: all .5s linear;
+  border-color: $hover-color;
 
-  &:hover:not(:disabled) {
-    color: $hover-color;
-  }
+  //&:hover:not(:disabled) {
+  //  color: $hover-color;
+  //}
 
   &:active:not(:disabled) {
     transform: translateY(1px);
@@ -52,4 +53,8 @@
 @mixin button-size-all($padding-top, $padding-right, $padding-bottom, $padding-left, $font-size) {
   padding: $padding-top $padding-right $padding-bottom $padding-left;
   font-size: $font-size;
+}
+
+@mixin button-size-w-full {
+  width: 100%;
 }

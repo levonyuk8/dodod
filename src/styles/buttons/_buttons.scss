@@ -22,7 +22,12 @@ $btn-icon-height: 1.5rem;
 
   &-transparent {
     //background: linear-gradient(#247e46, #9fd050);
-    @include button.button-variant(#fff, #005840, #fff, #005840);
+    @include button.button-variant(transparent, #005840);
+  }
+
+  &-bg-transparent {
+    //background: linear-gradient(#247e46, #9fd050);
+    @include button.button-variant(transparent, #005840, 'transparent', #005840);
   }
 
   //TODO variables
@@ -30,11 +35,19 @@ $btn-icon-height: 1.5rem;
   //  @include button.button-size-all(1rem, 1rem, 1rem, calc(1rem + 24px + 8px), 1rem);
   //}
 
-  &-sm {
+  &-medium {
+    @include button.button-size(1rem, 1rem, 1rem);
+  }
+
+  &-small {
     @include button.button-size(0.5rem, 1rem, 0.875rem);
   }
 
   &-lg {
     @include button.button-size(1rem, 2rem, 1.125rem);
+  }
+
+  &-w-full {
+    @include button.button-size-w-full();
   }
 }

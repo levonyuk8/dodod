@@ -3,7 +3,7 @@ import {NgClass} from '@angular/common';
 import {ButtonComponent} from '../button/button.component';
 
 export enum Steps {
-  one,
+  one = 1,
   two,
   three,
   four

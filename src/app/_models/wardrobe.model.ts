@@ -1,0 +1,36 @@
+export class Wardrobe {
+  // base
+  wSect: number;
+  // 1
+  srL: number;
+  srH: number;
+  srG: number;
+  SR_G_ldsp: string;
+  SR_G_fasad: string;
+  // 2
+  srK: number;
+  SR_K_max: number;
+  SR_K_min: number;
+  SR_yaschiki_vneshnie: number;
+  SR_tsokol: number;
+  SR_niz_dveri: number;
+  SR_antr: number;
+  SR_H_antr: number;
+
+  constructor() {
+    this.wSect = 0;
+    this.srL = 0;
+    this.srH = 0;
+    this.srG = 0;
+    this.SR_G_ldsp = '';
+    this.SR_G_fasad = '';
+    this.srK = 0;
+    this.SR_K_min = 0;
+    this.SR_K_max = 0;
+    this.SR_yaschiki_vneshnie = 0;
+    this.SR_tsokol = 0; // 0-Боковины до пола 1-Цоколь с зазорами под плинтус 2-Цоколь только спереди + кухонные опоры 100мм
+    this.SR_niz_dveri = 0; // 0-До цоколя 1-До пола
+    this.SR_antr = 0; // 0-Шкаф без антресоли 1-Шкаф с антресолью
+    this.SR_H_antr = 0; // 0-Шкаф без антресоли 1-Шкаф с антресолью
+  }
+}

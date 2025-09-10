@@ -14,25 +14,39 @@
 
     > .left {
       //display: flex;
-      flex: 0 0 70%;
-      padding-right: 2rem;
+      flex: 0 0 60%;
+
+      margin-right: 2rem;
       //background: #8e0000;
-      height: 80vh;
-      position: relative;
+      //height: 80vh;
+      //position: relative;
+
+      position: sticky;
+      top: 20px; /* Отступ от верха */
+      align-self: flex-start;
+      width: 250px;
+      background: #f8f9fa;
+      //padding: 1rem;
+      border-radius: 8px;
+      height: fit-content;
+      max-height: 80vh; /* Ограничение высоты */
+      //overflow-y: auto;
     }
 
     > .right {
-      flex: 0 0 30%;
+      flex: 0 0 40%;
       display: flex;
       flex-direction: column;
+
+      //background: #8e0000;
 
       //display: flex;
       //flex-direction: column;
       //max-height: 85vh; /* Важно: задаем высоту контейнера */
       //width: 100%;
 
-      > div:not(:last-child) {
-        margin-bottom: 2rem;
+      > :not(:last-child) {
+        margin-bottom: 1rem;
       }
     }
   }
@@ -58,7 +72,7 @@
 }
 
 .preview-container {
-
+  display: flex;
 }
 
 

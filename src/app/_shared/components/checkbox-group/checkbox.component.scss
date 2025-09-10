@@ -26,7 +26,7 @@
   //width: 100px;
   //height: 180px;
   //margin: 10px;
-  //padding: 10px;
+  padding: 10px;
   border: 2px solid #F1F1F1;
   background-color: white;
   //border-radius: 1rem;
@@ -56,7 +56,11 @@
   margin: .5rem;
 }
 /* Checked */
-.form_radio_btn input[type=radio]:checked + label {
+.form_radio_btn input[type=checkbox] {
+  display: none;
+}
+
+.form_radio_btn input[type=checkbox]:checked + label {
   border-color: #216E59;
 }
 
@@ -66,7 +70,7 @@
 }
 
 /* Disabled */
-.form_radio_btn input[type=radio]:disabled + label {
+.form_radio_btn input[type=checkbox]:disabled + label {
   background: #efefef;
   color: #666;
   cursor: default;
@@ -76,7 +80,6 @@
   //width: 70px;
   //height: 150px;
   //background-color: #1c8543;
-  background-color: #F1F1F1;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% 100%;

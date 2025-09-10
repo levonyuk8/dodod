@@ -5,12 +5,21 @@
   .stepper-container {
     display: flex;
     flex-direction: column;
+    flex: 1;
 
     &__header {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       margin-bottom: .5rem;
+
+      > app-button {
+        flex: 0 0 50%;
+
+        &:first-child {
+          margin-right: .5rem;
+        }
+      }
     }
 
     &__steps {

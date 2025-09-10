@@ -1,40 +1,43 @@
 import {Component, forwardRef, Input} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {NgStyle} from '@angular/common';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
-export interface IGroupData {
+interface IGroupData {
   groupName: string;
-  options: ITestOption[];
+  options: CheckboxOption[];
 }
 
-export interface ITestOption {
+interface CheckboxOption {
+  id: string;
+  name: string;
+  value: string;
+  checked: boolean;
   imgUrl?: string;
-  label: string;
-  value: unknown;
-  disabled?: boolean;
 }
 
 @Component({
-  selector: 'app-radio-group',
+  selector: 'app-checkbox',
   imports: [
+    ReactiveFormsModule,
     NgStyle
   ],
-  templateUrl: './radio-group.component.html',
-  styleUrl: './radio-group.component.scss',
+  templateUrl: './checkbox.component.html',
+  styleUrl: './checkbox.component.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => RadioGroupComponent),
+      useExisting: forwardRef(() => CheckboxComponent),
       multi: true
     }
   ]
 })
-export class RadioGroupComponent implements ControlValueAccessor {
-  @Input() ind: number = 0;
-  @Input() data!: IGroupData;
+export class CheckboxComponent implements ControlValueAccessor {
+  @Input() ind: string = 'checkbox';
+  @Input() item!: any;
   @Input() width = 50;
   @Input() height = 100;
   @Input() isRound = false;
+
 
   private _value: any;
 
@@ -48,8 +51,10 @@ export class RadioGroupComponent implements ControlValueAccessor {
     this.onChange(this._value);
   }
 
-  onChange: any = () => {};
-  onTouched: any = () => {};
+  onChange: any = () => {
+  };
+  onTouched: any = () => {
+  };
 
   writeValue(obj: any): void {
     console.log('writeValue', obj)
@@ -75,5 +80,4 @@ export class RadioGroupComponent implements ControlValueAccessor {
     this.value = target.value;
     // this.onChange(this.value);
   }
-
 }

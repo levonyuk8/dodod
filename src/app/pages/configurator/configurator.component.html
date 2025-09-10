@@ -1,8 +1,6 @@
 <div class="main">
   <div class="left">
-<!--    <div class="canvas-container panel">-->
-      <app-wardrobe-designer></app-wardrobe-designer>
-<!--    </div>-->
+    <app-three-wardrobe></app-three-wardrobe>
   </div>
 
   <div class="right">
@@ -19,7 +17,7 @@
         }
         @case (Steps.two) {
           @defer {
-            <app-step-2></app-step-2>
+            <ng-container *ngTemplateOutlet="s2"></ng-container>
           }
         }
         @case (Steps.three) {
@@ -31,7 +29,14 @@
       }
     </div>
 
-    <app-button (click)="nextStep()" [variant]="'primary'">Далее</app-button>
+    <div>
+      <app-button [style.width]="'120px'" (click)="nextStep()" [variant]="'primary'">Далее</app-button>
+    </div>
+
+
   </div>
 </div>
 
+<ng-template #s2>
+  <app-step-2></app-step-2>
+</ng-template>
