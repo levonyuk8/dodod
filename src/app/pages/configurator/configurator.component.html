@@ -1,11 +1,18 @@
 <div class="main">
   <div class="left">
-    <app-three-wardrobe></app-three-wardrobe>
+
+    @defer {
+      <app-three-wardrobe></app-three-wardrobe>
+    }
+
   </div>
 
   <div class="right">
     <div class="preview-container panel">
-      <app-stepper (restart)="startAgain()" [step]="currentStep()"></app-stepper>
+      @defer {
+        <app-stepper (restart)="startAgain()" [step]="currentStep()"></app-stepper>
+      }
+
     </div>
 
     <div class="settings-container">
@@ -19,12 +26,6 @@
           @defer {
             <ng-container *ngTemplateOutlet="s2"></ng-container>
           }
-        }
-        @case (Steps.three) {
-          <div>Blue</div>
-        }
-        @case (Steps.four) {
-          <div>Blue</div>
         }
       }
     </div>
