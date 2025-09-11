@@ -17,8 +17,9 @@
         [ngModelOptions]="{standalone:true}"
         class="gradient-slider w-full"/>
       <input
+        class="input"
         formControlName="srL"
-        [style.width.px]="100" pInputText/>
+        [style.width.px]="100"/>
     </div>
 
     <div>
@@ -29,7 +30,7 @@
         [ngModel]="stepOneForm.get('srH')?.value"
         (ngModelChange)="stepOneForm.get('srH')?.setValue($event)"
         [ngModelOptions]="{standalone:true}"/>
-      <input formControlName="srH" [style.width.px]="100" pInputText/>
+      <input class="input" formControlName="srH" [style.width.px]="100"/>
     </div>
 
     <div>
@@ -40,7 +41,7 @@
         [ngModel]="stepOneForm.get('srG')?.value"
         (ngModelChange)="stepOneForm.get('srG')?.setValue($event)"
         [ngModelOptions]="{standalone:true}"/>
-      <input formControlName="srG" [style.width.px]="100" pInputText/>
+      <input class="input" formControlName="srG" [style.width.px]="100"/>
     </div>
 
   </div>

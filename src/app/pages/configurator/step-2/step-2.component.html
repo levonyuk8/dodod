@@ -8,7 +8,7 @@
 
   <div class="sizing-container panel">
     <label class="text">Внешние выдвижные ящики</label>
-    <app-radio-group formControlName="SR_yaschiki_vneshnie" [data]="externalDrawers"></app-radio-group>
+    <app-radio-group class="mt-8" formControlName="SR_yaschiki_vneshnie" [data]="externalDrawers"></app-radio-group>
 
     <!--    TODO -->
     @if (stepTwoForm.get('SR_yaschiki_vneshnie')?.value > 0) {

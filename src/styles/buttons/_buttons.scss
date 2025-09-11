@@ -36,7 +36,7 @@ $btn-icon-height: 1.5rem;
   //}
 
   &-medium {
-    @include button.button-size(1rem, 1rem, 1rem);
+    @include button.button-size(.5rem, 1rem, 1rem);
   }
 
   &-small {
@@ -49,5 +49,9 @@ $btn-icon-height: 1.5rem;
 
   &-w-full {
     @include button.button-size-w-full();
+  }
+
+  &-100 {
+    @include button.button-w(100px);
   }
 }

@@ -1,13 +1,14 @@
-import {ChangeDetectorRef, Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Material, WardrobeParamsService} from '../../../_services/wardrobe-params.service';
+import {debounceTime, startWith, tap} from 'rxjs';
 import {Slider} from 'primeng/slider';
 import {Select} from 'primeng/select';
-import {InputText} from 'primeng/inputtext';
-import {debounceTime, distinctUntilChanged, startWith, tap} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+
+import {Material, WardrobeParamsService} from '../../../_services/wardrobe-params.service';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
+import {FormCorrectionService} from '../../../_services/form-correction.service';
 
 
 @Component({
@@ -16,33 +17,51 @@ import {Steps} from '../../../_shared/components/stepper/stepper.component';
     FormsModule,
     ReactiveFormsModule,
     Slider,
-    Select,
-    InputText
+    Select
   ],
   templateUrl: './step-1.component.html',
   styleUrl: './step-1.component.scss'
 })
 export class Step1Component implements OnInit {
-
   fb = inject(FormBuilder);
   wps = inject(WardrobeParamsService);
   ccs = inject(CabinetConfiguratorService);
-  cdr = inject(ChangeDetectorRef);
   destroyRef = inject(DestroyRef);
+  formCorrectionService = inject(FormCorrectionService);
   private readonly defaultSrL = 1600;
   private readonly defaultSrH = 2100;
   private readonly defaultSrG = 520;
-  // SR_L: number; //Ширина шкафа
-  // SR_H: number; //Высота шкафа
-  // SR_G: number; //Глубина шкафа
-  // height: number;
-  // SR_G_ldsp: Material; //Материал корпуса
 
   public stepOneForm: FormGroup = this.fb.group({});
 
   ngOnInit(): void {
     this.createAndPatchForm();
     this.changeForm();
+
+    this.correctionFormValue();
+  }
+
+  private correctionFormValue() {
+    this.formCorrectionService.setupRangeCorrection(
+      this.stepOneForm,
+      'srL',
+      this.wps.SR_L_MIN,
+      this.wps.SR_L_MAX
+    );
+
+    this.formCorrectionService.setupRangeCorrection(
+      this.stepOneForm,
+      'srH',
+      this.wps.SR_H_MIN,
+      this.wps.SR_H_MAX
+    );
+
+    this.formCorrectionService.setupRangeCorrection(
+      this.stepOneForm,
+      'srG',
+      this.wps.SR_G_MIN,
+      this.wps.SR_G_MAX
+    );
   }
 
   private createAndPatchForm(): void {
@@ -62,7 +81,7 @@ export class Step1Component implements OnInit {
         Validators.min(this.wps.SR_G_MIN),
         Validators.max(this.wps.SR_G_MAX)
       ]),
-      SR_G_ldsp: new FormControl<string>('mdf16'),
+      SR_G_ldsp: new FormControl<string>('ldsp16'),
       SR_G_fasad: new FormControl<string>('ldsp16'),
     });
   }
@@ -70,22 +89,18 @@ export class Step1Component implements OnInit {
   private changeForm(): void {
     this.stepOneForm?.valueChanges.pipe(
       startWith(this.stepOneForm.value),
-      debounceTime(300), // Задержка 300ms
-      distinctUntilChanged(), // Игнорировать повторяющиеся значения
+      debounceTime(800),
+      // distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
         this.ccs.setWardrobe(change, Steps.one);
-
-        // return this.ccs.test(change);
-
       })
     ).subscribe()
   }
 
-
   housingMaterials: Material[] = [
-    {name: 'МДФ 16мм', code: 'mdf16'},
-    {name: 'МДФ 18мм', code: 'mdf18'},
+    {name: 'ЛДСП 16мм', code: 'ldsp16'},
+    {name: 'ЛДСП 18мм', code: 'ldsp18'},
   ];
 
   doorMaterials: Material[] = [
@@ -94,13 +109,4 @@ export class Step1Component implements OnInit {
     {name: 'МДФ 16мм', code: 'mdf16'},
     {name: 'МДФ 19мм', code: 'mdf19'},
   ];
-
-
-  selectedHousingMaterial: Material | undefined;
-  selectedDoorMaterial: Material | undefined;
-
-  value = 0;
-
-
-  protected readonly tap = tap;
 }

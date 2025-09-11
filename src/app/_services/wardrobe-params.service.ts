@@ -1,13 +1,5 @@
 import {Injectable} from '@angular/core';
 
-export interface WardrobeParams {
-  SR_L: number; //Ширина шкафа
-  SR_H: number; //Высота шкафа
-  SR_G: number; //Глубина шкафа
-  height: number;
-  SR_G_ldsp: Material; //Материал корпуса
-}
-
 export interface Material {
   name: string;
   code: string;

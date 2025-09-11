@@ -26,30 +26,41 @@ export class CabinetConfiguratorService {
   }
 
   getWardrobeScheme() {
-    return  this.wardrobeScheme;
+    return this.wardrobeScheme;
   }
 
-  setWardrobe(data: any, step: Steps) {
+  setWardrobe(data: any, step: Steps = Steps.one) {
     Object.assign(this.data, data);
     if (step === Steps.one) {
       this.calcNumberOfDoors();
+      this.data.wSect = ((this.data.srL) / this.data.srK);
     }
+
+    if (step === Steps.two) {
+      debugger;
+      this.data.wSect = ((this.data.srL) / this.data.srK);
+    }
+
     this.dataUpdatedSubject$.next(step);
   }
 
-  setWardrobeScheme(scheme: any, step: Steps) {
+  setWardrobeScheme(scheme: any, step: Steps = Steps.one) {
     this.wardrobeScheme = scheme;
     this.dataUpdatedSubject$.next(step);
   }
 
   clear(): void {
+    this.setWardrobe(new Wardrobe());
+    this.setWardrobeScheme([]);
     this.clearConf.next();
   }
 
   calcNumberOfDoors() {
+    debugger
     if (!this.data?.srL) return;
     this.data.SR_K_min = this.minCalcNumberOfDoors(this.data?.srL);
     this.data.SR_K_max = this.maxCalcNumberOfDoors(this.data?.srL);
+    this.data.srK =  this.data.SR_K_min;
   }
 
   // todo change 600 and 300

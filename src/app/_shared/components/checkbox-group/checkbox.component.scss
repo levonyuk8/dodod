@@ -12,24 +12,15 @@
 
   margin-right: 10px;
 }
-.form_radio_btn input[type=radio] {
-  display: none;
-}
+
 .form_radio_btn label.image-box {
   display: flex;
   cursor: pointer;
-  //padding: 0 15px;
-  //line-height: 34px;
-  //border: 1px solid #999;
-  //border-radius: 6px;
+  border-radius: 1rem;
   user-select: none;
-  //width: 100px;
-  //height: 180px;
-  //margin: 10px;
   padding: 10px;
   border: 2px solid #F1F1F1;
   background-color: white;
-  //border-radius: 1rem;
   align-items: center;
   justify-content: center;
   flex-direction: column;

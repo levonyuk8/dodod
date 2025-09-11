@@ -29,7 +29,6 @@ export class ConfiguratorComponent {
   }
 
   nextStep() {
-    this.cabinetConfiguratorService.clear();
     this.currentStep.update((v) => ++v);
   }
 

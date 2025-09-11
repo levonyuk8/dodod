@@ -1,6 +1,5 @@
 import {Component, forwardRef, Input} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
-import {NgStyle} from '@angular/common';
 
 interface IGroupData {
   groupName: string;
@@ -18,8 +17,7 @@ interface CheckboxOption {
 @Component({
   selector: 'app-checkbox',
   imports: [
-    ReactiveFormsModule,
-    NgStyle
+    ReactiveFormsModule
   ],
   templateUrl: './checkbox.component.html',
   styleUrl: './checkbox.component.scss',
@@ -77,7 +75,8 @@ export class CheckboxComponent implements ControlValueAccessor {
   onInputChange(event: Event): void {
     console.log('onInputChange', event);
     const target = event.target as HTMLInputElement;
-    this.value = target.value;
+    console.log(target.value);
+    this.value = target.checked;
     // this.onChange(this.value);
   }
 }

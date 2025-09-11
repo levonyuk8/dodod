@@ -11,7 +11,7 @@ export class Wardrobe {
   srK: number;
   SR_K_max: number;
   SR_K_min: number;
-  SR_yaschiki_vneshnie: number;
+  SR_yaschiki_vneshnie?: number;
   SR_tsokol: number;
   SR_niz_dveri: number;
   SR_antr: number;

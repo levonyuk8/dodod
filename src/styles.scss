@@ -35,7 +35,7 @@ body {
   padding: 1rem;
 
   &--child {
-    background: #e5eeec;
+    background: #f4faf5;
   }
 }
 
@@ -94,10 +94,30 @@ body {
 8 = 2rem (32px)
  */
 
+.mr-2 {
+  margin-right: .5rem;
+}
+
 .mb-2 {
   margin-bottom: .5rem;
 }
 
 .mb-4 {
   margin-bottom: 1rem;
+}
+
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
 }

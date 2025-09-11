@@ -2,8 +2,8 @@
   <div class="block panel panel--child">
     <div class="block-header">
       <div class="block-header-status" (click)="openBlock(item.blockNA)">
-        <span class="block-header_icon">{{ currentBlock === idx ? '&#9650;' : '&#9660;' }}</span>
-        <label class="block-header_name">Блок №{{ idx + 1 }}</label>
+        <span class="block-header_icon">{{ currentBlock === item.blockNA ? '&#9650;' : '&#9660;' }}</span>
+        <label class="block-header_name text text-normal">Блок №{{ idx + 1 }}</label>
       </div>
       <div class="block-header_delete-btn">
         <app-button (click)="deleteBlock(item.blockNA)" [size]="'small'" [variant]="'transparent'"
@@ -24,16 +24,17 @@
 
 <ng-template #bodyTmpl let-item='item' let-idx='idx'>
   <div class="content">
-    <label class="text text-small text-color-gray">
+    <label class="text text-small text-color-gray mt-8 mb-5">
       Выберите количество выдвижных ящиков в секции
     </label>
     <app-radio-group
       (change)="schemeChanges()"
       [ind]="idx" [(ngModel)]="item.SR_yaschiki_vneshnie_kol"
       [data]="drawers"></app-radio-group>
-    <label class="text">Сдвинуть блок</label>
+    <label class="text text-normal mt-8 mb-4">Сдвинуть блок</label>
     <div>
       <app-button
+        class="mr-2"
         (click)="moveBlock(item.blockNA, '-')"
         [disabled]="item.startPos <= 0"
         [variant]="'bg-transparent'" [size]="'small'">&#9668; Влево

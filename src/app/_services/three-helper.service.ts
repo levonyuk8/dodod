@@ -41,6 +41,12 @@ export class ThreeHelperService {
     this.canvasContainerRef = el;
   }
 
+  clearScene() {
+    while (this.scene.children.length > 0) {
+      this.scene.remove(this.scene.children[0]);
+    }
+  }
+
   private getParentSize() {
     const parentElement = this.canvasContainerRef.nativeElement.parentElement;
     console.log(parentElement.offsetWidth)

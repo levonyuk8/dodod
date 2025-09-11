@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ButtonComponent} from '../../../../_shared/components/button/button.component';
 import {IGroupData, RadioGroupComponent} from '../../../../_shared/components/radio-group/radio-group.component';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -16,9 +16,10 @@ import {NgTemplateOutlet} from '@angular/common';
   templateUrl: './blocks.component.html',
   styleUrl: './blocks.component.scss'
 })
-export class BlocksComponent  {
-
-  val = 2;
+export class BlocksComponent implements OnInit {
+  ngOnInit(): void {
+    this.createBlock()
+  }
 
   @Input() doorCount!: number;
 
@@ -26,9 +27,7 @@ export class BlocksComponent  {
 
   blockList: any[] = [];
 
-  currentBlock = 0;
-
-  count = new FormControl(2);
+  currentBlock: number | null = 0;
 
   //   Внешние выдвижные ящики (кол-во)
   drawers: IGroupData =
@@ -47,7 +46,6 @@ export class BlocksComponent  {
       return;
     }
 
-    debugger;
 
     const block = this.createNewBlock(startPos);
     this.blockList.push(block);
@@ -55,8 +53,14 @@ export class BlocksComponent  {
     this.schemeChanges();
   }
 
-  openBlock(index: number) {
-    this.currentBlock = index;
+  openBlock(na: number) {
+    console.log('openBlock', na)
+    console.log('openBlock',  this.currentBlock)
+    if (na === this.currentBlock) {
+      this.currentBlock = null
+    } else {
+      this.currentBlock = na;
+    }
   }
 
   private isEnoughSpaceForNewBlock() {

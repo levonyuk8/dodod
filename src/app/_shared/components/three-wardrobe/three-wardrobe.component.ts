@@ -25,7 +25,11 @@ export class ThreeWardrobeComponent implements AfterViewInit {
     this.threeHelper.setElement(this.containerRef);
     this.threeHelper.initThreeJs();
 
-    console.log('ThreeWardrobeComponent')
+    this.cabinetConfiguratorService.clearConf.subscribe(
+      () => {
+        this.threeHelper.clearScene();
+      }
+    )
 
     this.cabinetConfiguratorService.dataUpdatedSubject$
       .pipe(

@@ -120,7 +120,7 @@ export class WardrobeDesignerComponent implements AfterViewInit {
       this.ctx = this.canvas.getContext('2d')!; // Use '2d' or 'webgl' as needed
     }
 
-    this.cabinetConfiguratorService.data$
+    this.cabinetConfiguratorService.dataUpdatedSubject$
       .pipe(
         filter(data => !!data)
       )

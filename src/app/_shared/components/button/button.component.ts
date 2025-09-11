@@ -34,5 +34,5 @@ export class ButtonComponent {
   @Input() disabled = false;
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() imageUrl!: string;
-  @Input() width!: string;
+  @Input() width!: 'w-full' | 'auto' | '100' | '200';
 }
