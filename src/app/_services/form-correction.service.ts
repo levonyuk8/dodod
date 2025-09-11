@@ -32,7 +32,7 @@ export class FormCorrectionService {
 
     control?.valueChanges
       .pipe(
-        debounceTime(300),
+        debounceTime(800),
       )
       .subscribe(value => {
         console.log('setupRangeCorrection')

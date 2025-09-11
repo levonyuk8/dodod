@@ -89,7 +89,7 @@ export class Step1Component implements OnInit {
   private changeForm(): void {
     this.stepOneForm?.valueChanges.pipe(
       startWith(this.stepOneForm.value),
-      debounceTime(800),
+      debounceTime(1000),
       // distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
