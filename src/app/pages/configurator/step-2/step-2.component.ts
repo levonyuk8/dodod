@@ -134,7 +134,7 @@ export class Step2Component implements OnInit {
 
     this.stepTwoForm.get('srK')?.valueChanges.pipe(
       takeUntilDestroyed(this.destroyRef),
-      debounceTime(1000),
+      debounceTime(2000),
       tap((val) => {
         this.stepTwoForm.get('SR_yaschiki_vneshnie')?.setValue(0);
         this.updateScheme([]);
@@ -275,7 +275,7 @@ export class Step2Component implements OnInit {
 
     this.stepTwoForm?.valueChanges.pipe(
       startWith(this.stepTwoForm?.value),
-      debounceTime(1000),
+      debounceTime(1500),
       distinctUntilChanged(), // Игнорировать повторяющиеся значения
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
