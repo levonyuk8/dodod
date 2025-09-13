@@ -8,7 +8,11 @@
     </label>
 
     <div>
-      <label class="text">Ширина</label>
+      <label class="h-field">
+        <span class="text">Ширина</span>
+        <!--        <img [ngSrc]="'/img/svg/I.svg'" [width]="20" [height]="20" alt="qwe">-->
+      </label>
+
       <p-slider
         [min]="wps.SR_L_MIN"
         [max]="wps.SR_L_MAX"
@@ -23,7 +27,10 @@
     </div>
 
     <div>
-      <label class="text">Высота</label>
+      <label class="h-field">
+        <span class="text">Высота</span>
+        <!--        <img [ngSrc]="'/img/svg/I.svg'" [width]="20" [height]="20" alt="qwe">-->
+      </label>
       <p-slider
         [min]="wps.SR_H_MIN"
         [max]="wps.SR_H_MAX"
@@ -34,7 +41,10 @@
     </div>
 
     <div>
-      <label class="text">Глубина (вместе с фасадами)</label>
+      <label class="h-field">
+        <span class="text">Глубина (вместе с фасадами)</span>
+        <img [ngSrc]="'/img/svg/I.svg'" [width]="20" [height]="20" alt="qwe">
+      </label>
       <p-slider
         [min]="wps.SR_G_MIN"
         [max]="wps.SR_G_MAX"
@@ -52,12 +62,19 @@
     <div class="material-container_row-content" style="display: flex">
 
       <div>
-        <label class="text mb-2">Материал корпуса</label>
+        <label class="h-field mb-2">
+          <span class="text">Материал корпуса</span>
+          <img [ngSrc]="'/img/svg/I.svg'" [width]="20" [height]="20" alt="qwe">
+        </label>
         <p-select formControlName="SR_G_ldsp" [options]="housingMaterials" optionValue="code" optionLabel="name"
                   placeholder="Выберите материал" class="w-full"/>
       </div>
       <div>
-        <label class="text mb-2">Материал дверей</label>
+        <label class="h-field mb-2">
+          <span class="text">Материал дверей</span>
+          <img [ngSrc]="'/img/svg/I.svg'" [width]="20" [height]="20" alt="qwe">
+        </label>
+
         <p-select formControlName="SR_G_fasad" [options]="doorMaterials" optionValue="code" optionLabel="name"
                   placeholder="Выберите материал" class="w-full"/>
       </div>

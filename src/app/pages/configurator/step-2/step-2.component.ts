@@ -15,6 +15,7 @@ import {Slider} from 'primeng/slider';
 import {InputText} from 'primeng/inputtext';
 import {WardrobeParamsService} from '../../../_services/wardrobe-params.service';
 import {CheckboxComponent} from '../../../_shared/components/checkbox-group/checkbox.component';
+import {ThreeHelperService} from '../../../_services/three-helper.service';
 
 export enum BlockTypes {
   default = 'default',
@@ -40,6 +41,7 @@ export enum BlockTypes {
 export class Step2Component implements OnInit {
   cabinetConfiguratorService = inject(CabinetConfiguratorService);
   wardrobeParamsService = inject(WardrobeParamsService);
+  threeHelper = inject(ThreeHelperService);
   destroyRef = inject(DestroyRef);
   changeDetectorRef = inject(ChangeDetectorRef);
   fb = inject(FormBuilder);
@@ -88,6 +90,8 @@ export class Step2Component implements OnInit {
       tap(data => {
         if (data && this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.value) {
           this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.setValue(false);
+          this.stepTwoForm.get('SR_H_PLANKA_BOK_LEV')?.setValue(false);
+          this.stepTwoForm.get('SR_H_PLANKA_BOK_PRAV')?.setValue(false);
         }
       })
     ).subscribe()
@@ -96,6 +100,8 @@ export class Step2Component implements OnInit {
       tap(data => {
         if (data && this.stepTwoForm.get('SR_PLANKA_VERH_CHENTR')?.value) {
           this.stepTwoForm.get('SR_PLANKA_VERH_CHENTR')?.setValue(false);
+          this.stepTwoForm.get('SR_PLANKA_VERH_LEV')?.setValue(false);
+          this.stepTwoForm.get('SR_PLANKA_VERH_PRAV')?.setValue(false);
         }
       })
     ).subscribe()
@@ -133,9 +139,11 @@ export class Step2Component implements OnInit {
     ).subscribe()
 
     this.stepTwoForm.get('srK')?.valueChanges.pipe(
+      startWith(this.stepTwoForm.get('srK')?.value),
       takeUntilDestroyed(this.destroyRef),
-      debounceTime(2000),
       tap((val) => {
+        // this.threeHelper.addDoorsToCabinet(val);
+
         this.stepTwoForm.get('SR_yaschiki_vneshnie')?.setValue(0);
         this.updateScheme([]);
         this.externalDrawers = {
@@ -158,9 +166,7 @@ export class Step2Component implements OnInit {
     this.stepTwoForm.get('SR_yaschiki_vneshnie')?.valueChanges.pipe(
       takeUntilDestroyed(this.destroyRef),
       tap((val) => {
-        if (val === 1) {
           this.stepTwoForm.get('SR_niz_dveri')?.setValue(0);
-        }
         console.log('SR_yaschiki_vneshnie', val)
         console.log(this.stepTwoForm.get('SR_yaschiki_vneshnie')?.value.toString() === '0')
         // this.base = this.base;
@@ -170,7 +176,7 @@ export class Step2Component implements OnInit {
         this.baseS.set({
           groupName: "base",
           options: [
-            {imgUrl: 'url(/img/svg/B4.svg)', label: 'До цоколя (Открытый цоколь)', value: 0},
+            {imgUrl: 'url(/img/svg/B4.svg)', label: 'Открытый цоколь', value: 0},
             {
               imgUrl: 'url(/img/svg/B5.svg)', label: 'Закрытый цоколь', value: 1,
               disabled: this.test(),
@@ -221,7 +227,7 @@ export class Step2Component implements OnInit {
     {
       groupName: "base",
       options: [
-        {imgUrl: 'url(/img/svg/B4.svg)', label: 'До цоколя (Открытый цоколь)', value: 0},
+        {imgUrl: 'url(/img/svg/B4.svg)', label: 'Открытый цоколь', value: 0},
         {
           imgUrl: 'url(/img/svg/B5.svg)', label: 'Закрытый цоколь', value: 1,
           disabled: this.test(),
@@ -275,15 +281,11 @@ export class Step2Component implements OnInit {
 
     this.stepTwoForm?.valueChanges.pipe(
       startWith(this.stepTwoForm?.value),
-      debounceTime(1500),
+      // debounceTime(800),
       distinctUntilChanged(), // Игнорировать повторяющиеся значения
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
-        console.log('srL change', change);
-        // this.createWardrobeScheme(change.srK);
         this.cabinetConfiguratorService.setWardrobe(change, Steps.two);
-        // this.changeDetectorRef.detectChanges();
-
       })
     ).subscribe()
   }

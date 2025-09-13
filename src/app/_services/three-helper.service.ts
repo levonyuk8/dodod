@@ -111,14 +111,16 @@ export class ThreeHelperService {
   }
 
   createCabinet(step?: Steps) {
+    // todo
     this.scene.clear();
+    this.createBaseCabinet()
     switch (step) {
       case Steps.one: {
-        this.createBaseCabinet()
+        // this.createBaseCabinet()
         break;
       }
       case Steps.two: {
-        this.createBaseCabinet();
+        // this.createBaseCabinet();
 
         // this.testAl();
         // this.addSectionsToCabinet();
@@ -135,7 +137,7 @@ export class ThreeHelperService {
     const group = new THREE.Group();
     const meshes: THREE.Mesh[] = [];
     const walls =
-      this.createWalls(data.srL, data.srH, data.srG, this.depth, data.SR_tsokol.toString());
+      this.createWalls(data.srL, data.srH, data.srG, this.depth, data?.SR_tsokol.toString());
 
     walls.forEach(wall => {
       wall.element.position.set(wall.position.x, wall.position.y, wall.position.z);
@@ -352,7 +354,8 @@ export class ThreeHelperService {
   }
 
 
-  private addDoorsToCabinet() {
+  addDoorsToCabinet(doorCount: number = 0) {
+    console.log(doorCount);
     const data = this.cabinetConfiguratorService.getWardrobe();
 
     const scheme = this.cabinetConfiguratorService.getWardrobeScheme();

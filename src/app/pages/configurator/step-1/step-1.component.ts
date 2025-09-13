@@ -1,7 +1,7 @@
 import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {debounceTime, startWith, tap} from 'rxjs';
+import {debounceTime, filter, startWith, tap} from 'rxjs';
 import {Slider} from 'primeng/slider';
 import {Select} from 'primeng/select';
 
@@ -9,6 +9,8 @@ import {Material, WardrobeParamsService} from '../../../_services/wardrobe-param
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {FormCorrectionService} from '../../../_services/form-correction.service';
+import {ThreeHelperService} from '../../../_services/three-helper.service';
+import {NgOptimizedImage} from '@angular/common';
 
 
 @Component({
@@ -17,7 +19,8 @@ import {FormCorrectionService} from '../../../_services/form-correction.service'
     FormsModule,
     ReactiveFormsModule,
     Slider,
-    Select
+    Select,
+    NgOptimizedImage
   ],
   templateUrl: './step-1.component.html',
   styleUrl: './step-1.component.scss'
@@ -26,6 +29,7 @@ export class Step1Component implements OnInit {
   fb = inject(FormBuilder);
   wps = inject(WardrobeParamsService);
   ccs = inject(CabinetConfiguratorService);
+  threeHelper = inject(ThreeHelperService);
   destroyRef = inject(DestroyRef);
   formCorrectionService = inject(FormCorrectionService);
   private readonly defaultSrL = 1600;
@@ -88,12 +92,14 @@ export class Step1Component implements OnInit {
 
   private changeForm(): void {
     this.stepOneForm?.valueChanges.pipe(
+      filter( () => !this.stepOneForm?.invalid),
       startWith(this.stepOneForm.value),
-      debounceTime(1000),
+      debounceTime(800),
       // distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
         this.ccs.setWardrobe(change, Steps.one);
+        // this.ccs.setWardrobe(change, Steps.one);
       })
     ).subscribe()
   }

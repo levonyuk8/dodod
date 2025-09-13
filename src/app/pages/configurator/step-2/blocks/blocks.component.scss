@@ -14,6 +14,13 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+
+    > .block-header-status {
+      > .block-header_name {
+        cursor: pointer;
+        user-select: none;
+      }
+    }
   }
 
   > .content {

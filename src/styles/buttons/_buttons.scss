@@ -9,7 +9,7 @@ $btn-icon-height: 1.5rem;
   @include button.button-base;
 
   &-primary {
-    @include button.button-variant(#005840, #fff, #3700b3, #fff);
+    @include button.button-variant(#005840, #fff, #3700b3, #005840);
   }
 
   &-secondary {
