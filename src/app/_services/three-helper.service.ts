@@ -7,6 +7,7 @@ import {Steps} from '../_shared/components/stepper/stepper.component';
 import {Section} from '../_models/section.model';
 import {BlockTypes} from '../pages/configurator/step-2/step-2.component';
 import {Wardrobe} from '../_models/wardrobe.model';
+import {FormControl} from '@angular/forms';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class ThreeHelperService {
   // Высота цоколя 80мм
   plinth = 80;
   // Ширина Материала
-  depth = 100;
+  depth = 40;
   // Внешние выдвижные ящики
   yvH = 200;
 
@@ -101,6 +102,7 @@ export class ThreeHelperService {
     //
     // this.scene.add(group);
 
+
     this.animate();
   }
 
@@ -114,9 +116,11 @@ export class ThreeHelperService {
     // todo
     this.scene.clear();
     this.createBaseCabinet()
+    this.createDimensions();
     switch (step) {
       case Steps.one: {
         // this.createBaseCabinet()
+        this.addSrPlanka()
         break;
       }
       case Steps.two: {
@@ -127,6 +131,7 @@ export class ThreeHelperService {
         this.addDoorsToCabinet();
         this.addVYToCabinet();
         this.addAntresoli();
+        this.addSrPlanka();
         break;
       }
     }
@@ -253,6 +258,142 @@ export class ThreeHelperService {
     // pos;
   }
 
+  private addSrPlanka() {
+    const data = this.cabinetConfiguratorService.getWardrobe();
+    // const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
+
+    // console.log('addSectionsToCabinet', scheme);
+
+    const group = new THREE.Group();
+    const meshes: THREE.Mesh[] = [];
+    const planki = this.createPlanki(data.srL, data.srH, data.srG, this.depth, data.srK, data);
+
+
+    planki.forEach(planka => {
+      planka.element.position.set(planka.position.x, planka.position.y, planka.position.z);
+      meshes.push(planka.element)
+    })
+
+    group.add(...meshes);
+    this.scene.add(group);
+
+
+  }
+
+  private createPlanki(w: number, h: number, d: number, thickness: number, srK: number, data: Wardrobe) {
+    const res = [];
+    if (data.SR_PLANKA_VERH_CHENTR) {
+      res.push(
+        {
+          name: 'верхняя потолок',
+          element: this.createCube(w, 100, thickness, 1, false, 0xFFA500),
+          position: {x: 0, y: h / 2 + 100 / 2, z: (d - thickness) / 2},
+        },
+      )
+    }
+    if (data.SR_PLANKA_VERH_LEV) {
+      res.push(
+        {
+          name: 'левая потолок',
+          element: this.createCube(thickness, 100, d, 1, false, 0xFFA500),
+          position: {x: (-w / 2) + thickness / 2, y: h / 2 + 100 / 2, z: -1},
+        },
+      )
+    }
+    if (data.SR_PLANKA_VERH_PRAV) {
+      res.push(
+        {
+          name: 'правая потолок',
+          element: this.createCube(thickness, 100, d, 1, false, 0xFFA500),
+          position: {x: (w / 2) - thickness / 2, y: h / 2 + 100 / 2, z: -1},
+        },
+      )
+    }
+    if (data.SR_H_PLANKA_BOK_PRAV) {
+      res.push(
+        {
+          name: 'правая',
+          element: this.createCube(100, h, thickness, 1, false, 0xFFA500),
+          position: {x: (w / 2) + 100 / 2, y: 0, z: (d + this.depth) / 2},
+        },
+      )
+    }
+
+    if (data.SR_H_PLANKA_BOK_LEV) {
+      res.push(
+        {
+          name: 'левая',
+          element: this.createCube(100, h, thickness, 1, false, 0xFFA500),
+          position: {x: (-w / 2) - 100 / 2, y: 0, z: (d + this.depth) / 2},
+        },
+      )
+    }
+
+    if (data.SR_PLANKA_BOK_CHENTR) {
+      res.push(
+        {
+          name: 'верхняя',
+          element: this.createCube(w + 200, 100, thickness, 1, false, 0xFFA500),
+          position: {x: 0, y: h / 2 + 100 / 2, z: (d + this.depth) / 2},
+        },
+      )
+    }
+    // SR_PLANKA_VERH_CHENTR: new FormControl<boolean>(false),
+    //   SR_PLANKA_VERH_LEV: new FormControl<boolean>(false),
+    // SR_PLANKA_VERH_PRAV: new FormControl<boolean>(false),
+    // SR_PLANKA_BOK_CHENTR: new FormControl<boolean>(false),
+    // SR_H_PLANKA_BOK_LEV: new FormControl<boolean>(false),
+    // SR_H_PLANKA_BOK_PRAV: new FormControl<boolean>(false),
+
+    let qwe = [
+      {
+        name: 'верхняя потолок',
+        element: this.createCube(w, 100, thickness, 1, false, 0xFFA500),
+        position: {x: 0, y: h / 2 + 100 / 2, z: (d - thickness) / 2},
+      },
+      // ...res,
+      {
+        name: 'левая потолок',
+        element: this.createCube(thickness, 100, d, 1, false, 0xFFA500),
+        position: {x: (-w / 2) + thickness / 2, y: h / 2 + 100 / 2, z: -1},
+      },
+      {
+        name: 'правая потолок',
+        element: this.createCube(thickness, 100, d, 1, false, 0xFFA500),
+        position: {x: (w / 2) - thickness / 2, y: h / 2 + 100 / 2, z: -1},
+      },
+      // {
+      //   name: 'правая боковая',
+      //   element: this.createCube(thickness, baseH, d),
+      //   position: {x: w / 2 - thickness / 2, y: boxwoodCupboardYPos, z: 0},
+      // },
+      // {
+      //   name: 'верхняя',
+      //   element: this.createCube(w + 200, 100, thickness, 1, false, 0xFFA500),
+      //   position: {x: 0, y: h / 2 + 100 / 2, z: (d - thickness) / 2},
+      // },
+      //
+      // {
+      //   name: 'левая',
+      //   element: this.createCube(100, h, thickness, 1, false, 0xFFA500),
+      //   position: {x: (-w / 2) - 100 / 2, y:0, z: (d - thickness) / 2},
+      // },
+      // {
+      //   name: 'правая',
+      //   element: this.createCube(100, h, thickness, 1, false, 0xFFA500),
+      //   position: {x: (w / 2) + 100 / 2, y:0, z: (d - thickness) / 2},
+      // },
+      // {
+      //   name: 'нижняя',
+      //   element: this.createCube(lowerPartW, thickness, d),
+      //   position: {x: 0, y: -(h / 2 - thickness / 2 - this.plinth), z: 0},
+      // },
+    ]
+    console.log(qwe)
+
+    return res;
+  }
+
   private addAntresoli() {
     const data = this.cabinetConfiguratorService.getWardrobe();
     if (data.SR_antr.toString() === '0') return;
@@ -278,33 +419,13 @@ export class ThreeHelperService {
   }
 
   createAntresoli(w: number, h: number, d: number, thickness: number, srK: number, data: Wardrobe) {
-    // data.SR_niz_dveri.toString(), data.SR_antr.toString())
 
     const wSect = ((w) / srK) - thickness;
     const doorW = wSect + thickness;
     let doors = []
 
     for (let i = 0; i < srK; i++) {
-      // let qwe = null;
-      // qwe = scheme.find((item) => {
-      //   return item.startPos === i || item.endPos === i;
-      // })
       let doorH = data.SR_H_antr;
-
-      // if (qwe) {
-      //   allYVH = qwe.SR_yaschiki_vneshnie_kol * this.yvH;
-      //   doorH = doorH - allYVH;
-      //
-      // }
-      //
-      // if (data.SR_antr.toString() === '1') {
-      //
-      //   console.log('1111111111111111111111111')
-      //
-      //   console.log(data.SR_H_antr)
-      //   doorH = doorH - data.SR_H_antr;
-      // }
-
 
       const startX = (-w / 2) + (doorW / 2)
 
@@ -321,6 +442,22 @@ export class ThreeHelperService {
           z: (d + thickness) / 2
         },
       }
+
+      if (data?.SR_antr_blok.toString() !== '0') {
+        doors.push(
+          {
+            name: 'верхняя',
+            element: this.createCube(w, thickness, d + 100, 1, false),
+            position: {
+              x: 0, y: h / 2 - doorH,
+              //h / 2 - thickness / 2,
+              z: 0
+            },
+          },
+        );
+      }
+
+
       doors.push(door);
     }
     return doors;
@@ -376,15 +513,20 @@ export class ThreeHelperService {
 
   }
 
-  private createCube(w: number, h: number, d: number): THREE.Mesh {
-    const textureMaterial = new THREE.MeshBasicMaterial({map: this.texture});
+  private createCube(w: number, h: number, d: number, opacity = 1, test = true, color = 0xffffff): THREE.Mesh {
+    const textureMaterial = test ? new THREE.MeshBasicMaterial({map: this.texture}) :
+      new THREE.MeshBasicMaterial({color: color});
 
     const geometry = new THREE.BoxGeometry(w, h, d);
     const cube = new THREE.Mesh(geometry, textureMaterial);
 
     const edges = new THREE.EdgesGeometry(geometry);
 
-    const lineMaterial = new THREE.LineBasicMaterial({color: 0x000000, linewidth: 6}); // Black border
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: 0x000000, linewidth: 6,
+      transparent: true,
+      opacity: opacity
+    }); // Black border
     const line = new THREE.LineSegments(edges, lineMaterial);
 
 
@@ -630,5 +772,211 @@ export class ThreeHelperService {
         position: {x: 0, y: -(h / 2 - this.plinth / 2), z: -(d / 2 - thickness / 2 - plintus)},
       }
     ];
+  }
+
+//   size
+  createOuterDimensionLine(start: any, end: any, extension = 0.3, color = 0x000000, isHorizontal = true) {
+    const group = new THREE.Group();
+
+    // Основная линия
+    const mainPoints = [start, end];
+    const mainGeometry = new THREE.BufferGeometry().setFromPoints(mainPoints);
+    const mainMaterial = new THREE.LineBasicMaterial({
+      color: color,
+      linewidth: 3
+    });
+    const mainLine = new THREE.Line(mainGeometry, mainMaterial);
+    group.add(mainLine);
+
+    if (isHorizontal) {
+    }
+
+    // Выносные линии
+    const createExtensionLine = (position: any) => {
+      const points = [
+        new THREE.Vector3(position.x, position.y, position.z),
+        new THREE.Vector3(
+          isHorizontal ? position.x : position.x + extension,
+          isHorizontal ? position.y + extension : position.y, position.z)
+      ];
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({color: color});
+      return new THREE.Line(geometry, material);
+    };
+
+    group.add(createExtensionLine(start));
+    group.add(createExtensionLine(end));
+
+    return group;
+  }
+
+  createTextLabel(text: string, position: any, color = 0xffffff, size = 200, isHorizontal = true) {
+    const canvas = document.createElement('canvas');
+    let context = canvas.getContext('2d');
+
+    debugger
+
+
+    if (!context) return;
+    canvas.width = 256;
+    canvas.height = 64;
+
+    // canvas.translate = 'translate(0, 90px)';
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.font = '30px Arial';
+    context.fillStyle = `rgb(${(color >> 16) & 0xff}, ${(color >> 8) & 0xff}, ${color & 0xff})`;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+    context.strokeStyle = 'black';
+    context.lineWidth = 2;
+    context.strokeText(text, canvas.width / 2, canvas.height / 2);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      rotation: isHorizontal ? 0 : Math.PI / 2
+    });
+    const sprite = new THREE.Sprite(material);
+    sprite.position.copy(position);
+    sprite.scale.set(size * 3, size * 0.8, 1);
+
+    return sprite;
+  }
+
+  // createArrow(position: any, rotation: any, color:any, size = 0.1) {
+  //   const coneGeometry = new THREE.ConeGeometry(0.08, 0.15, 8);
+  //   const coneMaterial = new THREE.MeshBasicMaterial({ color });
+  //   const arrow = new THREE.Mesh(coneGeometry, coneMaterial);
+  //   arrow.position.copy(position);
+  //   arrow.rotation.x = rotation;
+  //   arrow.scale.set(size, size, size);
+  //   return arrow;
+  // }
+
+  private dimensionsGroup!: THREE.Group;
+  cubeSize = 1000;
+
+  createDimensions() {
+    const data = this.cabinetConfiguratorService.getWardrobe();
+
+    // Удаляем старые размеры если есть
+
+    if (this.dimensionsGroup) {
+      this.scene.remove(this.dimensionsGroup);
+      this.dimensionsGroup.children.forEach(child => {
+        console.log('createDimensions IF')
+        // if (child?.geometry) child?.geometry.dispose();
+        // if (child?.material) child?.material.dispose();
+      });
+    }
+
+    this.dimensionsGroup = new THREE.Group();
+    const offset = 200;
+
+    console.log(data)
+
+    // ШИРИНА (X) - красный
+    const widthLine = this.createOuterDimensionLine(
+      new THREE.Vector3(-data.srL / 2, -data.srH / 2 - offset, data.srG / 2),
+      new THREE.Vector3(data.srL / 2, -data.srH / 2 - offset, data.srG / 2),
+      offset,
+      0x000
+    );
+    console.log('widthLine', widthLine)
+    this.dimensionsGroup.add(widthLine);
+
+
+    const widthLabel = this.createTextLabel(
+      `${data.srL}mm`,
+      new THREE.Vector3(0, -data.srH / 2 - offset + 50, data.srG / 2),
+      0x000
+    );
+    if (widthLabel) {
+      this.dimensionsGroup.add(widthLabel);
+    }
+
+    // ВЫСОТА (Y) - зеленый
+    const heightLine = this.createOuterDimensionLine(
+      new THREE.Vector3(-data.srL / 2 - offset, -data.srH / 2, data.srG / 2),
+      new THREE.Vector3(-data.srL / 2 - offset, data.srH / 2, data.srG / 2),
+      // new THREE.Vector3(this.cubeSize/2 + offset, this.cubeSize/2 + offset, this.cubeSize/2 + offset/2),
+      offset,
+      0x000,
+      false
+      // 0x44ff44
+    );
+    this.dimensionsGroup.add(heightLine);
+
+    const heightLabel = this.createTextLabel(
+      `${data.srH}mm`,
+      new THREE.Vector3(-data.srL / 2 - offset - 50, 0, data.srG / 2),
+      0x000,
+      200,
+      false
+    );
+    if (heightLabel) {
+      this.dimensionsGroup.add(heightLabel);
+    }
+
+    // ГЛУБИНА (Z) - синий
+    // const depthLine = this.createOuterDimensionLine(
+    //   new THREE.Vector3(this.cubeSize/2 + offset/2, this.cubeSize/2 + offset, -this.cubeSize/2 - offset),
+    //   new THREE.Vector3(this.cubeSize/2 + offset/2, this.cubeSize/2 + offset, this.cubeSize/2 + offset),
+    //   0.4,
+    //   0x4444ff
+    // );
+    // this.dimensionsGroup.add(depthLine);
+    //
+    // const depthLabel = this.createTextLabel(
+    //   `${this.cubeSize.toFixed(1)}m`,
+    //   new THREE.Vector3(this.cubeSize/2 + offset/2 + 0.8, this.cubeSize/2 + offset, 0),
+    //   0x4444ff
+    // );
+    // this.dimensionsGroup.add(depthLabel);
+    //
+    // // Стрелочки
+    // this.dimensionsGroup.add(this.createArrow(
+    //   new THREE.Vector3(-this.cubeSize/2 - offset, -this.cubeSize/2 - offset, this.cubeSize/2 + offset/2),
+    //   Math.PI/2,
+    //   0xff4444
+    // ));
+    // this.dimensionsGroup.add(this.createArrow(
+    //   new THREE.Vector3(this.cubeSize/2 + offset, -this.cubeSize/2 - offset, this.cubeSize/2 + offset/2),
+    //   -Math.PI/2,
+    //   0xff4444
+    // ));
+    //
+    // this.dimensionsGroup.add(this.createArrow(
+    //   new THREE.Vector3(this.cubeSize/2 + offset, -this.cubeSize/2 - offset, this.cubeSize/2 + offset/2),
+    //   0,
+    //   0x44ff44
+    // ));
+    // this.dimensionsGroup.add(this.createArrow(
+    //   new THREE.Vector3(this.cubeSize/2 + offset, this.cubeSize/2 + offset, this.cubeSize/2 + offset/2),
+    //   Math.PI,
+    //   0x44ff44
+    // ));
+    //
+    // this.dimensionsGroup.add(this.createArrow(
+    //   new THREE.Vector3(this.cubeSize/2 + offset/2, this.cubeSize/2 + offset, -this.cubeSize/2 - offset),
+    //   -Math.PI/2,
+    //   0x4444ff
+    // ));
+    // this.dimensionsGroup.add(this.createArrow(
+    //   new THREE.Vector3(this.cubeSize/2 + offset/2, this.cubeSize/2 + offset, this.cubeSize/2 + offset),
+    //   Math.PI/2,
+    //   0x4444ff
+    // ));
+
+    this.scene.add(this.dimensionsGroup);
+  }
+
+  resetSizes() {
+    this.dimensionsGroup.clear();
+    // this.dimensionsGroup.children.forEach(child => {})
   }
 }

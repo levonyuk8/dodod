@@ -60,5 +60,5 @@
 }
 
 @mixin button-w($width: 'auto') {
-  width: $width;
+  width: $width!important;
 }

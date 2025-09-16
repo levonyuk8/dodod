@@ -1,3 +1,5 @@
 <div class="canvas-container" #canvasContainer>
-  <app-button [variant]="'bg-transparent'" [imageUrl]="'/img/svg/Ruler1.svg'">Скрыть размеры</app-button>
+  <app-button [width]="'200'" (click)="resetSizes()" [variant]="'bg-transparent'" [imageUrl]="'/img/svg/Ruler1.svg'">
+    {{ this.size() ? 'Показать размеры' : '  Скрыть   размеры' }}
+  </app-button>
 </div>

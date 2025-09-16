@@ -54,4 +54,8 @@ $btn-icon-height: 1.5rem;
   &-100 {
     @include button.button-w(100px);
   }
+
+  &-200 {
+    @include button.button-w(200px);
+  }
 }

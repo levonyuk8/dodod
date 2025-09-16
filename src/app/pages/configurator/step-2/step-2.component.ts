@@ -86,6 +86,19 @@ export class Step2Component implements OnInit {
       SR_H_PLANKA_BOK_PRAV: new FormControl<boolean>(false),
     });
 
+    this.stepTwoForm.get('SR_antr')?.valueChanges.pipe(
+      tap(data => {
+        if (this.stepTwoForm.get('SR_antr')?.value === '0') {
+          this.stepTwoForm.get('SR_antr')?.setValue(0);
+        }
+        // if (data && this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.value) {
+        //   this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.setValue(false);
+        //   this.stepTwoForm.get('SR_H_PLANKA_BOK_LEV')?.setValue(false);
+        //   this.stepTwoForm.get('SR_H_PLANKA_BOK_PRAV')?.setValue(false);
+        // }
+      })
+    ).subscribe()
+
     this.stepTwoForm.get('SR_PLANKA_VERH_CHENTR')?.valueChanges.pipe(
       tap(data => {
         if (data && this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.value) {
@@ -146,6 +159,8 @@ export class Step2Component implements OnInit {
 
         this.stepTwoForm.get('SR_yaschiki_vneshnie')?.setValue(0);
         this.updateScheme([]);
+        console.log('updateScheme')
+        // this.([]);
         this.externalDrawers = {
           groupName: "externalDrawers",
           options: [
@@ -167,6 +182,7 @@ export class Step2Component implements OnInit {
       takeUntilDestroyed(this.destroyRef),
       tap((val) => {
           this.stepTwoForm.get('SR_niz_dveri')?.setValue(0);
+        this.updateScheme([]);
         console.log('SR_yaschiki_vneshnie', val)
         console.log(this.stepTwoForm.get('SR_yaschiki_vneshnie')?.value.toString() === '0')
         // this.base = this.base;
@@ -253,7 +269,7 @@ export class Step2Component implements OnInit {
       groupName: "test6",
       options: [
         {imgUrl: 'url(/img/svg/G44.svg)', label: 'Общая со шкафом', value: 0},
-        {imgUrl: 'url(/img/svg/G45.svg)', label: 'Отдельным блоком', value: 1, disabled: true},
+        {imgUrl: 'url(/img/svg/G45.svg)', label: 'Отдельным блоком', value: 1},
       ]
     }
 

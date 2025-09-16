@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, signal, ViewChild} from '@angular/core';
 import {ThreeHelperService} from '../../../_services/three-helper.service';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
 import {filter} from 'rxjs';
@@ -13,6 +13,10 @@ import {ButtonComponent} from '../button/button.component';
   styleUrl: './three-wardrobe.component.scss'
 })
 export class ThreeWardrobeComponent implements AfterViewInit {
+
+  size = signal(false);
+
+  sizeBtnLabel =  ` ${this.size() ? 'Скрыть' : 'Показать'} размеры`;
 
   @ViewChild('canvasContainer') containerRef!: ElementRef;
 
@@ -41,6 +45,14 @@ export class ThreeWardrobeComponent implements AfterViewInit {
           this.threeHelper.createCabinet(data);
         }
       )
+  }
+
+  resetSizes() {
+    console.log('reset');
+    this.size.update( v=> !this.size());
+
+    this.size() ? this.threeHelper.resetSizes() : this.threeHelper.createDimensions();
+
   }
 
 }
