@@ -115,18 +115,14 @@ export class ThreeHelperService {
   createCabinet(step?: Steps) {
     // todo
     this.scene.clear();
-    this.createBaseCabinet()
-    this.createDimensions();
     switch (step) {
       case Steps.one: {
-        // this.createBaseCabinet()
-        // this.addSrPlanka()
+        this.createBaseCabinet()
+        this.createDimensions();
         break;
       }
       case Steps.two: {
-        // this.createBaseCabinet();
-
-        // this.testAl();
+        this.createBaseCabinet();
         // this.addSectionsToCabinet();
         this.addDoorsToCabinet();
         this.addVYToCabinet();
@@ -176,6 +172,8 @@ export class ThreeHelperService {
 
   private addSrPlanka() {
     const data = this.cabinetConfiguratorService.getWardrobe();
+    console.log('addSrPlanka data', data);
+    console.log('addSrPlanka data', data.SR_tsokol);
 
     const group = new THREE.Group();
     const meshes: THREE.Mesh[] = [];
@@ -196,49 +194,71 @@ export class ThreeHelperService {
   }
 
   private createPlanki(w: number, h: number, d: number, thickness: number, srK: number, data: Wardrobe) {
+    console.log('data.SR_tsokol', data.SR_tsokol)
+
+
+    console.log('data.SR_tsokol', data.SR_tsokol)
+
     const res = [];
-    // if (data?.SR_PLANKA_VERH_CHENTR) {
-    //   res.push(
-    //     {
-    //       name: 'верхняя потолок',
-    //       element: this.createCube(w, data.SR_H_PLANKA_VERH, thickness, 1, false, 0xFFA500),
-    //       position: {x: 0, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: (d - thickness) / 2},
-    //     },
-    //   )
-    // }
     if (data?.SR_PLANKA_VERH_CHENTR) {
       res.push(
         {
+          name: 'верхняя потолок крепёж',
+          element: this.createCube(w - thickness * 4, data.SR_H_PLANKA_VERH, thickness, 1, false, 0xFFA500),
+          position: {x: 0, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: (d + thickness) / 2 - thickness},
+        },
+      );
+      res.push(
+        {
           name: 'верхняя потолок',
-          element: this.createCube(w, data.SR_H_PLANKA_VERH, thickness, 1, false, 0xFFA500),
+          element: this.createCube(w, data.SR_H_PLANKA_VERH, thickness),
           position: {x: 0, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: (d + thickness) / 2},
         },
-      )
+      );
     }
     if (data?.SR_PLANKA_VERH_LEV) {
       res.push(
         {
-          name: 'левая потолок',
+          name: 'левая потолок крепёж',
           element: this.createCube(thickness, data.SR_H_PLANKA_VERH, d, 1, false, 0xFFA500),
+          position: {x: (-w / 2) + thickness / 2 + thickness, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: -1},
+        },
+      );
+      res.push(
+        {
+          name: 'левая потолок',
+          element: this.createCube(thickness, data.SR_H_PLANKA_VERH, d),
           position: {x: (-w / 2) + thickness / 2, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: -1},
         },
-      )
+      );
     }
     if (data?.SR_PLANKA_VERH_PRAV) {
       res.push(
         {
-          name: 'правая потолок',
+          name: 'правая потолок крепёж',
           element: this.createCube(thickness, data.SR_H_PLANKA_VERH, d, 1, false, 0xFFA500),
+          position: {x: (w / 2) - thickness / 2 - thickness, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: -1},
+        },
+      );
+      res.push(
+        {
+          name: 'правая потолок',
+          element: this.createCube(thickness, data.SR_H_PLANKA_VERH, d),
           position: {x: (w / 2) - thickness / 2, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: -1},
         },
-      )
+      );
     }
+
+    const plankaBokD = 100;
+    const plankaBokH = +data.SR_tsokol === 0 ? h : h - this.plinth;
+    const plankaBokYPos = +data.SR_tsokol === 0 ? 0 : this.plinth / 2;
+
     if (data?.SR_H_PLANKA_BOK_PRAV) {
       res.push(
         {
           name: 'правая',
-          element: this.createCube(100, h, thickness, 1, false, 0xFFA500),
-          position: {x: (w / 2) + 100 / 2, y: 0, z: (d + this.depth) / 2},
+          element: this.createCube(thickness, plankaBokH, plankaBokD),
+          position: {x: (w / 2) + thickness / 2, y: plankaBokYPos, z: (d - plankaBokD) / 2 + thickness},
         },
       )
     }
@@ -247,18 +267,30 @@ export class ThreeHelperService {
       res.push(
         {
           name: 'левая',
-          element: this.createCube(100, h, thickness, 1, false, 0xFFA500),
-          position: {x: (-w / 2) - 100 / 2, y: 0, z: (d + this.depth) / 2},
+          element: this.createCube(thickness, plankaBokH, plankaBokD),
+          position: {x: (-w / 2) - thickness / 2, y: plankaBokYPos, z: (d - plankaBokD) / 2 + thickness},
         },
       )
+    }
+
+    let plankaBokCenterW = w;
+    let plankaBokCenterXPos = 0;
+
+    if (data?.SR_H_PLANKA_BOK_PRAV)  {
+      plankaBokCenterW += thickness;
+      plankaBokCenterXPos += thickness;
+    }
+    if (data?.SR_H_PLANKA_BOK_LEV)  {
+      plankaBokCenterW += thickness;
+      plankaBokCenterXPos -= thickness;
     }
 
     if (data?.SR_PLANKA_BOK_CHENTR) {
       res.push(
         {
           name: 'верхняя',
-          element: this.createCube(w + 200, 100, thickness, 1, false, 0xFFA500),
-          position: {x: 0, y: h / 2 + 100 / 2, z: (d + this.depth) / 2},
+          element: this.createCube(plankaBokCenterW, thickness, plankaBokD),
+          position: {x: plankaBokCenterXPos / 2, y: h / 2 + this.depth / 2, z: (d - plankaBokD) / 2 + thickness},
         },
       )
     }
@@ -319,7 +351,7 @@ export class ThreeHelperService {
         doors.push(
           {
             name: 'верхняя',
-            element: this.createCube(w, 2, d + 100, 1, false),
+            element: this.createCube(w, 0, d),
             position: {
               x: 0, y: h / 2 - doorH,
               //h / 2 - thickness / 2,

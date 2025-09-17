@@ -1,6 +1,7 @@
 import {Component, forwardRef, Input} from '@angular/core';
 import {NgClass, NgStyle} from '@angular/common';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Tooltip} from 'primeng/tooltip';
 
 export interface IGroupData {
   groupName: string;
@@ -12,13 +13,14 @@ export interface ITestOption {
   label: string;
   value: unknown;
   disabled?: boolean;
+  message?: string;
 }
 
 @Component({
   selector: 'app-radio-group',
   imports: [
     NgStyle,
-    NgClass
+    Tooltip
   ],
   templateUrl: './radio-group.component.html',
   styleUrl: './radio-group.component.scss',

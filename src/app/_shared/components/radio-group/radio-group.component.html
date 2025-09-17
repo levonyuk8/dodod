@@ -7,10 +7,12 @@
              id="{{ind + idx + data.groupName}}"
              type="radio" name="{{data.groupName}}}"
              value="{{item.value}}">
+      {{item?.message}}
+      {{item?.disabled}}
       <label
-        data-tooltip="Недоступно до завершения формы"
+        [pTooltip]="item?.disabled ? item?.message : ''"
+        tooltipPosition="top"
         [ngStyle]="isRound ? {'border-radius': '50%'} : {'border-radius': '1rem'}"
-        [ngClass]="item.disabled ? 'disabled-button': ''"
         [style.padding]="isRound ? '5px' : '10px' "
         class="image-box" for="{{ind + idx + data.groupName}}">
         @if (item.imgUrl) {
@@ -27,7 +29,9 @@
         }
       </label>
       @if (!isRound) {
-        <label class="text text-small" for="{{ind + idx + data.groupName}}">{{ item.label }}</label>
+        <label
+          [style.max-width]="width + 40 + 'px'"
+          class="text text-small" for="{{ind + idx + data.groupName}}">{{ item.label }}</label>
       }
     </div>
   }

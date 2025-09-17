@@ -1,4 +1,4 @@
-import {Component, signal} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {ButtonComponent} from "../../_shared/components/button/button.component";
 import {StepperComponent, Steps} from "../../_shared/components/stepper/stepper.component";
 import {Step1Component} from './step-1/step-1.component';
@@ -6,6 +6,7 @@ import {Step2Component} from './step-2/step-2.component';
 import {CabinetConfiguratorService} from '../../_services/cabinet-configurator.service';
 import {ThreeWardrobeComponent} from '../../_shared/components/three-wardrobe/three-wardrobe.component';
 import {NgTemplateOutlet} from '@angular/common';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-configurator',
@@ -34,6 +35,6 @@ export class ConfiguratorComponent {
 
   startAgain() {
     this.cabinetConfiguratorService.clear();
-    this.currentStep.set(Steps.one)
+    location.reload();
   }
 }

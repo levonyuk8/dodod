@@ -71,10 +71,10 @@ export class Step2Component implements OnInit {
       // SR_yaschiki_vneshnie_kol: new FormControl<number>(2),
       SR_tsokol: new FormControl<number>(0),
       SR_niz_dveri: new FormControl<number>(0),
-      SR_antr: new FormControl<number>(0),
+      SR_antr: new FormControl<number>(this.data.srH >= this.wardrobeParamsService.SR_H_MAX_FASAD ? 1 : 0),
       SR_H_antr: new FormControl<number>(400),
 
-      SR_antr_blok: new FormControl<number>(0),
+      SR_antr_blok: new FormControl<number>(this.data.srH > this.wardrobeParamsService.SR_H_MAX_BOK ? 1 : 0),
 
       SR_PLANKA: new FormControl<number>(0),
       SR_H_PLANKA_VERH: new FormControl<number>(200),
@@ -169,7 +169,8 @@ export class Step2Component implements OnInit {
               imgUrl: 'url(/img/svg/ED2.svg)', label: 'Да', value: 1,
               disabled: this.data.srL <= 600
                 || this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK
-                || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2
+                || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,
+              message: `${this.data.srL} <= 600 или ...`
             }, // todo
           ]
         }
@@ -220,7 +221,8 @@ export class Step2Component implements OnInit {
           imgUrl: 'url(/img/svg/ED2.svg)', label: 'Да', value: 1,
           disabled: this.data.srL <= 600
             || this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK
-            || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2//??
+            || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,//??
+          message: `${this.data.srL} <= 600 или ...`
         }, // todo
       ]
     }
@@ -234,8 +236,9 @@ export class Step2Component implements OnInit {
       options: [
         {imgUrl: 'url(/img/svg/B1.svg)', label: 'Боковины до пола', value: 0},
         {
-          imgUrl: 'url(/img/svg/B2.svg)', label: 'С отступами под плинтус', value: 1,
-          disabled: this.data.srL > this.wardrobeParamsService.SR_H_MAX_BOK
+          imgUrl: 'url(/img/svg/B2.svg)', label: 'С отступами под плинтус по 25 мм', value: 1,
+          disabled: this.data.srL > this.wardrobeParamsService.SR_H_MAX_BOK,
+          message: `${this.data.srL} > ${this.wardrobeParamsService.SR_H_MAX_BOK}`
         },
         {imgUrl: 'url(/img/svg/B3.svg)', label: 'Цоколь спереди ножки 100 мм', value: 2},
       ]
@@ -261,8 +264,16 @@ export class Step2Component implements OnInit {
     {
       groupName: "test3",
       options: [
-        {imgUrl: 'url(/img/svg/G42.svg)', label: 'Без антресоли', value: 0},
-        {imgUrl: 'url(/img/svg/G43.svg)', label: 'С антресолью', value: 1, disabled: this.data.srH <= 2000},
+        {
+          imgUrl: 'url(/img/svg/G42.svg)', label: 'Без антресоли', value: 0,
+          disabled: this.data.srH >= this.wardrobeParamsService.SR_H_MAX_FASAD,
+          message: `${this.data.srH} >= ${this.wardrobeParamsService.SR_H_MAX_FASAD}`
+        },
+        {
+          imgUrl: 'url(/img/svg/G43.svg)', label: 'С антресолью', value: 1,
+          disabled: this.data.srH <= this.wardrobeParamsService.SR_H_MIN_S_ANTR,
+          message: `${this.data.srH} <= ${this.wardrobeParamsService.SR_H_MIN_S_ANTR}`
+        },
       ]
     }
 
@@ -271,19 +282,25 @@ export class Step2Component implements OnInit {
     {
       groupName: "test6",
       options: [
-        {imgUrl: 'url(/img/svg/G44.svg)', label: 'Общая со шкафом', value: 0},
-        {imgUrl: 'url(/img/svg/G45.svg)', label: 'Отдельным блоком', value: 1},
+        {
+          imgUrl: 'url(/img/svg/G44.svg)', label: 'Общая со шкафом', value: 0,
+          disabled: this.data.srH > this.wardrobeParamsService.SR_H_MAX_BOK,
+          message: `${this.data.srH} > ${this.wardrobeParamsService.SR_H_MAX_BOK}`
+        },
+        {
+          imgUrl: 'url(/img/svg/G45.svg)', label: 'Отдельным блоком', value: 1
+        },
       ]
     }
 
-  items7: IGroupData =
-    {
-      groupName: "test7",
-      options: [
-        {imgUrl: 'url(/img/svg/G46.svg)', label: 'Нет', value: 0},
-        {imgUrl: 'url(/img/svg/G47.svg)', label: 'Да', value: 1},
-      ]
-    }
+  // items7: IGroupData =
+  //   {
+  //     groupName: "test7",
+  //     options: [
+  //       {imgUrl: 'url(/img/svg/G46.svg)', label: 'Нет', value: 0},
+  //       {imgUrl: 'url(/img/svg/G47.svg)', label: 'Да', value: 1},
+  //     ]
+  //   }
 
   srPlankaVerhLev = {imgUrl: 'url(/img/svg/not.svg)', label: 'Слева', value: false};
   srPlankaVerhCentr = {imgUrl: 'url(/img/svg/not.svg)', label: 'Спереди', value: false};
@@ -304,6 +321,7 @@ export class Step2Component implements OnInit {
       distinctUntilChanged(), // Игнорировать повторяющиеся значения
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
+        console.log(change)
         this.cabinetConfiguratorService.setWardrobe(change, Steps.two);
       })
     ).subscribe()

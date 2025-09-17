@@ -22,6 +22,7 @@ export class CabinetConfiguratorService {
   }
 
   getWardrobe() {
+    debugger;
     return this.data;
   }
 
@@ -31,6 +32,7 @@ export class CabinetConfiguratorService {
 
   setWardrobe(data: any, step: Steps = Steps.one) {
     Object.assign(this.data, data);
+    debugger;
     if (step === Steps.one) {
       this.calcNumberOfDoors();
       this.data.wSect = ((this.data.srL) / this.data.srK);
