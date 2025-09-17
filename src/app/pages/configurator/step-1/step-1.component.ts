@@ -11,6 +11,10 @@ import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {FormCorrectionService} from '../../../_services/form-correction.service';
 import {ThreeHelperService} from '../../../_services/three-helper.service';
 import {NgOptimizedImage} from '@angular/common';
+import {ConfirmDialog} from 'primeng/confirmdialog';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {ButtonComponent} from '../../../_shared/components/button/button.component';
+import {Toast} from 'primeng/toast';
 
 
 @Component({
@@ -20,10 +24,14 @@ import {NgOptimizedImage} from '@angular/common';
     ReactiveFormsModule,
     Slider,
     Select,
-    NgOptimizedImage
+    NgOptimizedImage,
+    ConfirmDialog,
+    ButtonComponent,
+    Toast
   ],
   templateUrl: './step-1.component.html',
-  styleUrl: './step-1.component.scss'
+  styleUrl: './step-1.component.scss',
+  providers: [ConfirmationService, MessageService]
 })
 export class Step1Component implements OnInit {
   fb = inject(FormBuilder);
@@ -31,6 +39,9 @@ export class Step1Component implements OnInit {
   ccs = inject(CabinetConfiguratorService);
   threeHelper = inject(ThreeHelperService);
   destroyRef = inject(DestroyRef);
+  confirmationService = inject(ConfirmationService);
+  messageService = inject(MessageService);
+
   formCorrectionService = inject(FormCorrectionService);
   private readonly defaultSrL = 1600;
   private readonly defaultSrH = 2100;
@@ -43,6 +54,36 @@ export class Step1Component implements OnInit {
     this.changeForm();
 
     this.correctionFormValue();
+  }
+
+  confirm1(event: Event) {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Are you sure that you want to proceed?',
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+      },
+      acceptButtonProps: {
+        label: 'Save',
+      },
+      accept: () => {
+        this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted' });
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Rejected',
+          detail: 'You have rejected',
+          life: 3000,
+        });
+      },
+    });
   }
 
   private correctionFormValue() {

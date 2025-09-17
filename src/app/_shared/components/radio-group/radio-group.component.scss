@@ -76,8 +76,24 @@
   //width: 70px;
   //height: 150px;
   //background-color: #1c8543;
-  background-color: #F1F1F1;
+  //background-color: #F1F1F1;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% 100%;
+}
+
+.disabled-button {
+  position: relative;
+}
+.disabled-button[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: black;
+  color: white;
+  padding: 5px;
+  border-radius: 3px;
+  white-space: nowrap;
 }

@@ -64,10 +64,11 @@ export class BlocksComponent implements OnInit {
   }
 
   private isEnoughSpaceForNewBlock() {
+    debugger;
     if (!this.blockList.length) {
       return 0;
     }
-    let arr: any = [0, this.doorCount];
+    let arr: any = [0, +this.doorCount];
     this.blockList.forEach(item => {
       const {endPos, startPos} = item;
       arr.push(startPos, endPos);
@@ -78,7 +79,7 @@ export class BlocksComponent implements OnInit {
     for (let i = 1; i < arr.length; i++) {
       const diff = arr[i] - arr[i - 1];
       debugger;
-      if (diff > 2) {
+      if (diff >= 2) {
         return arr[i - 1] === 0 ? arr[i - 1] : arr[i - 1] + 1;
       }
     }

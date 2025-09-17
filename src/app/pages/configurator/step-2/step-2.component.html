@@ -2,12 +2,12 @@
   <label class="text text-medium">Внешний вид</label>
 
   <div class="sizing-container panel">
-    <label class="text">Количество дверей</label>
+    <label class="text text-normal">Количество дверей</label>
     <app-radio-group ngDefaultControl formControlName="srK" [isRound]="true" [data]="numberOfDoors"></app-radio-group>
   </div>
 
   <div class="sizing-container panel">
-    <label class="text">Внешние выдвижные ящики</label>
+    <label class="text text-normal">Внешние выдвижные ящики</label>
     <app-radio-group class="mt-8" formControlName="SR_yaschiki_vneshnie" [data]="externalDrawers"></app-radio-group>
 
     <!--    TODO -->
@@ -17,19 +17,19 @@
   </div>
 
   <div class="sizing-container panel">
-    <label class="text">Цоколь</label>
+    <label class="text text-normal">Цоколь</label>
     <app-radio-group ngDefaultControl formControlName="SR_tsokol" [width]="100" [height]="50"
                      [data]="items4"></app-radio-group>
   </div>
 
   <div class="sizing-container panel">
-    <label class="text">Нижняя часть фасадов</label>
+    <label class="text text-normal">Нижняя часть фасадов</label>
     <app-radio-group ngDefaultControl formControlName="SR_niz_dveri" [data]="baseS()"></app-radio-group>
   </div>
 
   <div class="sizing-container panel">
 
-    <label class="text">Антресоль</label>
+    <label class="text text-normal">Антресоль</label>
 
     <app-radio-group formControlName="SR_antr" [data]="items3"></app-radio-group>
 
@@ -90,7 +90,7 @@
   <div class="sizing-container panel">
 
 <!--    <label class="text">Фальш-планки</label>-->
-    <label class="text">Планки под натяжной потолок</label>
+    <label class="text text-normal">Планки под натяжной потолок</label>
 <!--    <app-radio-group ngDefaultControl formControlName="SR_PLANKA" [data]="items7"></app-radio-group>-->
 
 
@@ -123,7 +123,7 @@
 
   <div class="sizing-container panel">
     <div class="panel">
-      <label class="text">Планка по контуру шкафа</label>
+      <label class="text text-normal">Планка по контуру шкафа</label>
       <div class="row-checkboxes">
         <app-checkbox ngDefaultControl formControlName="SR_H_PLANKA_BOK_LEV" [ind]="'srPlankaBokLev'"
                       [item]="srPlankaBokLev"></app-checkbox>

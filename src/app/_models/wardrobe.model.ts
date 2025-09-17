@@ -17,7 +17,8 @@ export class Wardrobe {
   SR_antr: number;
   SR_H_antr: number;
   SR_antr_blok: number;
-
+  SR_PLANKA: number;
+  SR_H_PLANKA_VERH: number;
   SR_PLANKA_VERH_CHENTR: number; // new FormControl<boolean>(false),
   SR_PLANKA_VERH_LEV: number; // new FormControl<boolean>(false),
   SR_PLANKA_VERH_PRAV: number; // new FormControl<boolean>(false),
@@ -47,6 +48,8 @@ export class Wardrobe {
     this.SR_H_antr = 0; // 0-Шкаф без антресоли 1-Шкаф с антресолью
     this.SR_antr_blok = 0; // 0-Шкаф и антресоль не разделены 1-Шкаф и антресоль разделены
 
+    this.SR_PLANKA = 0;
+    this.SR_H_PLANKA_VERH = 0;
     this.SR_PLANKA_VERH_CHENTR = 0;
     this.SR_PLANKA_VERH_LEV = 0;
     this.SR_PLANKA_VERH_PRAV = 0;

@@ -1,4 +1,11 @@
 <form [formGroup]="stepOneForm">
+
+  <div class="card flex justify-center gap-2">
+    <p-toast />
+    <p-confirmdialog />
+    <app-button (click)="confirm1($event)">test</app-button>
+  </div>
+
   <label class="text text-medium">Размеры и материалы</label>
 
   <div class="sizing-container panel">
@@ -57,7 +64,7 @@
   </div>
 
   <div class="material-container panel">
-    <label class="text text-medium">Материалы</label>
+    <label class="text text-normal">Материалы</label>
     <label class="text text-small text-color-gray">Выберите желаемый материал корпуса и дверей шкафа.</label>
     <div class="material-container_row-content" style="display: flex">
 

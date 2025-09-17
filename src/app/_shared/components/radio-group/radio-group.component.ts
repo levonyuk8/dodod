@@ -1,5 +1,5 @@
 import {Component, forwardRef, Input} from '@angular/core';
-import {NgStyle} from '@angular/common';
+import {NgClass, NgStyle} from '@angular/common';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 export interface IGroupData {
@@ -17,7 +17,8 @@ export interface ITestOption {
 @Component({
   selector: 'app-radio-group',
   imports: [
-    NgStyle
+    NgStyle,
+    NgClass
   ],
   templateUrl: './radio-group.component.html',
   styleUrl: './radio-group.component.scss',

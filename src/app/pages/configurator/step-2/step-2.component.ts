@@ -181,7 +181,10 @@ export class Step2Component implements OnInit {
     this.stepTwoForm.get('SR_yaschiki_vneshnie')?.valueChanges.pipe(
       takeUntilDestroyed(this.destroyRef),
       tap((val) => {
+        if (val !== 0) {
+          alert('alarm');
           this.stepTwoForm.get('SR_niz_dveri')?.setValue(0);
+        }
         this.updateScheme([]);
         console.log('SR_yaschiki_vneshnie', val)
         console.log(this.stepTwoForm.get('SR_yaschiki_vneshnie')?.value.toString() === '0')

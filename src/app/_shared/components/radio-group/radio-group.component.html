@@ -2,12 +2,15 @@
   @for (item of data.options; track item; let idx = $index) {
 
     <div class="form_radio_btn">
-      <input (change)="onInputChange($event)" [disabled]="item?.disabled" [checked]="item.value === value"
+      <input (change)="onInputChange($event)"
+             [disabled]="item?.disabled" [checked]="item.value === value"
              id="{{ind + idx + data.groupName}}"
              type="radio" name="{{data.groupName}}}"
              value="{{item.value}}">
       <label
+        data-tooltip="Недоступно до завершения формы"
         [ngStyle]="isRound ? {'border-radius': '50%'} : {'border-radius': '1rem'}"
+        [ngClass]="item.disabled ? 'disabled-button': ''"
         [style.padding]="isRound ? '5px' : '10px' "
         class="image-box" for="{{ind + idx + data.groupName}}">
         @if (item.imgUrl) {
