@@ -57,7 +57,7 @@ export class Step2Component implements OnInit {
 
   isFormValid!: any;
 
-  // @ts-ignore
+  // @ts-ignore TODO ADD FOR 25MM
   test = signal<boolean>(this.stepTwoForm['SR_yaschiki_vneshnie']?.value === '0');
 
   constructor() {
@@ -169,12 +169,11 @@ export class Step2Component implements OnInit {
               imgUrl: 'url(/img/svg/ED2.svg)', label: 'Да', value: 1,
               disabled: this.data.srL <= 600
                 || this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK
-                || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,
-              message: `${this.data.srL} <= 600 или ...`
+                || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,//??
+              message: this.externalDrawersMessageByCondition()
             }, // todo
           ]
         }
-        debugger;
         this.changeDetectorRef.detectChanges();
       })
     ).subscribe()
@@ -183,7 +182,7 @@ export class Step2Component implements OnInit {
       takeUntilDestroyed(this.destroyRef),
       tap((val) => {
         if (val !== 0) {
-          alert('alarm');
+          // alert('alarm');
           this.stepTwoForm.get('SR_niz_dveri')?.setValue(0);
         }
         this.updateScheme([]);
@@ -200,6 +199,7 @@ export class Step2Component implements OnInit {
             {
               imgUrl: 'url(/img/svg/B5.svg)', label: 'Закрытый цоколь', value: 1,
               disabled: this.test(),
+              message: `Защита от ошибок: Недопустимо при наличии внешних выдвижных ящиков`
             }
           ]
         });
@@ -212,6 +212,23 @@ export class Step2Component implements OnInit {
   }
 
   // Внешние выдвижные ящики
+  readonly externalDrawersErrMesG = `"Защита от ошибок: Нельзя сделать внешние ящики при глубине менее
+${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
+  readonly externalDrawersErrMesWF = `Защита от ошибок: Внешние ящики не могут быть более
+  ${this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK}`
+
+
+  externalDrawersMessageByCondition() {
+    if (this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK) {
+      debugger;
+      return this.externalDrawersErrMesG;
+    }
+    if (this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2) {
+      return this.externalDrawersErrMesWF;
+    }
+    return '';
+  }
+
   externalDrawers: IGroupData =
     {
       groupName: "externalDrawers",
@@ -222,7 +239,7 @@ export class Step2Component implements OnInit {
           disabled: this.data.srL <= 600
             || this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK
             || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,//??
-          message: `${this.data.srL} <= 600 или ...`
+          message: this.externalDrawersMessageByCondition()
         }, // todo
       ]
     }
@@ -238,9 +255,9 @@ export class Step2Component implements OnInit {
         {
           imgUrl: 'url(/img/svg/B2.svg)', label: 'С отступами под плинтус по 25 мм', value: 1,
           disabled: this.data.srL > this.wardrobeParamsService.SR_H_MAX_BOK,
-          message: `${this.data.srL} > ${this.wardrobeParamsService.SR_H_MAX_BOK}`
-        },
-        {imgUrl: 'url(/img/svg/B3.svg)', label: 'Цоколь спереди ножки 100 мм', value: 2},
+          message: `Защита от ошибок: Недопустимо при ширине шкафа более ${this.wardrobeParamsService.SR_H_MAX_BOK} мм`,
+        }
+        // {imgUrl: 'url(/img/svg/B3.svg)', label: 'Цоколь спереди ножки 100 мм', value: 2},
       ]
     }
 
@@ -253,6 +270,7 @@ export class Step2Component implements OnInit {
         {
           imgUrl: 'url(/img/svg/B5.svg)', label: 'Закрытый цоколь', value: 1,
           disabled: this.test(),
+          message: `Защита от ошибок: Недопустимо при наличии внешних выдвижных ящиков`
         }
       ]
     }
@@ -267,12 +285,12 @@ export class Step2Component implements OnInit {
         {
           imgUrl: 'url(/img/svg/G42.svg)', label: 'Без антресоли', value: 0,
           disabled: this.data.srH >= this.wardrobeParamsService.SR_H_MAX_FASAD,
-          message: `${this.data.srH} >= ${this.wardrobeParamsService.SR_H_MAX_FASAD}`
+          message: `Защита от ошибок: Большая высота. Сделать без антресоли нельзя`
         },
         {
           imgUrl: 'url(/img/svg/G43.svg)', label: 'С антресолью', value: 1,
           disabled: this.data.srH <= this.wardrobeParamsService.SR_H_MIN_S_ANTR,
-          message: `${this.data.srH} <= ${this.wardrobeParamsService.SR_H_MIN_S_ANTR}`
+          message: `Защита от ошибок: Маленькая высота. Сделать с антресолью нельзя`
         },
       ]
     }
@@ -285,7 +303,7 @@ export class Step2Component implements OnInit {
         {
           imgUrl: 'url(/img/svg/G44.svg)', label: 'Общая со шкафом', value: 0,
           disabled: this.data.srH > this.wardrobeParamsService.SR_H_MAX_BOK,
-          message: `${this.data.srH} > ${this.wardrobeParamsService.SR_H_MAX_BOK}`
+          message: `Защита от ошибок: Большая высота шкафа! Сделать антресоль общую со шкафом нельзя`
         },
         {
           imgUrl: 'url(/img/svg/G45.svg)', label: 'Отдельным блоком', value: 1
@@ -336,7 +354,6 @@ export class Step2Component implements OnInit {
   createCountDoorsSliderData() {
     console.log('createCountDoorsSliderData');
     let res: ITestOption[] = []
-    debugger
     for (let i = this.data.SR_K_min; i <= this.data.SR_K_max; i += 1) {
       res?.push(({label: i.toString(), value: i}) as ITestOption)
     }

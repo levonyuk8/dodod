@@ -16,7 +16,7 @@ export class ThreeWardrobeComponent implements AfterViewInit {
 
   size = signal(false);
 
-  sizeBtnLabel =  ` ${this.size() ? 'Скрыть' : 'Показать'} размеры`;
+  sizeBtnLabel = ` ${this.size() ? 'Скрыть' : 'Показать'} размеры`;
 
   @ViewChild('canvasContainer') containerRef!: ElementRef;
 
@@ -49,9 +49,12 @@ export class ThreeWardrobeComponent implements AfterViewInit {
 
   resetSizes() {
     console.log('reset');
-    this.size.update( v=> !this.size());
+    this.size.update(v => !this.size());
+    // if (this.size()) {
+    //   this.threeHelper.resetSizes();
+    // }
 
-    this.size() ? this.threeHelper.resetSizes() : this.threeHelper.createDimensions();
+    // this.size() ? this.threeHelper.resetSizes() : this.threeHelper.createDimensions();
 
   }
 

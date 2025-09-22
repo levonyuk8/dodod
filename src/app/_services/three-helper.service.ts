@@ -5,9 +5,8 @@ import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 import {CabinetConfiguratorService} from './cabinet-configurator.service';
 import {Steps} from '../_shared/components/stepper/stepper.component';
 import {Section} from '../_models/section.model';
-import {BlockTypes} from '../pages/configurator/step-2/step-2.component';
 import {Wardrobe} from '../_models/wardrobe.model';
-import {FormControl} from '@angular/forms';
+import {Block} from '../_models/block.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +21,7 @@ export class ThreeHelperService {
   // Высота цоколя 80мм
   plinth = 80;
   // Ширина Материала
-  depth = 40;
+  depth = 16;
   // Внешние выдвижные ящики
   yvH = 200;
 
@@ -123,6 +122,7 @@ export class ThreeHelperService {
       }
       case Steps.two: {
         this.createBaseCabinet();
+        this.createStepTwoDimensions();
         // this.addSectionsToCabinet();
         this.addDoorsToCabinet();
         this.addVYToCabinet();
@@ -135,6 +135,7 @@ export class ThreeHelperService {
 
   private createBaseCabinet() {
     const data = this.cabinetConfiguratorService.getWardrobe();
+    this.depth = data.SR_G_fasad === 'ldsp16' ? 16 : 18;
     const group = new THREE.Group();
     const meshes: THREE.Mesh[] = [];
     const walls =
@@ -142,6 +143,7 @@ export class ThreeHelperService {
 
     walls.forEach(wall => {
       wall.element.position.set(wall.position.x, wall.position.y, wall.position.z);
+      wall.element.name = wall.name;
       meshes.push(wall.element)
       //
     })
@@ -276,11 +278,11 @@ export class ThreeHelperService {
     let plankaBokCenterW = w;
     let plankaBokCenterXPos = 0;
 
-    if (data?.SR_H_PLANKA_BOK_PRAV)  {
+    if (data?.SR_H_PLANKA_BOK_PRAV) {
       plankaBokCenterW += thickness;
       plankaBokCenterXPos += thickness;
     }
-    if (data?.SR_H_PLANKA_BOK_LEV)  {
+    if (data?.SR_H_PLANKA_BOK_LEV) {
       plankaBokCenterW += thickness;
       plankaBokCenterXPos -= thickness;
     }
@@ -438,7 +440,7 @@ export class ThreeHelperService {
     return cube
   }
 
-  createSections(w: number, h: number, d: number, thickness: number, srK: number, scheme: Section[]) {
+  createSections(w: number, h: number, d: number, thickness: number, srK: number, scheme: Block[]) {
 
     const sectionW = (w - thickness - thickness * scheme.length) / scheme.length + thickness * 2;
 
@@ -583,6 +585,9 @@ export class ThreeHelperService {
       case '0':
         res.push(...this.cololZero(w, h, d, thickness));
         break;
+      case '1':
+        res.push(...this.cocolOne(w, h, d, thickness));
+        break;
       case '2':
         res.push(
           {
@@ -593,9 +598,7 @@ export class ThreeHelperService {
         )
 
         break;
-      case '1':
-        res.push(...this.cocolOne(w, h, d, thickness));
-        break;
+
       default:
         res.push(...this.cololZero(w, h, d, thickness));
 
@@ -646,7 +649,7 @@ export class ThreeHelperService {
     // todo
     const plintus = 25;
 
-    const wCocol = w - 2 * thickness - 2 * plintus;
+    const wCocol = w - 2 * plintus;
 
     return [
       {
@@ -718,9 +721,6 @@ export class ThreeHelperService {
     const canvas = document.createElement('canvas');
     let context = canvas.getContext('2d');
 
-    debugger
-
-
     if (!context) return;
     canvas.width = 256;
     canvas.height = 64;
@@ -761,25 +761,26 @@ export class ThreeHelperService {
   //   return arrow;
   // }
 
-  private dimensionsGroup!: THREE.Group;
+  private dimensionsGroup: THREE.Group = new THREE.Group();
   private dimensionsViewGroup!: THREE.Group;
 
-  createDimensions() {
+  createDimensions(offset = 200) {
+    console.log(this.scene)
     const data = this.cabinetConfiguratorService.getWardrobe();
 
     // Удаляем старые размеры если есть
 
-    if (this.dimensionsGroup) {
-      this.scene.remove(this.dimensionsGroup);
-      this.dimensionsGroup.children.forEach(child => {
-        console.log('createDimensions IF')
-        // if (child?.geometry) child?.geometry.dispose();
-        // if (child?.material) child?.material.dispose();
-      });
-    }
+    this.resetSizes();
+    // if (this.dimensionsGroup) {
+    //   this.scene.remove(this.dimensionsGroup);
+    //   this.dimensionsGroup.children.forEach(child => {
+    //     console.log('createDimensions IF')
+    //     // if (child?.geometry) child?.geometry.dispose();
+    //     // if (child?.material) child?.material.dispose();
+    //   });
+    // }
 
     this.dimensionsGroup = new THREE.Group();
-    const offset = 200;
 
     console.log(data)
 
@@ -826,60 +827,212 @@ export class ThreeHelperService {
       this.dimensionsGroup.add(heightLabel);
     }
 
-    // ГЛУБИНА (Z) - синий
-    // const depthLine = this.createOuterDimensionLine(
-    //   new THREE.Vector3(this.cubeSize/2 + offset/2, this.cubeSize/2 + offset, -this.cubeSize/2 - offset),
-    //   new THREE.Vector3(this.cubeSize/2 + offset/2, this.cubeSize/2 + offset, this.cubeSize/2 + offset),
-    //   0.4,
-    //   0x4444ff
-    // );
-    // this.dimensionsGroup.add(depthLine);
-    //
-    // const depthLabel = this.createTextLabel(
-    //   `${this.cubeSize.toFixed(1)}m`,
-    //   new THREE.Vector3(this.cubeSize/2 + offset/2 + 0.8, this.cubeSize/2 + offset, 0),
-    //   0x4444ff
-    // );
-    // this.dimensionsGroup.add(depthLabel);
-    //
-    // // Стрелочки
-    // this.dimensionsGroup.add(this.createArrow(
-    //   new THREE.Vector3(-this.cubeSize/2 - offset, -this.cubeSize/2 - offset, this.cubeSize/2 + offset/2),
-    //   Math.PI/2,
-    //   0xff4444
-    // ));
-    // this.dimensionsGroup.add(this.createArrow(
-    //   new THREE.Vector3(this.cubeSize/2 + offset, -this.cubeSize/2 - offset, this.cubeSize/2 + offset/2),
-    //   -Math.PI/2,
-    //   0xff4444
-    // ));
-    //
-    // this.dimensionsGroup.add(this.createArrow(
-    //   new THREE.Vector3(this.cubeSize/2 + offset, -this.cubeSize/2 - offset, this.cubeSize/2 + offset/2),
-    //   0,
-    //   0x44ff44
-    // ));
-    // this.dimensionsGroup.add(this.createArrow(
-    //   new THREE.Vector3(this.cubeSize/2 + offset, this.cubeSize/2 + offset, this.cubeSize/2 + offset/2),
-    //   Math.PI,
-    //   0x44ff44
-    // ));
-    //
-    // this.dimensionsGroup.add(this.createArrow(
-    //   new THREE.Vector3(this.cubeSize/2 + offset/2, this.cubeSize/2 + offset, -this.cubeSize/2 - offset),
-    //   -Math.PI/2,
-    //   0x4444ff
-    // ));
-    // this.dimensionsGroup.add(this.createArrow(
-    //   new THREE.Vector3(this.cubeSize/2 + offset/2, this.cubeSize/2 + offset, this.cubeSize/2 + offset),
-    //   Math.PI/2,
-    //   0x4444ff
-    // ));
+    this.scene.add(this.dimensionsGroup);
+  }
+
+  createStepTwoDimensions() {
+    const data = this.cabinetConfiguratorService.getWardrobe();
+    this.dimensionsGroup = new THREE.Group();
+    const offset = 150;
+
+    this.createDimensions(450);
+    this.createBaseDimension(data);
+    this.createCabinetHDimension(data);
+    this.createSectionHDimension(data)
+
+    // X dimensions
+    const widthSectionLine = this.createOuterDimensionLine(
+      new THREE.Vector3(-data.srL / 2, -data.srH / 2 - offset, data.srG / 2),
+      new THREE.Vector3(data.srL / 2, -data.srH / 2 - offset, data.srG / 2),
+      offset,
+      0x000
+    );
+    console.log('widthLine', widthSectionLine)
+    this.dimensionsGroup.add(widthSectionLine);
+
+    let remainderWSect = data.srL % data.srK;
+
+
+    for (let i = 0; i < data.srK; i++) {
+      const testAl = this.createOuterDimensionLine(
+        new THREE.Vector3(-data.srL / 2 + data.wSect * i, -data.srH / 2 - offset, data.srG / 2),
+        new THREE.Vector3(-data.srL / 2 + data.wSect * i, -data.srH / 2 - offset, data.srG / 2),
+        offset,
+        0x000
+      );
+
+      let wSectLabel = Math.trunc(data.wSect)
+
+      if (remainderWSect > 0) {
+        ++wSectLabel;
+        --remainderWSect;
+      }
+
+
+      console.log('widthLine', data.srL / data.srK)
+      const sWidthLabel = this.createTextLabel(
+        `${wSectLabel}mm`,
+        new THREE.Vector3((-data.srL + data.wSect) / 2 + data.wSect * i, -data.srH / 2 - offset + 50, data.srG / 2),
+        0x000
+      );
+      if (sWidthLabel) {
+        this.dimensionsGroup.add(sWidthLabel);
+      }
+
+      this.dimensionsGroup.add(testAl);
+    }
 
     this.scene.add(this.dimensionsGroup);
   }
 
+  private createBaseDimension(data: Wardrobe, offset = 300) {
+    const qwe = data.SR_tsokol.toString() === '0' ? this.depth : 25;
+
+    const widthLine = this.createOuterDimensionLine(
+      new THREE.Vector3(-data.srL / 2 + qwe, -data.srH / 2 - offset, data.srG / 2),
+      new THREE.Vector3(data.srL / 2 - qwe, -data.srH / 2 - offset, data.srG / 2),
+      offset,
+      0x000
+    );
+    this.dimensionsGroup.add(widthLine);
+
+    const widthLabel = this.createTextLabel(
+      `${data.srL - qwe * 2}mm`,
+      new THREE.Vector3(0, -data.srH / 2 - offset + 50, data.srG / 2),
+      0x000
+    );
+    if (widthLabel) {
+      this.dimensionsGroup.add(widthLabel);
+    }
+  }
+
+  private createSectionHDimension(data: Wardrobe, offset = 150) {
+    this.createCabinetHDimension(data, 150, true);
+
+    if (data.SR_antr) {
+
+      const dimensionAntrData = {
+        x: -data.srL / 2 - offset,
+        y: data.srH / 2,
+        z: data.srG / 2,
+        x1: -data.SR_H_antr
+      }
+
+      this.createDem(dimensionAntrData)
+    }
+
+    if (data.SR_yaschiki_vneshnie) {
+      const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
+      let yaschikiSet: Set<number> = new Set();
+      if (scheme?.length) {
+        scheme.forEach(scheme => {
+          console.log(scheme);
+          yaschikiSet.add(+scheme?.SR_yaschiki_vneshnie_kol);
+
+        });
+      }
+
+      for (let i = 0; i < Math.max(...yaschikiSet); i++) {
+        const offset = 150;
+        const dimensionYaschikiData = {
+          x: -data.srL / 2 - offset,
+          y: -data.srH / 2 + this.plinth + i * this.yvH,
+          z: data.srG / 2,
+          x1: this.yvH
+        }
+
+        this.createDem(dimensionYaschikiData);
+      }
+
+      yaschikiSet.forEach((item) => {
+        let doorH = data.srH - this.plinth - this.yvH * item;
+        let antrH = 0;
+        if (data.SR_antr.toString() === '1') {
+          antrH = data.SR_H_antr;
+        }
+
+        const dimensionDoorData = {
+          x: -data.srL / 2 - offset,
+          y: data.srH / 2 - doorH,
+          z: data.srG  / 2,
+          x1: doorH - antrH
+        }
+        this.createDem(dimensionDoorData);
+      })
+    }
+
+    if (data.SR_PLANKA_VERH_CHENTR || data.SR_PLANKA_VERH_LEV || data.SR_PLANKA_VERH_PRAV) {
+      const offset = 450;
+      const dimensionPlankaData = {
+        x: -data.srL / 2 - offset,
+        y: data.srH / 2,
+        z: data.srG / 2,
+        x1: data.SR_H_PLANKA_VERH
+      }
+      this.createDem(dimensionPlankaData);
+    }
+  }
+
+  private createDem(data: {
+    x: number,
+    y: number,
+    z: number,
+    x1: number
+  }, color = 0xffffff, size = 200, isHorizontal = true) {
+
+    const {x, y, z, x1} = data;
+    const vector = this.createOuterDimensionLine(
+      new THREE.Vector3(x, y, z),
+      new THREE.Vector3(x, y + x1, z),
+      450,
+      0x000,
+      false
+    );
+
+    const textLabel = this.createTextLabel(
+        Math.abs(x1).toString(),
+        new THREE.Vector3(x - 50, y + x1 / 2, z),
+        0x000,
+        200,
+        false
+      )
+    ;
+
+    if (textLabel) {
+      this.dimensionsGroup.add(textLabel);
+    }
+
+    this.dimensionsGroup.add(vector);
+  }
+
+  private createCabinetHDimension(data: Wardrobe, offset = 300, withoutLabel = false) {
+    const heightLine = this.createOuterDimensionLine(
+      new THREE.Vector3(-data.srL / 2 - offset, -data.srH / 2 + this.plinth, data.srG / 2),
+      new THREE.Vector3(-data.srL / 2 - offset, data.srH / 2, data.srG / 2),
+      // new THREE.Vector3(this.cubeSize/2 + offset, this.cubeSize/2 + offset, this.cubeSize/2 + offset/2),
+      offset,
+      0x000,
+      false
+      // 0x44ff44
+    );
+    this.dimensionsGroup.add(heightLine);
+
+    if (withoutLabel) return;
+
+    const heightLabel = this.createTextLabel(
+      `${data.srH - this.plinth}mm`,
+      new THREE.Vector3(-data.srL / 2 - offset - 50, 0, data.srG / 2),
+      0x000,
+      200,
+      false
+    );
+    if (heightLabel) {
+      this.dimensionsGroup.add(heightLabel);
+    }
+  }
+
   resetSizes() {
+    this.scene.remove(this.dimensionsGroup);
     this.dimensionsGroup.clear();
     // this.dimensionsGroup.children.forEach(child => {})
   }

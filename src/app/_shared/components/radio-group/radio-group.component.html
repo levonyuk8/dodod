@@ -7,8 +7,6 @@
              id="{{ind + idx + data.groupName}}"
              type="radio" name="{{data.groupName}}}"
              value="{{item.value}}">
-      {{item?.message}}
-      {{item?.disabled}}
       <label
         [pTooltip]="item?.disabled ? item?.message : ''"
         tooltipPosition="top"

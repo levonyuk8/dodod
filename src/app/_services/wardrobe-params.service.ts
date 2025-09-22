@@ -13,7 +13,7 @@ export class WardrobeParamsService {
 
  readonly  HEIGHT_BASE = 80; // Высота цоколя 80мм
 
-  readonly SR_L_MAX = 3000; //Максимально возможная ширина шкафа
+  readonly SR_L_MAX = 2760; //Максимально возможная ширина шкафа
   readonly SR_L_MIN = 300; //Минимально возможная ширина шкафа
   readonly SR_H_MAX = 3360; //Максимально возможная высота шкафа
   readonly SR_H_MIN = 1400; //Минимально возможная высота шкафа

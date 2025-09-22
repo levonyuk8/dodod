@@ -3,7 +3,7 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {WardrobeParamsService} from './wardrobe-params.service';
 import {Wardrobe} from '../_models/wardrobe.model';
 import {Steps} from '../_shared/components/stepper/stepper.component';
-import {Section} from '../_models/section.model';
+import {Block} from '../_models/block.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ import {Section} from '../_models/section.model';
 export class CabinetConfiguratorService {
 
   private data = new Wardrobe();
-  private wardrobeScheme: Section[] = [];
+  private wardrobeScheme: Block[] = [];
 
   dataUpdatedSubject$ = new BehaviorSubject<Steps | null>(null);
 
@@ -22,7 +22,6 @@ export class CabinetConfiguratorService {
   }
 
   getWardrobe() {
-    debugger;
     return this.data;
   }
 
@@ -32,14 +31,12 @@ export class CabinetConfiguratorService {
 
   setWardrobe(data: any, step: Steps = Steps.one) {
     Object.assign(this.data, data);
-    debugger;
     if (step === Steps.one) {
       this.calcNumberOfDoors();
       this.data.wSect = ((this.data.srL) / this.data.srK);
     }
 
     if (step === Steps.two) {
-      debugger;
       this.data.wSect = ((this.data.srL) / this.data.srK);
     }
 
@@ -58,7 +55,6 @@ export class CabinetConfiguratorService {
   }
 
   calcNumberOfDoors() {
-    debugger
     if (!this.data?.srL) return;
     this.data.SR_K_min = this.minCalcNumberOfDoors(this.data?.srL);
     this.data.SR_K_max = this.maxCalcNumberOfDoors(this.data?.srL);

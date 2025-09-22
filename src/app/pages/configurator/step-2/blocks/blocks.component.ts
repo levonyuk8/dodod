@@ -64,7 +64,6 @@ export class BlocksComponent implements OnInit {
   }
 
   private isEnoughSpaceForNewBlock() {
-    debugger;
     if (!this.blockList.length) {
       return 0;
     }
@@ -78,7 +77,6 @@ export class BlocksComponent implements OnInit {
 
     for (let i = 1; i < arr.length; i++) {
       const diff = arr[i] - arr[i - 1];
-      debugger;
       if (diff >= 2) {
         return arr[i - 1] === 0 ? arr[i - 1] : arr[i - 1] + 1;
       }
