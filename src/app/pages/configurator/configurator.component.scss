@@ -48,6 +48,12 @@
       > :not(:last-child) {
         margin-bottom: 1rem;
       }
+
+      > .action-btn-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
     }
   }
 

@@ -35,7 +35,7 @@ body {
   padding: 1rem;
 
   &--child {
-    background: #f4faf5;
+    background: #E5EEEC;
   }
 }
 
@@ -55,34 +55,6 @@ body {
   --p-slider-handle-content-hover-background: #FFC835;
 
 }
-
-//.p-slider-range
-//
-//.p-slider-handle
-
-//:host ::ng-deep .p-slider {
-//  width: 300px;
-//}
-//
-//:host ::ng-deep .gradient-slider .p-slider {
-//  height: 10px;
-//}
-//
-//:host ::ng-deep .gradient-slider .p-slider-track {
-//  background: #FFC835;
-//  height: 10px;
-//  border-radius: 6px;
-//}
-//
-//:host ::ng-deep .gradient-slider .p-slider-range {
-//  background: #FFC835;
-//  border-radius: 6px;
-//}
-//
-//:host ::ng-deep .gradient-slider .p-slider-handle {
-//  color: #FFC835;
-//  //border-radius: 6px;
-//}
 
 /*
 1 = 0.25rem (обычно 4px, если 1rem = 16px)

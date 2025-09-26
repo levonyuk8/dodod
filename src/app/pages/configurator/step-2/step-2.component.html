@@ -52,48 +52,46 @@
     }
   </div>
 
-<!--  <div class="sizing-container panel">-->
+  <!--  <div class="sizing-container panel">-->
 
-<!--    <label class="text">Фальш-планки</label>-->
-<!--    <app-radio-group ngDefaultControl formControlName="SR_PLANKA" [data]="items7"></app-radio-group>-->
+  <!--    <label class="text">Фальш-планки</label>-->
+  <!--    <app-radio-group ngDefaultControl formControlName="SR_PLANKA" [data]="items7"></app-radio-group>-->
 
-<!--    @if (stepTwoForm.get('SR_PLANKA')?.value > 0) {-->
+  <!--    @if (stepTwoForm.get('SR_PLANKA')?.value > 0) {-->
 
-<!--      <div class="panel panel&#45;&#45;child mb-4">-->
-<!--        <label class="text">Высота верхней фальш-планки</label>-->
-<!--        <p-slider-->
-<!--          [min]="wardrobeParamsService.SR_H_MIN_PLANKA"-->
-<!--          [max]="wardrobeParamsService.SR_H_MAX_PLANKA"-->
-<!--          [ngModel]="stepTwoForm.get('SR_H_PLANKA_VERH')?.value"-->
-<!--          (ngModelChange)="stepTwoForm.get('SR_H_PLANKA_VERH')?.setValue($event)"-->
-<!--          [ngModelOptions]="{standalone:true}"/>-->
-<!--        <input formControlName="SR_H_PLANKA_VERH" [style.width.px]="100" pInputText/>-->
-<!--      </div>-->
+  <!--      <div class="panel panel&#45;&#45;child mb-4">-->
+  <!--        <label class="text">Высота верхней фальш-планки</label>-->
+  <!--        <p-slider-->
+  <!--          [min]="wardrobeParamsService.SR_H_MIN_PLANKA"-->
+  <!--          [max]="wardrobeParamsService.SR_H_MAX_PLANKA"-->
+  <!--          [ngModel]="stepTwoForm.get('SR_H_PLANKA_VERH')?.value"-->
+  <!--          (ngModelChange)="stepTwoForm.get('SR_H_PLANKA_VERH')?.setValue($event)"-->
+  <!--          [ngModelOptions]="{standalone:true}"/>-->
+  <!--        <input formControlName="SR_H_PLANKA_VERH" [style.width.px]="100" pInputText/>-->
+  <!--      </div>-->
 
-<!--      <div class="panel panel&#45;&#45;child mb-4">-->
-<!--        <label class="text">Планка под потолок</label>-->
-<!--        <div class="row-checkboxes">-->
-<!--          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_LEV" [ind]="'srPlankaVerhLev'"-->
-<!--                        [item]="srPlankaVerhLev"></app-checkbox>-->
-<!--          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_CHENTR" [ind]="'srPlankaVerhCentr'"-->
-<!--                        [item]="srPlankaVerhCentr"></app-checkbox>-->
-<!--          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_PRAV" [ind]="'srPlankaVerhPrav'"-->
-<!--                        [item]="srPlankaVerhPrav"></app-checkbox>-->
-<!--        </div>-->
+  <!--      <div class="panel panel&#45;&#45;child mb-4">-->
+  <!--        <label class="text">Планка под потолок</label>-->
+  <!--        <div class="row-checkboxes">-->
+  <!--          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_LEV" [ind]="'srPlankaVerhLev'"-->
+  <!--                        [item]="srPlankaVerhLev"></app-checkbox>-->
+  <!--          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_CHENTR" [ind]="'srPlankaVerhCentr'"-->
+  <!--                        [item]="srPlankaVerhCentr"></app-checkbox>-->
+  <!--          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_PRAV" [ind]="'srPlankaVerhPrav'"-->
+  <!--                        [item]="srPlankaVerhPrav"></app-checkbox>-->
+  <!--        </div>-->
 
-<!--      </div>-->
+  <!--      </div>-->
 
 
-<!--    }-->
-<!--  </div>-->
+  <!--    }-->
+  <!--  </div>-->
 
   <div class="sizing-container panel">
 
-<!--    <label class="text">Фальш-планки</label>-->
+    <!--    <label class="text">Фальш-планки</label>-->
     <label class="text text-normal">Планки под натяжной потолок</label>
-<!--    <app-radio-group ngDefaultControl formControlName="SR_PLANKA" [data]="items7"></app-radio-group>-->
-
-
+    <!--    <app-radio-group ngDefaultControl formControlName="SR_PLANKA" [data]="items7"></app-radio-group>-->
 
 
     <div class="panel mb-4">
@@ -108,16 +106,21 @@
 
     </div>
 
-    <div class="panel panel--child mb-4">
-      <label class="text">Высота планки</label>
-      <p-slider
-        [min]="wardrobeParamsService.SR_H_MIN_PLANKA"
-        [max]="wardrobeParamsService.SR_H_MAX_PLANKA"
-        [ngModel]="stepTwoForm.get('SR_H_PLANKA_VERH')?.value"
-        (ngModelChange)="stepTwoForm.get('SR_H_PLANKA_VERH')?.setValue($event)"
-        [ngModelOptions]="{standalone:true}"/>
-      <input formControlName="SR_H_PLANKA_VERH" [style.width.px]="100" pInputText/>
-    </div>
+    @if (stepTwoForm.get('SR_PLANKA_VERH_LEV')?.value
+    || stepTwoForm.get('SR_PLANKA_VERH_CHENTR')?.value
+    || stepTwoForm.get('SR_PLANKA_VERH_PRAV')?.value) {
+      <div class="panel panel--child mb-4">
+        <label class="text">Высота планки</label>
+        <p-slider
+          [min]="wardrobeParamsService.SR_H_MIN_PLANKA"
+          [max]="wardrobeParamsService.SR_H_MAX_PLANKA"
+          [ngModel]="stepTwoForm.get('SR_H_PLANKA_VERH')?.value"
+          (ngModelChange)="stepTwoForm.get('SR_H_PLANKA_VERH')?.setValue($event)"
+          [ngModelOptions]="{standalone:true}"/>
+        <input formControlName="SR_H_PLANKA_VERH" [style.width.px]="100" pInputText/>
+      </div>
+    }
+
 
   </div>
 

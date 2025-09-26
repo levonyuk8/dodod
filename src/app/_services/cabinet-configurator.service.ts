@@ -14,11 +14,12 @@ export class CabinetConfiguratorService {
   private wardrobeScheme: Block[] = [];
 
   dataUpdatedSubject$ = new BehaviorSubject<Steps | null>(null);
+  saveSectionSubject$ = new Subject<void>();
 
   clearConf = new Subject<void>;
 
 
-  constructor(private wardrobeParamsService: WardrobeParamsService) {
+  constructor(private wps: WardrobeParamsService) {
   }
 
   getWardrobe() {
@@ -61,43 +62,17 @@ export class CabinetConfiguratorService {
     this.data.srK =  this.data.SR_K_min;
   }
 
-  // todo change 600 and 300
   // SR_K_min=(SR_L/600) и округлить в большую сторону	Формула для минимального кол-ва дверей
   private minCalcNumberOfDoors(width: number) {
-    return Math.ceil(width / 600);
+    return Math.round(width / this.wps.SR_L_MAX_FASAD);
   }
 
   // SR_K_max=(SR_L/SR_L_MIN) и округлить в большую сторону	Формула для максимального кол-ва дверей
   private maxCalcNumberOfDoors(width: number) {
-    return Math.ceil(width / 300);
+    return Math.round(width / this.wps.SR_L_MIN);
   }
 
-  // Создаем объемные двери шкафа
-  // private createDoors(w: number, h: number, d: number, thickness: number) {
-  //   const doorW = w / 4;
-  //
-  //   let doors = []
-  //
-  //   for (let i = 1; i <= 4; i++) {
-  //     console.log({doorW});
-  //     const door = {
-  //       name: 'дверь',
-  //       vertices: this.createWall(doorW, h - this.wardrobeParamsService.HEIGHT_BASE, d, {
-  //         x: -w / 2 - (doorW / 2) + i * doorW,
-  //         y: -(thickness / 2 + this.wardrobeParamsService.HEIGHT_BASE) / 2,
-  //         z: 0
-  //       }),
-  //       color: '#c3ac9f',
-  //       faces: [
-  //         [0, 1, 2, 3],
-  //         // [4, 5, 6, 7],
-  //         // [0,1, 5, 4], [2,3,7,6],
-  //         // [0, 3, 7, 4],
-  //         // [1, 2, 6,5]
-  //       ]
-  //     }
-  //     doors.push(door);
-  //   }
-  //   return doors;
-  // }
+  saveSection() {
+    this.saveSectionSubject$.next();
+  }
 }

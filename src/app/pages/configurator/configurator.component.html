@@ -1,10 +1,8 @@
 <div class="main">
   <div class="left">
-
     @defer {
       <app-three-wardrobe></app-three-wardrobe>
     }
-
   </div>
 
   <div class="right">
@@ -12,7 +10,6 @@
       @defer {
         <app-stepper (restart)="startAgain()" [step]="currentStep()"></app-stepper>
       }
-
     </div>
 
     <div class="settings-container">
@@ -27,14 +24,20 @@
             <ng-container *ngTemplateOutlet="s2"></ng-container>
           }
         }
+        @case (Steps.three) {
+          @defer {
+            <app-step-3></app-step-3>
+          }
+        }
       }
     </div>
 
-    <div>
+    <div class="action-btn-container">
+      @if (currentStep() === Steps.three) {
+        <app-button [width]="'100'" (click)="saveSection()" [variant]="'bg-transparent'">Сохранить</app-button>
+      }
       <app-button [width]="'100'" (click)="nextStep()" [variant]="'primary'">Далее</app-button>
     </div>
-
-
   </div>
 </div>
 
