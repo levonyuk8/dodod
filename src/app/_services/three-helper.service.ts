@@ -511,7 +511,7 @@ export class ThreeHelperService {
   }
 
   private transparentDoor(child: any) {
-    const textureMaterial = new THREE.MeshBasicMaterial({map: this.texture, opacity: .3, transparent: true});
+    const textureMaterial = new THREE.MeshBasicMaterial({map: this.texture, opacity: .6, transparent: true});
     child.material.dispose();
     child.material = textureMaterial;
   }
