@@ -19,22 +19,22 @@
 
   <div class="sizing-container panel">
     <label class="text text-normal">Варианты наполнения</label>
-    <app-radio-group class="mt-8" [data]="fillingOptions"></app-radio-group>
+    <app-radio-group class="mt-8"  [formControlName]="'fillingOptions'"  [data]="fillingOptions"></app-radio-group>
   </div>
 
-  <div class="sizing-container panel">
-    <label class="text text-normal">Количество полок в основной секции</label>
-    <app-radio-group [isRound]="true" [data]="numberShelvesInMainSection"></app-radio-group>
-  </div>
+<!--  <div class="sizing-container panel">-->
+<!--    <label class="text text-normal">Количество полок в основной секции</label>-->
+<!--    <app-radio-group [isRound]="true" [data]="numberShelvesInMainSection"></app-radio-group>-->
+<!--  </div>-->
 
-  <div class="sizing-container panel">
-    <label class="text text-normal">Количество вверху</label>
-    <app-radio-group [isRound]="true" [data]="numberShelvesInMainSection"></app-radio-group>
-  </div>
+<!--  <div class="sizing-container panel">-->
+<!--    <label class="text text-normal">Количество вверху</label>-->
+<!--    <app-radio-group [isRound]="true" [data]="numberShelvesInMainSection"></app-radio-group>-->
+<!--  </div>-->
 
-  <div class="sizing-container panel">
-    <label class="text text-normal">Количество полок в антресоли</label>
-    <app-radio-group [isRound]="true" [data]="numberShelvesInMainSection"></app-radio-group>
-  </div>
+<!--  <div class="sizing-container panel">-->
+<!--    <label class="text text-normal">Количество полок в антресоли</label>-->
+<!--    <app-radio-group [isRound]="true" [data]="numberShelvesInMainSection"></app-radio-group>-->
+<!--  </div>-->
 
 </form>

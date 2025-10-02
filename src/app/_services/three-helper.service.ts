@@ -71,8 +71,8 @@ export class ThreeHelperService {
     this.camera.position.set(0, 0, 3000);
     this.renderer = new THREE.WebGLRenderer(
       {
-        // antialias: true,
-        // alpha: true
+        antialias: true,
+        alpha: true
       }
     );
     this.renderer.setSize(this.parentSize.width, this.parentSize.height);
@@ -120,8 +120,8 @@ export class ThreeHelperService {
     switch (step) {
       case Steps.one: {
         this.createBaseCabinet()
-        this.scene.add(this.fillingSectionsService.createCylinder());
-        this.scene.add(this.fillingSectionsService.createY());
+        // this.scene.add(this.fillingSectionsService.createCylinder());
+        // this.scene.add(this.fillingSectionsService.createY());
         // this.scene.add(this.fillingSectionsService.createShelf());
         // this.scene.add(this.fillingSectionsService.createCoatHanger());
 
@@ -136,7 +136,7 @@ export class ThreeHelperService {
         // this.addVYToCabinet();
         // this.addAntresoli();
         // this.addSrPlanka();
-        this.scene.add(this.fillingSectionsService.createY());
+        // this.scene.add(this.fillingSectionsService.createY());
         this.addSectionsToCabinet();
         break;
       }
@@ -455,7 +455,34 @@ export class ThreeHelperService {
   }
 
   // step 3
+
+  filingSection(sectionNumber: number | null,  sectionType: number | null, filing: number) {
+
+    // console.log(this.scene)
+    if (!sectionNumber) return;
+
+    console.log({sectionType})
+
+    if (sectionType === 1) {
+      this.removeFilingBySection(sectionNumber + 1);
+      this.scene.add(this.fillingSectionsService.addFillingToSection(sectionNumber + 1, filing))
+    }
+
+    this.removeFilingBySection(sectionNumber);
+    this.scene.add(this.fillingSectionsService.addFillingToSection(sectionNumber, filing))
+  }
+
+  public removeFilingBySection(sectionNumber: number | null) {
+    this.scene.children.forEach(object => {
+      if (object.name === "Filling" + sectionNumber) {
+        this.scene.remove(object);
+      }
+    })
+  }
+
+
   public selectSection(sectionNumber: number | null, sectionType: number, openingDoorType: any) {
+
 
     console.log({sectionNumber, sectionType, openingDoorType});
     if (!sectionNumber) return;
@@ -536,6 +563,11 @@ export class ThreeHelperService {
     const quaternion = new THREE.Quaternion();
     quaternion.setFromAxisAngle(axis, angle);
     child.setRotationFromQuaternion(quaternion);
+
+    //
+    // child.scale.x = .5;
+
+    console.log(child)
   }
 
   private closeDoor(child: any, side: 'Left' | 'Right' = 'Left') {
@@ -758,6 +790,11 @@ export class ThreeHelperService {
         name: 'правая боковая',
         element: this.createCube(thickness, baseH, d),
         position: {x: w / 2 - thickness / 2, y: boxwoodCupboardYPos, z: 0},
+      },
+      {
+        name: 'верхняя',
+        element: this.createCube(w - 2 * thickness, thickness, d),
+        position: {x: 0, y: h / 2 - thickness / 2, z: 0},
       },
       {
         name: 'верхняя',
