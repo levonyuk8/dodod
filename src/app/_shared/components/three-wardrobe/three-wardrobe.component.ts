@@ -41,14 +41,12 @@ export class ThreeWardrobeComponent implements AfterViewInit {
       )
       .subscribe(
         data => {
-          console.log('ThreeWardrobeComponent cabinetConfiguratorService', data);
           this.threeHelper.createCabinet(data);
         }
       )
   }
 
   resetSizes() {
-    console.log('reset');
     this.size.update(v => !this.size());
     // if (this.size()) {
     //   this.threeHelper.resetSizes();

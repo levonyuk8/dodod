@@ -55,7 +55,6 @@ export class RadioGroupComponent implements ControlValueAccessor {
   onTouched: any = () => {};
 
   writeValue(obj: any): void {
-    console.log('writeValue', obj)
     this.value = obj;
   }
 
@@ -69,11 +68,9 @@ export class RadioGroupComponent implements ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     // Handle disabled state if needed
-    console.log('setDisabledState', isDisabled);
   }
 
   onInputChange(event: Event): void {
-    console.log('onInputChange', event);
     const target = event.target as HTMLInputElement;
     this.value = target.value;
     // this.onChange(this.value);

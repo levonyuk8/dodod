@@ -26,6 +26,7 @@ export class ConfiguratorComponent {
   protected readonly Steps = Steps;
 
   currentStep = signal<Steps>(Steps.one);
+  nextStepVisible = signal(true);
 
   constructor(private cabinetConfiguratorService: CabinetConfiguratorService) {
   }
@@ -39,7 +40,8 @@ export class ConfiguratorComponent {
     location.reload();
   }
 
-  saveSection() {
-    this.cabinetConfiguratorService.saveSection();
+  handleCompleteFilling(ev: boolean) {
+    this.nextStepVisible.set(ev)
   }
+
 }

@@ -1,43 +1,48 @@
-import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit, output, Output, signal} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {
-  IGroupData,
-  ITestOption,
-  RadioGroupComponent
-} from '../../../_shared/components/radio-group/radio-group.component';
+import {IGroupData, RadioGroupComponent} from '../../../_shared/components/radio-group/radio-group.component';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
-import {combineLatest, distinctUntilChanged, map, startWith, tap} from 'rxjs';
+import {combineLatest, distinctUntilChanged, map, skip, startWith, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {ThreeHelperService} from '../../../_services/three-helper.service';
+import {ButtonComponent} from '../../../_shared/components/button/button.component';
+import {Block} from '../../../_models/block.model';
+import {WardrobeParamsService} from '../../../_services/wardrobe-params.service';
 
 @Component({
   selector: 'app-step-3',
   imports: [
     ReactiveFormsModule,
-    RadioGroupComponent
+    RadioGroupComponent,
+    ButtonComponent
   ],
   templateUrl: './step-3.component.html',
   styleUrl: './step-3.component.scss'
 })
 export class Step3Component implements OnInit {
   private fb = inject(FormBuilder);
+  private threeHelperService = inject(ThreeHelperService);
+  private cabinetConfiguratorService = inject(CabinetConfiguratorService);
+  private wardrobeParamsService = inject(WardrobeParamsService);
+
   stepThreeForm: FormGroup = this.createAndPatchForm();
 
-  a1$ =
+  sectionType$ =
     this.sectionType.valueChanges.pipe(startWith(this.stepThreeForm.get('sectionType')?.value));
-  a2$ =
+  section$ =
     this.section.valueChanges.pipe(startWith(this.stepThreeForm.get('section')?.value));
 
-  a3$ =
+  openingDoorType$ =
     this.openingDoorType.valueChanges.pipe(startWith(this.stepThreeForm.get('openingDoorType')?.value));
 
   // all$ = this.a1$.pipe(combineLatestWith(this.a2$)).pipe(
   //   combineLatestWith(this.a3$)
   // )
   all$ = combineLatest({
-    sectionType: this.a1$, section: this.a2$, openingDoorType: this.a3$
+    sectionType: this.sectionType$, section: this.section$, openingDoorType: this.openingDoorType$
   });
+  wardrobe = this.cabinetConfiguratorService.getWardrobe();
 
 
   sectionTypes = {
@@ -45,13 +50,13 @@ export class Step3Component implements OnInit {
     options: [
       {
         imgUrl: 'url(/img/svg/s3/ST1.svg)', label: 'Одинарная', value: 0,
-        disabled: false,
-        message: ``
+        disabled: Number(this.wardrobe.SR_yaschiki_vneshnie) === 1,
+        message: `Неподходящий вариант`
       },
       {
         imgUrl: 'url(/img/svg/s3/ST2.svg)', label: 'Двойная', value: 1,
-        disabled: false,
-        message: ``
+        disabled:  this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2,
+        message: `Защита от ошибок: Секция не может быть более ${this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR}`
       },
     ]
   }
@@ -76,7 +81,24 @@ export class Step3Component implements OnInit {
     ]
   }
 
-  fillingOptions = {
+  openingDualDoorTypes = {
+    groupName: "openingDoorTypes",
+    options: [
+      {
+        imgUrl: 'url(/img/svg/s3/ODT1.svg)', label: 'Двери', value: 0,
+        disabled: false,
+        message: ``
+      },
+      {
+        imgUrl: 'url(/img/svg/s3/ODT2.svg)', label: 'Без двери', value: 1,
+        disabled: false,
+        message: ``
+      }
+    ]
+  }
+
+
+  fillingOptionList = {
     groupName: "fillingOptions",
     options: [
       {
@@ -124,28 +146,57 @@ export class Step3Component implements OnInit {
     ]
   }
 
+
   // numberShelvesInMainSection = this.createCountOptions();
 
   lastSectionIndex = 1;
 
+  isCompleteFilling = signal(false);
+  isEditSectionAfterCompleteFiling = signal(false);
+  isNewCurrentSection = signal(false);
+  isSavedCurrentSection = signal(false);
+  isCompleteFillingEv = output<boolean>();
+
   sectionList = {
     groupName: "sectionList",
-    options: []
-  } as IGroupData
+    options: [{
+      label: '1',
+      value: 1,
+    }]
+  } as IGroupData;
 
   constructor(
-    private destroyRef: DestroyRef, private threeHelperService: ThreeHelperService,
-    private cabinetConfiguratorService: CabinetConfiguratorService) {
-
+    private destroyRef: DestroyRef) {
   }
 
   ngOnInit(): void {
-    this.createEmptySection();
-    // this.createAndPatchForm();
+    // this.saveSection();
+    // this.createEmptySection();
+    this.isCompleteFillingEv.emit(this.isCompleteFilling())
+
     this.cabinetConfiguratorService.saveSectionSubject$.pipe(
+      // distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef),
       tap(() => {
-        console.log("saveSectionSubject$");
-        this.createEmptySection();
+        debugger;
+        console.log('cabinetConfiguratorService saveSectionSubject$');
+        const nextDoorNumber = this.cabinetConfiguratorService.currentFilingAndSavedSection();
+        const {srK} = this.cabinetConfiguratorService.getWardrobe();
+        console.log('saveSectionSubject$', nextDoorNumber);
+        console.log('saveSectionSubject$', srK);
+        console.log('saveSectionSubject$', srK === nextDoorNumber);
+
+        if (+srK <= nextDoorNumber) {
+          this.isCompleteFilling.set(true);
+          this.isCompleteFillingEv.emit(this.isCompleteFilling());
+          this.section.setValue(null);
+        } else {
+
+          this.createEmptySection();
+
+          this.section.setValue(this.lastSectionIndex);
+          // this.section.setValue(nextDoorNumber);
+        }
       })
     ).subscribe();
 
@@ -155,39 +206,155 @@ export class Step3Component implements OnInit {
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
-        console.log(change)
+        this.isSavedCurrentSection.set(false);
         this.cabinetConfiguratorService.setWardrobe({}, Steps.three);
       })
     ).subscribe()
 
 
-    this.all$.pipe(
+    this.sectionType$.pipe(
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
-      map(({sectionType, section, openingDoorType}) => {
-        console.log('all')
-        this.threeHelperService.selectSection(section, sectionType, openingDoorType);
+      tap(data => {
+        this.threeHelperService.selectSectionAndOpenDoors(this.stepThreeForm.getRawValue(), this.isNewCurrentSection())
+        this.threeHelperService.filingSection(+this.section.value, +this.sectionType.value, +this.fillingOption.value);
       })
     ).subscribe();
 
-    this.a1$.pipe(
-      tap( data => {
-        console.log('a1$', {data});
-        if (+data === 0) this.threeHelperService.removeFilingBySection(+this.section.value + 1);
-        if (+data === 1) {
-          console.log('a1 _ 1', +this.section.value + 1, this.fillingOption.value)
-          this.threeHelperService.filingSection(+this.section.value + 1, 0, +this.fillingOption.value);
+    this.section$.pipe(
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef),
+      tap(data => {
+        const filingList = this.cabinetConfiguratorService.getSavedFilingScheme();
+        const section = filingList.find((item: any) => {
+          if (+item.section === +data) {
+            return item;
+          }
+        });
+
+        console.log('SR_yaschiki_vneshnie', this.wardrobe.SR_yaschiki_vneshnie);
+        console.log('SR_yaschiki_vneshnie', this.cabinetConfiguratorService.getWardrobeScheme());
+
+        if (+data !== 0 && this.isCompleteFilling()) {
+          this.isEditSectionAfterCompleteFiling.set(true);
+          this.isCompleteFillingEv.emit(false);
         }
+
+
+        if (section) {
+          // let isBoss = confirm("сбросить настройки");
+          //
+          // alert( isBoss ); // true, если нажата OK
+          //
+          // if (!this.isSavedCurrentSection()) {
+          //   alert('not saved');
+          // }
+
+          this.isNewCurrentSection.set(false);
+          console.log('if section', section);
+          this.sectionType.setValue(+section.sectionType);
+          this.openingDoorType.setValue(+section.openingDoorType);
+          this.fillingOption.setValue(+section.fillingOption);
+          this.stepThreeForm.updateValueAndValidity();
+          // this.threeHelperService.filingSection(+this.section.value + 1, data, +this.fillingOption.value);
+          this.threeHelperService.selectSectionAndOpenDoors(section, this.isNewCurrentSection());
+        } else {
+          console.log('else section', section);
+          this.sectionType.setValue(0);
+          this.openingDoorType.setValue(0);
+          this.fillingOption.setValue(1);
+          // // this.stepThreeForm.reset();
+          // this.isNewCurrentSection.set(true);
+          this.threeHelperService.selectSectionAndOpenDoors(this.stepThreeForm.getRawValue(), this.isNewCurrentSection());
+        }
+
+        if (Number(this.wardrobe.SR_yaschiki_vneshnie) === 1) {
+          const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
+          // @ts-ignore
+          const block = scheme.find((item: Block) => {
+            if (item.startPos <= +data && +data <= item.endPos) { //<= item.endPos
+              return item;
+            }
+          });
+          if (block) {
+            this.sectionWithSRY(block);
+          } else {
+            this.deSectionWithSRY()
+          }
+        }
+
       })
     ).subscribe();
+
+    this.openingDoorType$.pipe(
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef),
+      tap(data => {
+        this.threeHelperService.selectSectionAndOpenDoors(this.stepThreeForm.getRawValue());
+        // this.threeHelperService.filingSection(+this.section.value, +this.sectionType.value, +data);
+      })
+    ).subscribe();
+
 
     this.fillingOption.valueChanges.pipe(
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef),
       tap(data => {
-        console.log(data);
         this.threeHelperService.filingSection(+this.section.value, +this.sectionType.value, +data);
       })
     ).subscribe();
 
+  }
+
+  private sectionWithSRY(section: Block) {
+    console.log('sectionWithSRY', section);
+    const message = 'Неподходящий вариант';
+    const arr = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+    this.fillingOptionList.options = this.fillingOptionList.options.map(
+      (item: any) => {
+        if (arr.includes(item.value)) {
+          return {...item, disabled: true, message};
+        }
+        return item;
+      }
+    );
+
+    this.sectionTypes.options = this.sectionTypes.options.map((i: any) => i);
+
+    this.sectionType.setValue(1);
+    this.openingDoorType.setValue(0);
+
+  }
+
+  private deSectionWithSRY() {
+
+    console.log('deSectionWithSRY')
+    this.fillingOptionList.options = this.fillingOptionList.options.map(
+      (item: any) => {
+        delete item.disabled;
+        delete item.message;
+        return item;
+      }
+    );
+
+    this.sectionTypes.options = this.sectionTypes.options.map((i: any) => {
+      delete i.disabled;
+      delete i.message;
+      return i;
+    });
+
+    // this.sectionType.setValue(1);
+    // this.openingDoorType.setValue(0);
+  }
+
+  private createAndPatchForm() {
+    return this.stepThreeForm = this.fb.group({
+      section: new FormControl<number>(1),
+      sectionType: new FormControl<number>(0),
+      openingDoorType: new FormControl<number>(0),
+      fillingOption: new FormControl<number>(1),
+    })
   }
 
   get sectionType() {
@@ -203,33 +370,31 @@ export class Step3Component implements OnInit {
   }
 
   get fillingOption() {
-    return this.stepThreeForm.get('fillingOptions') as FormControl;
+    return this.stepThreeForm.get('fillingOption') as FormControl;
   }
 
-  private createAndPatchForm() {
-    return this.stepThreeForm = this.fb.group({
-      section: new FormControl<number>(1),
-      sectionType: new FormControl<number>(0),
-      openingDoorType: new FormControl<number>(0),
-      fillingOptions: new FormControl<number>(1),
-    })
+  saveSection() {
+    console.log('saveSection', this.stepThreeForm.getRawValue());
+    this.isSavedCurrentSection.set(true);
+    this.cabinetConfiguratorService.saveSection(this.stepThreeForm.getRawValue());
+
+
+    this.isCompleteFillingEv.emit(this.isCompleteFilling());
+  }
+
+  editAfterFilingSection() {
+    console.log('saveSection', this.stepThreeForm.getRawValue());
+    // this.isSavedCurrentSection.set(true);
+    this.isEditSectionAfterCompleteFiling.set(false);
+    this.cabinetConfiguratorService.saveSection(this.stepThreeForm.getRawValue());
+
+
+    this.isCompleteFillingEv.emit(this.isCompleteFilling());
   }
 
   private createEmptySection() {
-    this.sectionList.options.push({label: this.lastSectionIndex.toString(), value: this.lastSectionIndex});
     this.lastSectionIndex++;
+    this.sectionList.options.push({label: String(this.lastSectionIndex), value: this.lastSectionIndex});
     // this.cdr.detectChanges();
   }
-
-  // private createCountOptions(max = 9) {
-  //   let res: ITestOption[] = []
-  //   for (let i = 0; i <= max; i++) {
-  //     res?.push(({label: i.toString(), value: i}) as ITestOption)
-  //   }
-  //
-  //   return {
-  //     groupName: "test5",
-  //     options: res
-  //   } as IGroupData
-  // }
 }

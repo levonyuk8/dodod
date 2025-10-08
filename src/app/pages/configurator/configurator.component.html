@@ -26,7 +26,7 @@
         }
         @case (Steps.three) {
           @defer {
-            <app-step-3></app-step-3>
+            <app-step-3 (isCompleteFillingEv)="handleCompleteFilling($event)"></app-step-3>
           }
         }
       }
@@ -34,9 +34,13 @@
 
     <div class="action-btn-container">
       @if (currentStep() === Steps.three) {
-        <app-button [width]="'100'" (click)="saveSection()" [variant]="'bg-transparent'">Сохранить</app-button>
+        <!--        <app-button [width]="'100'" (click)="saveSection()" [variant]="'bg-transparent'">Сохранить</app-button>-->
       }
-      <app-button [width]="'100'" (click)="nextStep()" [variant]="'primary'">Далее</app-button>
+      @if (nextStepVisible()) {
+        <app-button [width]="'100'" (click)="nextStep()" [variant]="'primary'">Далее</app-button>
+      }
+
+
     </div>
   </div>
 </div>

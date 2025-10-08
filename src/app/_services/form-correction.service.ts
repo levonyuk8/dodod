@@ -35,7 +35,6 @@ export class FormCorrectionService {
         debounceTime(1000),
       )
       .subscribe(value => {
-        console.log('setupRangeCorrection')
       if (value !== null && value !== undefined) {
         this.correctNumberValue(control, value, min, max);
       }

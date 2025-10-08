@@ -54,8 +54,6 @@ export class BlocksComponent implements OnInit {
   }
 
   openBlock(na: number) {
-    console.log('openBlock', na)
-    console.log('openBlock',  this.currentBlock)
     if (na === this.currentBlock) {
       this.currentBlock = null
     } else {

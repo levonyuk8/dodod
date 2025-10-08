@@ -12,6 +12,7 @@ export class CabinetConfiguratorService {
 
   private data = new Wardrobe();
   private wardrobeScheme: Block[] = [];
+  private savedFilingScheme: any[] = [];
 
   dataUpdatedSubject$ = new BehaviorSubject<Steps | null>(null);
   saveSectionSubject$ = new Subject<void>();
@@ -24,6 +25,10 @@ export class CabinetConfiguratorService {
 
   getWardrobe() {
     return this.data;
+  }
+
+  getSavedFilingScheme() {
+    return this.savedFilingScheme;
   }
 
   getWardrobeScheme() {
@@ -59,7 +64,7 @@ export class CabinetConfiguratorService {
     if (!this.data?.srL) return;
     this.data.SR_K_min = this.minCalcNumberOfDoors(this.data?.srL);
     this.data.SR_K_max = this.maxCalcNumberOfDoors(this.data?.srL);
-    this.data.srK =  this.data.SR_K_min;
+    this.data.srK = this.data.SR_K_min;
   }
 
   // SR_K_min=(SR_L/600) и округлить в большую сторону	Формула для минимального кол-ва дверей
@@ -72,7 +77,47 @@ export class CabinetConfiguratorService {
     return Math.round(width / this.wps.SR_L_MIN);
   }
 
-  saveSection() {
+  saveSection(val: any) {
+    const editElement = this.savedFilingScheme.find((el: any) => el.section === val.section);
+    debugger;
+    if (!editElement) {
+      this.savedFilingScheme.push(val);
+    } else {
+      this.savedFilingScheme = this.savedFilingScheme.map(s => {
+        if (s.section === val.section) {
+          return val;
+        }
+        return s;
+      });
+    }
+    debugger;
     this.saveSectionSubject$.next();
+  }
+
+  nextSectionNumber(sectionNA: number): number {
+    let count = 0;
+
+    if (!this.savedFilingScheme.length) return count;
+
+    for (let i = 0; i < sectionNA - 1; i++) {
+      debugger;
+      ++count;
+      if (+this.savedFilingScheme[i].sectionType === 1) {
+        console.log('add')
+        ++count;
+      }
+    }
+    console.log('nextSectionNumber', count);
+    return count;
+  }
+
+  currentFilingAndSavedSection(): number {
+    let count = 0;
+
+    for (let i = 0; i < this.savedFilingScheme?.length; i++) {
+      ++count
+      if (+this.savedFilingScheme[i].sectionType === 1) ++count;
+    }
+    return count;
   }
 }

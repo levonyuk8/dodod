@@ -1,5 +1,4 @@
 <form [formGroup]="stepThreeForm">
-
   <label class="text text-medium mb-4">Внутреннее наполнение</label>
 
   <div class="sizing-container panel">
@@ -7,34 +6,45 @@
     <app-radio-group [formControlName]="'section'" [isRound]="true" [data]="sectionList"></app-radio-group>
   </div>
 
-  <div class="sizing-container panel">
-    <label class="text text-normal">Вид секции</label>
-    <app-radio-group class="mt-8" [formControlName]="'sectionType'" [data]="sectionTypes"></app-radio-group>
+  @if (!isCompleteFilling() || isEditSectionAfterCompleteFiling()) {
+    <div class="sizing-container panel">
+      <label class="text text-normal">Вид секции</label>
+      <app-radio-group class="mt-8" [formControlName]="'sectionType'" [data]="sectionTypes"></app-radio-group>
 
-    <div class="panel panel--child">
-      <label class="text text-normal">Открывание двери</label>
-      <app-radio-group class="mt-8" [formControlName]="'openingDoorType'" [data]="openingDoorTypes"></app-radio-group>
+      {{ +sectionType.value }}
+      @if (+sectionType.value === 0) {
+        <div class="panel panel--child">
+          <label class="text text-normal">Открывание двери</label>
+          <app-radio-group class="mt-8" [formControlName]="'openingDoorType'"
+                           [data]="openingDoorTypes"></app-radio-group>
+        </div>
+      } @else {
+        <div class="panel panel--child">
+          <label class="text text-normal">Открывание двери</label>
+          <app-radio-group class="mt-8" [formControlName]="'openingDoorType'"
+                           [data]="openingDualDoorTypes"></app-radio-group>
+        </div>
+      }
     </div>
-  </div>
 
-  <div class="sizing-container panel">
-    <label class="text text-normal">Варианты наполнения</label>
-    <app-radio-group class="mt-8"  [formControlName]="'fillingOptions'"  [data]="fillingOptions"></app-radio-group>
-  </div>
+    <div class="sizing-container panel">
+      <label class="text text-normal">Варианты наполнения</label>
+      <app-radio-group class="mt-8" [formControlName]="'fillingOption'" [data]="fillingOptionList"></app-radio-group>
+    </div>
 
-<!--  <div class="sizing-container panel">-->
-<!--    <label class="text text-normal">Количество полок в основной секции</label>-->
-<!--    <app-radio-group [isRound]="true" [data]="numberShelvesInMainSection"></app-radio-group>-->
-<!--  </div>-->
+    <div>
+      {{isCompleteFilling()}}
+      {{isEditSectionAfterCompleteFiling()}}
+    </div>
 
-<!--  <div class="sizing-container panel">-->
-<!--    <label class="text text-normal">Количество вверху</label>-->
-<!--    <app-radio-group [isRound]="true" [data]="numberShelvesInMainSection"></app-radio-group>-->
-<!--  </div>-->
+    <div class="action-btn-container">
 
-<!--  <div class="sizing-container panel">-->
-<!--    <label class="text text-normal">Количество полок в антресоли</label>-->
-<!--    <app-radio-group [isRound]="true" [data]="numberShelvesInMainSection"></app-radio-group>-->
-<!--  </div>-->
-
+      @if (!isCompleteFilling()) {
+        <app-button [width]="'100'" (click)="saveSection()" [variant]="'bg-transparent'">Сохранить</app-button>
+      }
+      @if (isEditSectionAfterCompleteFiling()) {
+        <app-button [width]="'100'" (click)="editAfterFilingSection()" [variant]="'bg-transparent'">Сохранить</app-button>
+      }
+    </div>
+  }
 </form>

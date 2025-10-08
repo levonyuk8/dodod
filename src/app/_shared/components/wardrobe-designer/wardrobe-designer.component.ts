@@ -154,8 +154,6 @@ export class WardrobeDesignerComponent implements AfterViewInit {
 
   private getParentSize() {
     const parentElement = this.containerRef.nativeElement.parentElement;
-    console.log(parentElement.offsetWidth)
-    console.log(parentElement.offsetHeight)
     if (parentElement) {
       this.parentSize = {
         width: parentElement.offsetWidth,

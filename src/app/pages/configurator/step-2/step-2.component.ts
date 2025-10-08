@@ -159,7 +159,6 @@ export class Step2Component implements OnInit {
 
         this.stepTwoForm.get('SR_yaschiki_vneshnie')?.setValue(0);
         this.updateScheme([]);
-        console.log('updateScheme')
         // this.([]);
         this.externalDrawers = {
           groupName: "externalDrawers",
@@ -186,10 +185,6 @@ export class Step2Component implements OnInit {
           this.stepTwoForm.get('SR_niz_dveri')?.setValue(0);
         }
         this.updateScheme([]);
-        console.log('SR_yaschiki_vneshnie', val)
-        console.log(this.stepTwoForm.get('SR_yaschiki_vneshnie')?.value.toString() === '0')
-        // this.base = this.base;
-        console.log('isFormValid', this.test());
         this.test.update(v => !v);
         // todo
         this.baseS.set({
@@ -220,7 +215,6 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
 
   externalDrawersMessageByCondition() {
     if (this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK) {
-      debugger;
       return this.externalDrawersErrMesG;
     }
     if (this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2) {
@@ -330,7 +324,6 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
 
 
   ngOnInit(): void {
-    console.log('ngOnInit', this.data);
     this.createAndPatchForm();
 
     this.stepTwoForm?.valueChanges.pipe(
@@ -339,7 +332,6 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
       distinctUntilChanged(), // Игнорировать повторяющиеся значения
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
-        console.log(change)
         this.cabinetConfiguratorService.setWardrobe(change, Steps.two);
       })
     ).subscribe()
@@ -352,7 +344,6 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
 
 
   createCountDoorsSliderData() {
-    console.log('createCountDoorsSliderData');
     let res: ITestOption[] = []
     for (let i = this.data.SR_K_min; i <= this.data.SR_K_max; i += 1) {
       res?.push(({label: i.toString(), value: i}) as ITestOption)

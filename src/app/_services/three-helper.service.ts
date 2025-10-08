@@ -7,6 +7,7 @@ import {Steps} from '../_shared/components/stepper/stepper.component';
 import {Wardrobe} from '../_models/wardrobe.model';
 import {Block} from '../_models/block.model';
 import {FillingSectionsService} from './ filling-sections.service';
+import {WardrobeParamsService} from './wardrobe-params.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ import {FillingSectionsService} from './ filling-sections.service';
 export class ThreeHelperService {
 
   cabinetConfiguratorService = inject(CabinetConfiguratorService)
+  wardrobeParamsService = inject(WardrobeParamsService)
   fillingSectionsService = inject(FillingSectionsService)
 
   // Высота цоколя 80мм
@@ -31,6 +33,7 @@ export class ThreeHelperService {
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
   private mesh!: THREE.Mesh;
+  private group = new THREE.Group();
   private controls!: OrbitControls;
 
   private texture = new THREE.TextureLoader().load('img/qwe.jpg');
@@ -47,8 +50,6 @@ export class ThreeHelperService {
 
   private getParentSize() {
     const parentElement = this.canvasContainerRef.nativeElement.parentElement;
-    console.log(parentElement.offsetWidth)
-    console.log(parentElement.offsetHeight)
     if (parentElement) {
       this.parentSize = {
         width: parentElement.offsetWidth,
@@ -65,10 +66,9 @@ export class ThreeHelperService {
     if (!this.parentSize) {
       return;
     }
-    console.log('initThreeJs')
 
     this.camera = new THREE.PerspectiveCamera(75, this.parentSize?.width / this.parentSize?.height, 1, 4500);
-    this.camera.position.set(0, 0, 3000);
+    this.camera.position.set(0, 0, 500);
     this.renderer = new THREE.WebGLRenderer(
       {
         antialias: true,
@@ -90,6 +90,10 @@ export class ThreeHelperService {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     // this.controls.enableDamping = true;
     // this.controls.dampingFactor = 0.05;
+    // this.controls.maxZoom = 0.1;
+    this.controls.minDistance = 500;
+    this.controls.maxDistance = 3000;
+
 
     this.canvasContainerRef.nativeElement.appendChild(this.renderer.domElement);
 
@@ -116,32 +120,33 @@ export class ThreeHelperService {
 
   createCabinet(step?: Steps) {
     // todo
-    // this.scene.clear();
+
     switch (step) {
       case Steps.one: {
+        this.scene.clear();
         this.createBaseCabinet()
         // this.scene.add(this.fillingSectionsService.createCylinder());
         // this.scene.add(this.fillingSectionsService.createY());
         // this.scene.add(this.fillingSectionsService.createShelf());
         // this.scene.add(this.fillingSectionsService.createCoatHanger());
 
-        // this.createDimensions();
+        this.createDimensions();
         break;
       }
       case Steps.two: {
-        // this.createBaseCabinet();
-        // this.createStepTwoDimensions();
+        this.scene.clear();
+        this.createBaseCabinet();
+        this.createStepTwoDimensions();
 
         this.addDoorsToCabinet();
-        // this.addVYToCabinet();
-        // this.addAntresoli();
-        // this.addSrPlanka();
+        this.addVYToCabinet();
+        this.addAntresoli();
+        this.addSrPlanka();
         // this.scene.add(this.fillingSectionsService.createY());
         this.addSectionsToCabinet();
         break;
       }
       case Steps.three: {
-        console.log('Steps.three')
         // this.scene.clear();
         // this.createBaseCabinet()
         // this.addSectionsToCabinet();
@@ -166,11 +171,13 @@ export class ThreeHelperService {
     walls.forEach(wall => {
       wall.element.position.set(wall.position.x, wall.position.y, wall.position.z);
       wall.element.name = wall.name;
-      debugger
       meshes.push(wall.element)
       //
     })
     group.add(...meshes);
+
+    // group.scale.set(.3, .3, .3);
+    this.scene.scale.set(.3, .3, .3);
     this.scene.add(group);
   }
 
@@ -179,7 +186,6 @@ export class ThreeHelperService {
     const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
 
     this.removeByGroupName('Sections');
-    console.log('addSectionsToCabinet', data);
 
     const group = new THREE.Group();
 
@@ -200,8 +206,6 @@ export class ThreeHelperService {
 
   private addSrPlanka() {
     const data = this.cabinetConfiguratorService.getWardrobe();
-    console.log('addSrPlanka data', data);
-    console.log('addSrPlanka data', data.SR_tsokol);
 
     const group = new THREE.Group();
     const meshes: THREE.Mesh[] = [];
@@ -222,11 +226,6 @@ export class ThreeHelperService {
   }
 
   private createPlanki(w: number, h: number, d: number, thickness: number, srK: number, data: Wardrobe) {
-    console.log('data.SR_tsokol', data.SR_tsokol)
-
-
-    console.log('data.SR_tsokol', data.SR_tsokol)
-
     const res = [];
     if (data?.SR_PLANKA_VERH_CHENTR) {
       res.push(
@@ -328,21 +327,23 @@ export class ThreeHelperService {
 
   private addAntresoli() {
     const data = this.cabinetConfiguratorService.getWardrobe();
-    if (data.SR_antr.toString() === '0') return;
+    if (Number(data.SR_antr) === 0) return;
 
     const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
 
 
     const group = new THREE.Group();
+    group.name = 'EntresolList'
     const meshes: THREE.Mesh[] = [];
 
 
     const list = this.createAntresoli(data.srL, data.srH, data.srG, this.depth, data.srK, data);
 
 
-    list.forEach((yv: any) => {
-      yv.element.position.set(yv.position.x, yv.position.y, yv.position.z);
-      meshes.push(yv.element)
+    list.forEach((entr: any) => {
+      entr.element.position.set(entr.position.x, entr.position.y, entr.position.z);
+      entr.element.name = entr.name;
+      meshes.push(entr.element)
     })
 
 
@@ -356,8 +357,9 @@ export class ThreeHelperService {
     const doorW = wSect + thickness;
     let doors = []
 
+    let doorH = data.SR_H_antr;
+
     for (let i = 0; i < srK; i++) {
-      let doorH = data.SR_H_antr;
 
       const startX = (-w / 2) + (doorW / 2)
 
@@ -366,7 +368,7 @@ export class ThreeHelperService {
       const door = {
         bloc: i,
         section: i,
-        name: 'Антресоль',
+        name: 'Entresol',
         element: this.createCube(doorW, doorH, thickness),
         position: {
           x: startX + i * doorW, //+ (doorW / 2) + (thickness / 2) + i * doorW  / 2,
@@ -375,23 +377,63 @@ export class ThreeHelperService {
         },
       }
 
-      if (data?.SR_antr_blok.toString() !== '0') {
-        doors.push(
+      if (data.SR_H_antr - thickness / 2 > this.wardrobeParamsService.SR_H_MIN_POLKA_ANTR * 2) {
+        const shelf =
           {
-            name: 'верхняя',
-            element: this.createCube(w, 0, d),
+            name: 'Entresol shelf',
+            element: this.createCube(wSect - thickness * 2, thickness, d),
             position: {
-              x: 0, y: h / 2 - doorH,
+              x: startX + i * doorW,
+              y: h / 2 - doorH / 2,
               //h / 2 - thickness / 2,
               z: 0
             },
-          },
-        );
-      }
+          }
 
+        doors.push(shelf);
+      }
 
       doors.push(door);
     }
+
+
+    if (Number(data?.SR_antr_blok) === 0) {
+      doors.push(
+        {
+          name: 'Entresol shelf',
+          element: this.createCube(w - thickness * 2, thickness, d),
+          position: {
+            x: 0, y: h / 2 - doorH,
+            //h / 2 - thickness / 2,
+            z: 0
+          },
+        },
+      );
+    } else if (Number(data?.SR_antr_blok) === 1) {
+      doors.push(
+        {
+          name: 'Entresol shelf',
+          element: this.createCube(w - thickness * 2, thickness, d),
+          position: {
+            x: 0,
+            y: h / 2 - doorH + (thickness / 2),
+            z: 0
+          },
+        },
+      );
+      doors.push(
+        {
+          name: 'Entresol shelf',
+          element: this.createCube(w - thickness * 2, thickness, d),
+          position: {
+            x: 0,
+            y: h / 2 - doorH - (thickness / 2),
+            z: 0
+          },
+        },
+      );
+    }
+
     return doors;
   }
 
@@ -410,8 +452,6 @@ export class ThreeHelperService {
 
 
     const YV = this.createYaschikVneshnie(data.srL, data.srH, data.srG, this.depth, data.srK, schemeVY);
-
-    console.log({YV})
 
     YV.forEach((yv: any) => {
       yv.element.position.set(yv.position.x, yv.position.y, yv.position.z);
@@ -456,84 +496,120 @@ export class ThreeHelperService {
 
   // step 3
 
-  filingSection(sectionNumber: number | null,  sectionType: number | null, filing: number) {
-
-    // console.log(this.scene)
-    if (!sectionNumber) return;
-
-    console.log({sectionType})
-
-    if (sectionType === 1) {
-      this.removeFilingBySection(sectionNumber + 1);
-      this.scene.add(this.fillingSectionsService.addFillingToSection(sectionNumber + 1, filing))
-    }
-
+  filingSection(sectionNumber: number, sectionType: number, filing: number, isNew = false) {
     this.removeFilingBySection(sectionNumber);
-    this.scene.add(this.fillingSectionsService.addFillingToSection(sectionNumber, filing))
+    this.scene.add(this.fillingSectionsService.addFillingToSection(sectionNumber, filing, +sectionType === 1))
   }
 
-  public removeFilingBySection(sectionNumber: number | null) {
-    this.scene.children.forEach(object => {
-      if (object.name === "Filling" + sectionNumber) {
-        this.scene.remove(object);
-      }
-    })
+  public removeFilingBySection(sectionNumber: number) {
+    const oldFiling = this.scene.children.find(object =>
+      object.name === "Filling" + sectionNumber);
+
+
+    if (oldFiling) this.scene.remove(oldFiling);
+    // this.scene.children.forEach(object => {
+    //   if (object.name === "Filling" + sectionNumber) {
+    //     this.scene.remove(object);
+    //   }
+    // })
   }
 
 
-  public selectSection(sectionNumber: number | null, sectionType: number, openingDoorType: any) {
-
-
-    console.log({sectionNumber, sectionType, openingDoorType});
-    if (!sectionNumber) return;
-
-    const test = this.scene.children.find((child: THREE.Object3D) =>
-      child.name === 'Doors')
-
-    console.log(test)
-
-    test?.children.forEach((child: any, index) => {
+  private closeAllDoors(doors: any) {
+    doors?.children.forEach((child: any) => {
       this.transparentDoor(child);
       if (child.userData && (child.userData === 'openDoorLeft' || child.userData === 'openDoorRight')) {
         this.closeDoor(child);
       }
     });
-
-    test?.children.forEach((child: any, index) => {
-
-
-      console.log({index, sectionNumber})
-      console.log(index + 1 === +sectionNumber)
+  }
 
 
-      if (index + 1 === +sectionNumber) {
+  public selectSectionAndOpenDoors(selectedSection: any, isNew = true) {
 
-        if (+openingDoorType === 1) {
-          child.visible = false;
-          if (+sectionType === 1) {
-            test.children[index + 1].visible = false;
-          }
-          return;
-        } else {
-          child.visible = true;
-          test.children[index + 1].visible = true;
-        }
+    if (!selectedSection) return;
+    let {section, sectionType, openingDoorType} = selectedSection;
+    section = this.cabinetConfiguratorService.nextSectionNumber(section);
+    // const addDoorPos = this.cabinetConfiguratorService.nextSectionNumber(section);
+    const addDoorPos = +section + 1;
+    const doors = this.scene.children.find((child: THREE.Object3D) =>
+      child.name === 'Doors');
+    this.closeAllDoors(doors);
+    if (doors?.children) {
+      const mainDoor = doors?.children[section];
+      const addDoor = doors?.children[addDoorPos];
 
-        console.log(index)
-        console.log({sectionNumber})
-        this.openDoor(child, +openingDoorType === 2 ? 'Right' : 'Left');
+      const partitions = this.scene.children.find((child: THREE.Object3D) =>
+        child.name === 'Sections');
+      console.log('partitions', partitions)
+      const partition = partitions?.children[section];
+      console.log('partition', partition)
+      if (!mainDoor) return;
 
-        // this.closeDoor(child);
-
-        if (+sectionType === 1) {
-          this.openDoor(test.children[index + 1], 'Right');
-          // this.closeDoor(test.children[index + 1]);
-        }
-
-
+      if (+sectionType === 1 && partition) {
+        debugger;
+        partition.visible = false;
+      } else if (partition) {
+        partition.visible = true;
       }
 
-    })
+      if (+openingDoorType === 1) {
+        mainDoor.visible = false;
+        if (+sectionType === 1 && addDoor) {
+          addDoor.visible = false;
+        }
+        return;
+      } else {
+        mainDoor.visible = true;
+        if (+sectionType === 1 && addDoor) {
+          addDoor.visible = true;
+        }
+      }
+
+      this.openDoor(mainDoor, +openingDoorType === 2 ? 'Right' : 'Left');
+      if (+sectionType === 1 && addDoor) {
+        this.openDoor(addDoor, 'Right');
+      }
+
+      this.openAntisoleDoors(selectedSection);
+    }
+  }
+
+  private openAntisoleDoors(selectedSection: any) {
+
+    let {section, sectionType, openingDoorType} = selectedSection;
+    const {wSect, SR_H_antr} = this.cabinetConfiguratorService.getWardrobe();
+
+    const addDoorPos = this.cabinetConfiguratorService.nextSectionNumber(section);
+    section = +section + addDoorPos;
+
+    const doorsEntr = this.scene.children.find((child: THREE.Object3D) =>
+      child.name === 'EntresolList');
+    this.closeAllDoors(doorsEntr);
+
+    const onlyDoorsEntr = doorsEntr?.children.filter((child: THREE.Object3D) =>
+      child.name === 'Entresol');
+    console.log('onlyDoorsEntr', onlyDoorsEntr)
+    if (!onlyDoorsEntr) return;
+
+    console.log(this.scene.children)
+    console.log(doorsEntr)
+    console.log(section)
+    const mainDoor = onlyDoorsEntr[section - 1];
+    const addDoor = onlyDoorsEntr[section];
+    console.log(mainDoor)
+    console.log(addDoor)
+
+
+    if (SR_H_antr < wSect + 35) {
+      console.log('open down')
+    } else {
+      this.openDoor(mainDoor, +openingDoorType === 2 ? 'Right' : 'Left');
+      if (+sectionType === 1 && addDoor) {
+        this.openDoor(addDoor, 'Right');
+      }
+    }
+
 
   }
 
@@ -564,10 +640,6 @@ export class ThreeHelperService {
     quaternion.setFromAxisAngle(axis, angle);
     child.setRotationFromQuaternion(quaternion);
 
-    //
-    // child.scale.x = .5;
-
-    console.log(child)
   }
 
   private closeDoor(child: any, side: 'Left' | 'Right' = 'Left') {
@@ -619,14 +691,11 @@ export class ThreeHelperService {
 
     const sectionW = (w - thickness - thickness * srK) / srK + thickness * 2;
 
-    console.log({sectionW});
-
     let listS: any[] = []; // = scheme;
 
 
     for (let i = 1; i < srK; i++) {
-      console.log('createSections h', h - thickness * 2 - this.plinth)
-
+      console.log('createSections', (-w / 2) + sectionW * i - thickness / 2)
       const sect = {
         bloc: i,
         section: i,
@@ -643,7 +712,6 @@ export class ThreeHelperService {
       listS.push(sect);
     }
 
-    console.log({listS});
     return listS;
   }
 
@@ -655,7 +723,6 @@ export class ThreeHelperService {
     // const doorW = wSect + thickness;
 
     const wYV = wSect * 2 + thickness;
-    console.log({wYV})
 
     const group = new THREE.Group();
     const meshes: THREE.Mesh[] = [];
@@ -666,12 +733,8 @@ export class ThreeHelperService {
 
 
     for (let iS = 0; iS < scheme.length; iS++) {
-      console.log('section', iS)
       const section = scheme[iS];
       const nextSection = scheme[iS + 1];
-
-      console.log({section})
-
       const startX = (-w + wYV + thickness) / 2
 
       // x: startX  + i * doorW , //+ (doorW / 2) + (thickness / 2) + i * doorW  / 2,
@@ -719,10 +782,6 @@ export class ThreeHelperService {
       }
 
       if (data.SR_antr.toString() === '1') {
-
-        console.log('1111111111111111111111111')
-
-        console.log(data.SR_H_antr)
         doorH = doorH - data.SR_H_antr;
       }
 
@@ -945,7 +1004,6 @@ export class ThreeHelperService {
   private dimensionsViewGroup!: THREE.Group;
 
   createDimensions(offset = 200) {
-    console.log(this.scene)
     const data = this.cabinetConfiguratorService.getWardrobe();
 
     // Удаляем старые размеры если есть
@@ -954,15 +1012,12 @@ export class ThreeHelperService {
     // if (this.dimensionsGroup) {
     //   this.scene.remove(this.dimensionsGroup);
     //   this.dimensionsGroup.children.forEach(child => {
-    //     console.log('createDimensions IF')
     //     // if (child?.geometry) child?.geometry.dispose();
     //     // if (child?.material) child?.material.dispose();
     //   });
     // }
 
     this.dimensionsGroup = new THREE.Group();
-
-    console.log(data)
 
     // ШИРИНА (X)
     const widthLine = this.createOuterDimensionLine(
@@ -971,7 +1026,6 @@ export class ThreeHelperService {
       offset,
       0x000
     );
-    console.log('widthLine', widthLine)
     this.dimensionsGroup.add(widthLine);
 
 
@@ -1027,7 +1081,6 @@ export class ThreeHelperService {
       offset,
       0x000
     );
-    console.log('widthLine', widthSectionLine)
     this.dimensionsGroup.add(widthSectionLine);
 
     let remainderWSect = data.srL % data.srK;
@@ -1049,7 +1102,6 @@ export class ThreeHelperService {
       }
 
 
-      console.log('widthLine', data.srL / data.srK)
       const sWidthLabel = this.createTextLabel(
         `${wSectLabel}mm`,
         new THREE.Vector3((-data.srL + data.wSect) / 2 + data.wSect * i, -data.srH / 2 - offset + 50, data.srG / 2),

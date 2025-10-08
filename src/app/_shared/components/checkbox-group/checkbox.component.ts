@@ -55,7 +55,6 @@ export class CheckboxComponent implements ControlValueAccessor {
   };
 
   writeValue(obj: any): void {
-    console.log('writeValue', obj)
     this.value = obj;
   }
 
@@ -69,13 +68,10 @@ export class CheckboxComponent implements ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     // Handle disabled state if needed
-    console.log('setDisabledState', isDisabled);
   }
 
   onInputChange(event: Event): void {
-    console.log('onInputChange', event);
     const target = event.target as HTMLInputElement;
-    console.log(target.value);
     this.value = target.checked;
     // this.onChange(this.value);
   }
