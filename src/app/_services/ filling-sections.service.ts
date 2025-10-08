@@ -439,7 +439,7 @@ export class FillingSectionsService {
     const sW = obj.geometry.parameters[par];
     console.log(par)
     console.log(sW)
-    group.position.x = (-this.data.srL + sW) / 2 + (pos * this.data.wSect) + depth + depth;
+    group.position.x = (-this.data.srL + sW) / 2 + (pos * this.data.wSect) + depth;
 
 
     // group.position.x = ((-this.data.srL + this.data.wSect + depth) / 2) + (pos * (this.data.wSect));
