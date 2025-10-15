@@ -47,13 +47,9 @@ export class ThreeWardrobeComponent implements AfterViewInit {
   }
 
   resetSizes() {
+    console.log('resetSizes')
+    this.threeHelper.resetSizes(this.size());
     this.size.update(v => !this.size());
-    // if (this.size()) {
-    //   this.threeHelper.resetSizes();
-    // }
-
-    // this.size() ? this.threeHelper.resetSizes() : this.threeHelper.createDimensions();
-
   }
 
 }

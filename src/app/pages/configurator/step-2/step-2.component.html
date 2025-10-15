@@ -1,44 +1,34 @@
 <form [formGroup]="stepTwoForm">
   <label class="text text-medium">Внешний вид</label>
-
   <div class="sizing-container panel">
     <label class="text text-normal">Количество дверей</label>
     <app-radio-group ngDefaultControl formControlName="srK" [isRound]="true" [data]="numberOfDoors"></app-radio-group>
   </div>
-
   <div class="sizing-container panel">
     <label class="text text-normal">Внешние выдвижные ящики</label>
     <app-radio-group class="mt-8" formControlName="SR_yaschiki_vneshnie" [data]="externalDrawers"></app-radio-group>
-
-    <!--    TODO -->
     @if (stepTwoForm.get('SR_yaschiki_vneshnie')?.value > 0) {
       <app-blocks (schemeChange)="updateScheme($event)" [doorCount]="stepTwoForm.get('srK')?.value"></app-blocks>
     }
   </div>
-
   <div class="sizing-container panel">
     <label class="text text-normal">Цоколь</label>
     <app-radio-group ngDefaultControl formControlName="SR_tsokol" [width]="100" [height]="50"
                      [data]="items4"></app-radio-group>
   </div>
-
   <div class="sizing-container panel">
     <label class="text text-normal">Нижняя часть фасадов</label>
-    <app-radio-group ngDefaultControl formControlName="SR_niz_dveri" [data]="baseS()"></app-radio-group>
+    <app-radio-group ngDefaultControl formControlName="SR_niz_dveri" [data]="base"></app-radio-group>
   </div>
-
   <div class="sizing-container panel">
-
     <label class="text text-normal">Антресоль</label>
-
     <app-radio-group formControlName="SR_antr" [data]="items3"></app-radio-group>
-
     @if (stepTwoForm.get('SR_antr')?.value > 0) {
       <div class="panel panel--child mb-4">
         <label class="text">Высота антресоли</label>
         <p-slider
           [min]="wardrobeParamsService.SR_H_MIN_ANTR"
-          [max]="wardrobeParamsService.SR_H_MAX_ANTR"
+          [max]="srHMaxAntr"
           [ngModel]="stepTwoForm.get('SR_H_antr')?.value"
           (ngModelChange)="stepTwoForm.get('SR_H_antr')?.setValue($event)"
           [ngModelOptions]="{standalone:true}"/>
@@ -51,49 +41,8 @@
       </div>
     }
   </div>
-
-  <!--  <div class="sizing-container panel">-->
-
-  <!--    <label class="text">Фальш-планки</label>-->
-  <!--    <app-radio-group ngDefaultControl formControlName="SR_PLANKA" [data]="items7"></app-radio-group>-->
-
-  <!--    @if (stepTwoForm.get('SR_PLANKA')?.value > 0) {-->
-
-  <!--      <div class="panel panel&#45;&#45;child mb-4">-->
-  <!--        <label class="text">Высота верхней фальш-планки</label>-->
-  <!--        <p-slider-->
-  <!--          [min]="wardrobeParamsService.SR_H_MIN_PLANKA"-->
-  <!--          [max]="wardrobeParamsService.SR_H_MAX_PLANKA"-->
-  <!--          [ngModel]="stepTwoForm.get('SR_H_PLANKA_VERH')?.value"-->
-  <!--          (ngModelChange)="stepTwoForm.get('SR_H_PLANKA_VERH')?.setValue($event)"-->
-  <!--          [ngModelOptions]="{standalone:true}"/>-->
-  <!--        <input formControlName="SR_H_PLANKA_VERH" [style.width.px]="100" pInputText/>-->
-  <!--      </div>-->
-
-  <!--      <div class="panel panel&#45;&#45;child mb-4">-->
-  <!--        <label class="text">Планка под потолок</label>-->
-  <!--        <div class="row-checkboxes">-->
-  <!--          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_LEV" [ind]="'srPlankaVerhLev'"-->
-  <!--                        [item]="srPlankaVerhLev"></app-checkbox>-->
-  <!--          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_CHENTR" [ind]="'srPlankaVerhCentr'"-->
-  <!--                        [item]="srPlankaVerhCentr"></app-checkbox>-->
-  <!--          <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_PRAV" [ind]="'srPlankaVerhPrav'"-->
-  <!--                        [item]="srPlankaVerhPrav"></app-checkbox>-->
-  <!--        </div>-->
-
-  <!--      </div>-->
-
-
-  <!--    }-->
-  <!--  </div>-->
-
   <div class="sizing-container panel">
-
-    <!--    <label class="text">Фальш-планки</label>-->
     <label class="text text-normal">Планки под натяжной потолок</label>
-    <!--    <app-radio-group ngDefaultControl formControlName="SR_PLANKA" [data]="items7"></app-radio-group>-->
-
-
     <div class="panel mb-4">
       <div class="row-checkboxes">
         <app-checkbox ngDefaultControl formControlName="SR_PLANKA_VERH_LEV" [ind]="'srPlankaVerhLev'"
@@ -120,10 +69,7 @@
         <input formControlName="SR_H_PLANKA_VERH" [style.width.px]="100" pInputText/>
       </div>
     }
-
-
   </div>
-
   <div class="sizing-container panel">
     <div class="panel">
       <label class="text text-normal">Планка по контуру шкафа</label>
@@ -137,5 +83,4 @@
       </div>
     </div>
   </div>
-
 </form>

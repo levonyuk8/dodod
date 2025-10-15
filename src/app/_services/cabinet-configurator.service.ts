@@ -54,6 +54,15 @@ export class CabinetConfiguratorService {
     this.dataUpdatedSubject$.next(step);
   }
 
+  calcMaxHAntr() {
+    const emptyH = this.data.srH - this.wps.SR_H_MIN;
+
+    return this.wps.SR_H_MIN_ANTR < emptyH && emptyH< this.wps.SR_H_MAX_ANTR ? emptyH : this.wps.SR_H_MAX_ANTR;
+    // this.wps.SR_H_MAX_ANTR = readonly SR_H_MIN_ANTR = 	340; //	Минимально возможная высота антресоли (зависит от толщины ЛДСП). Здесь зазоры не учитываем	Раньше считал это значение по формуле (SR_H_MIN_GL)+(SR_G_ldsp)+(SR_G_ldsp)/2
+    // readonly SR_H_MAX_ANTR = 	635;
+  }
+
+
   clear(): void {
     this.setWardrobe(new Wardrobe());
     this.setWardrobeScheme([]);

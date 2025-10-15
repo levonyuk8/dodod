@@ -7,7 +7,7 @@ import {
   RadioGroupComponent
 } from '../../../_shared/components/radio-group/radio-group.component';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
-import {combineLatest, debounceTime, distinctUntilChanged, forkJoin, startWith, tap} from 'rxjs';
+import {distinctUntilChanged, startWith, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {BlocksComponent} from './blocks/blocks.component';
@@ -15,12 +15,7 @@ import {Slider} from 'primeng/slider';
 import {InputText} from 'primeng/inputtext';
 import {WardrobeParamsService} from '../../../_services/wardrobe-params.service';
 import {CheckboxComponent} from '../../../_shared/components/checkbox-group/checkbox.component';
-import {ThreeHelperService} from '../../../_services/three-helper.service';
-
-export enum BlockTypes {
-  default = 'default',
-  custom = 'custom',
-}
+import {FormCorrectionService} from '../../../_services/form-correction.service';
 
 @Component({
   selector: 'app-step-2',
@@ -41,28 +36,17 @@ export enum BlockTypes {
 export class Step2Component implements OnInit {
   cabinetConfiguratorService = inject(CabinetConfiguratorService);
   wardrobeParamsService = inject(WardrobeParamsService);
-  threeHelper = inject(ThreeHelperService);
   destroyRef = inject(DestroyRef);
   changeDetectorRef = inject(ChangeDetectorRef);
   fb = inject(FormBuilder);
-
+  formCorrectionService = inject(FormCorrectionService);
 
   value: any;
   data = this.cabinetConfiguratorService.getWardrobe();
-
-  public stepTwoForm: FormGroup = this.fb.group({});
-
-  // Количество дверей
+  stepTwoForm: FormGroup = this.fb.group({});
   numberOfDoors: IGroupData = this.createCountDoorsSliderData();
 
-  isFormValid!: any;
-
-  // @ts-ignore TODO ADD FOR 25MM
-  test = signal<boolean>(this.stepTwoForm['SR_yaschiki_vneshnie']?.value === '0');
-
-  constructor() {
-    // this.myControlValueSignal = toSignal(this.stepTwoForm['SR_yaschiki_vneshnie']?.valueChanges);
-  }
+  srHMaxAntr = this.cabinetConfiguratorService.calcMaxHAntr();
 
   private createAndPatchForm(): void {
     this.stepTwoForm = this.fb.group({
@@ -72,7 +56,7 @@ export class Step2Component implements OnInit {
       SR_tsokol: new FormControl<number>(0),
       SR_niz_dveri: new FormControl<number>(0),
       SR_antr: new FormControl<number>(this.data.srH >= this.wardrobeParamsService.SR_H_MAX_FASAD ? 1 : 0),
-      SR_H_antr: new FormControl<number>(400),
+      SR_H_antr: new FormControl<number>(this.wardrobeParamsService.SR_H_MIN_ANTR),
 
       SR_antr_blok: new FormControl<number>(this.data.srH > this.wardrobeParamsService.SR_H_MAX_BOK ? 1 : 0),
 
@@ -159,7 +143,6 @@ export class Step2Component implements OnInit {
 
         this.stepTwoForm.get('SR_yaschiki_vneshnie')?.setValue(0);
         this.updateScheme([]);
-        // this.([]);
         this.externalDrawers = {
           groupName: "externalDrawers",
           options: [
@@ -168,12 +151,34 @@ export class Step2Component implements OnInit {
               imgUrl: 'url(/img/svg/ED2.svg)', label: 'Да', value: 1,
               disabled: this.data.srL <= 600
                 || this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK
-                || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,//??
+                || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,
               message: this.externalDrawersMessageByCondition()
-            }, // todo
+            },
           ]
         }
         this.changeDetectorRef.detectChanges();
+      })
+    ).subscribe()
+
+    this.stepTwoForm.get('SR_tsokol')?.valueChanges.pipe(
+      takeUntilDestroyed(this.destroyRef), // todo all obs
+      tap(data => {
+        this.stepTwoForm.get('SR_niz_dveri')?.setValue(0);
+        this.base = {
+          groupName: "base",
+          options: [
+            {imgUrl: 'url(/img/svg/B4.svg)', label: 'Открытый цоколь', value: 0},
+            {
+              imgUrl: 'url(/img/svg/B5.svg)', label: 'Закрытый цоколь', value: 1,
+              disabled:
+                +this.cabinetConfiguratorService.getWardrobe()?.SR_yaschiki_vneshnie === 1 ||
+                +this.cabinetConfiguratorService.getWardrobe()?.SR_tsokol === 1,
+              message: this.baseMessageByCondition()
+              // `Защита от ошибок: Недопустимо при наличии внешних выдвижных ящиков`
+            }
+          ]
+        };
+
       })
     ).subscribe()
 
@@ -185,25 +190,26 @@ export class Step2Component implements OnInit {
           this.stepTwoForm.get('SR_niz_dveri')?.setValue(0);
         }
         this.updateScheme([]);
-        this.test.update(v => !v);
         // todo
-        this.baseS.set({
+        console.log(this.cabinetConfiguratorService.getWardrobe())
+        this.base = {
           groupName: "base",
           options: [
             {imgUrl: 'url(/img/svg/B4.svg)', label: 'Открытый цоколь', value: 0},
             {
               imgUrl: 'url(/img/svg/B5.svg)', label: 'Закрытый цоколь', value: 1,
-              disabled: this.test(),
-              message: `Защита от ошибок: Недопустимо при наличии внешних выдвижных ящиков`
+              disabled:
+                +this.cabinetConfiguratorService.getWardrobe()?.SR_yaschiki_vneshnie === 1 ||
+                +this.cabinetConfiguratorService.getWardrobe()?.SR_tsokol === 1,
+              message: this.baseMessageByCondition()
+              // `Защита от ошибок: Недопустимо при наличии внешних выдвижных ящиков`
             }
           ]
-        });
+        };
+        debugger;
         this.changeDetectorRef.detectChanges();
       })
     ).subscribe()
-    // @ts-ignore
-
-
   }
 
   // Внешние выдвижные ящики
@@ -219,6 +225,18 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
     }
     if (this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2) {
       return this.externalDrawersErrMesWF;
+    }
+    return '';
+  }
+
+  private baseMessageByCondition() {
+    console.log(this.cabinetConfiguratorService.getWardrobe())
+    console.log(this.cabinetConfiguratorService.getWardrobe()?.SR_yaschiki_vneshnie)
+    if (+this.cabinetConfiguratorService.getWardrobe()?.SR_yaschiki_vneshnie === 1) {
+      return `Защита от ошибок: Недопустимо при наличии внешних выдвижных ящиков`;
+    }
+    if (+this.cabinetConfiguratorService.getWardrobe()?.SR_tsokol === 1) {
+      return 'Защита от ошибок: Недопустимо при наличии отступов под плинтус по 25 мм';
     }
     return '';
   }
@@ -263,15 +281,16 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
         {imgUrl: 'url(/img/svg/B4.svg)', label: 'Открытый цоколь', value: 0},
         {
           imgUrl: 'url(/img/svg/B5.svg)', label: 'Закрытый цоколь', value: 1,
-          disabled: this.test(),
-          message: `Защита от ошибок: Недопустимо при наличии внешних выдвижных ящиков`
+          disabled:
+            +this.cabinetConfiguratorService.getWardrobe()?.SR_yaschiki_vneshnie === 1 ||
+            +this.cabinetConfiguratorService.getWardrobe()?.SR_tsokol === 1,
+          message: this.baseMessageByCondition()
         }
       ]
     }
 
 
-  baseS = signal(this.base);
-
+  // 1800+(SR_H_TSOKOL_X)+(SR_G_ldsp)*2+(SR_H_MIN_ANTR)
   items3: IGroupData =
     {
       groupName: "test3",
@@ -283,8 +302,8 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
         },
         {
           imgUrl: 'url(/img/svg/G43.svg)', label: 'С антресолью', value: 1,
-          disabled: this.data.srH <= this.wardrobeParamsService.SR_H_MIN_S_ANTR,
-          message: `Защита от ошибок: Маленькая высота. Сделать с антресолью нельзя`
+          disabled: this.data.srH <= this.wardrobeParamsService.SR_H_MIN_ANTR + this.wardrobeParamsService.SR_H_MIN,
+          message: `Защита от ошибок: Маленькая высота. Сделать с антресолью нельзя ${this.wardrobeParamsService.SR_H_MIN_ANTR + this.wardrobeParamsService.SR_H_MIN}`
         },
       ]
     }
@@ -314,13 +333,15 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
   //     ]
   //   }
 
-  srPlankaVerhLev = {imgUrl: 'url(/img/svg/not.svg)', label: 'Слева', value: false};
-  srPlankaVerhCentr = {imgUrl: 'url(/img/svg/not.svg)', label: 'Спереди', value: false};
-  srPlankaVerhPrav = {imgUrl: 'url(/img/svg/not.svg)', label: 'Справа', value: false};
 
-  srPlankaBokLev = {imgUrl: 'url(/img/svg/PL.svg)', label: 'Торцом вперед', value: false};
-  srPlankaBokCentr = {imgUrl: 'url(/img/svg/not.svg)', label: 'Сверху', value: false};
-  srPlankaBokPrav = {imgUrl: 'url(/img/svg/PR.svg)', label: 'Торцом вперед', value: false};
+
+  srPlankaVerhLev = {imgUrl: 'url(/img/svg/s2/fp_v_l.svg)', label: 'Слева', value: false};
+  srPlankaVerhCentr = {imgUrl: 'url(/img/svg/s2/fp_v_v.svg)', label: 'Спереди', value: false};
+  srPlankaVerhPrav = {imgUrl: 'url(/img/svg/s2/fp_v_r.svg)', label: 'Справа', value: false};
+
+  srPlankaBokLev = {imgUrl: 'url(/img/svg/s2/fp_t_l.svg)', label: 'Торцом вперед', value: false};
+  srPlankaBokCentr = {imgUrl: 'url(/img/svg/s2/fp_t_v.svg)', label: 'Сверху', value: false};
+  srPlankaBokPrav = {imgUrl: 'url(/img/svg/s2/fp_t_r.svg)', label: 'Торцом вперед', value: false};
 
 
   ngOnInit(): void {
@@ -335,6 +356,24 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
         this.cabinetConfiguratorService.setWardrobe(change, Steps.two);
       })
     ).subscribe()
+
+    this.correctionFormValue();
+  }
+
+  private correctionFormValue() {
+    this.formCorrectionService.setupRangeCorrection(
+      this.stepTwoForm,
+      'SR_H_PLANKA_VERH',
+      this.wardrobeParamsService.SR_H_MIN_PLANKA,
+      this.wardrobeParamsService.SR_H_MAX_PLANKA,
+    );
+
+    this.formCorrectionService.setupRangeCorrection(
+      this.stepTwoForm,
+      'SR_H_antr',
+      this.wardrobeParamsService.SR_H_MIN_ANTR,
+      this.srHMaxAntr,
+    );
   }
 
 

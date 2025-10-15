@@ -19,7 +19,7 @@
 }
 
 <app-button [disabled]="isDisabledAddBlock()" (click)="createBlock()" [width]="'w-full'" [size]="'small'"
-            [variant]="'bg-transparent'">+ добавить блок
+            [variant]="'primary'">+ добавить блок
 </app-button>
 
 <ng-template #bodyTmpl let-item='item' let-idx='idx'>
@@ -37,7 +37,8 @@
         class="mr-2"
         (click)="moveBlock(item.blockNA, '-')"
         [disabled]="item.startPos <= 0"
-        [variant]="'bg-transparent'" [size]="'small'">&#9668; Влево
+        [variant]="'white'"
+        [size]="'small'">&#9668; Влево
       </app-button>
       <app-button
         (click)="moveBlock(item.blockNA, '+')"

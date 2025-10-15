@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, OnInit, output, Output, signal} from '@angular/core';
+import {Component, DestroyRef, inject, OnChanges, OnInit, output, Output, signal, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {IGroupData, RadioGroupComponent} from '../../../_shared/components/radio-group/radio-group.component';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
@@ -20,7 +20,7 @@ import {WardrobeParamsService} from '../../../_services/wardrobe-params.service'
   templateUrl: './step-3.component.html',
   styleUrl: './step-3.component.scss'
 })
-export class Step3Component implements OnInit {
+export class Step3Component implements OnInit, OnChanges {
   private fb = inject(FormBuilder);
   private threeHelperService = inject(ThreeHelperService);
   private cabinetConfiguratorService = inject(CabinetConfiguratorService);
@@ -55,7 +55,7 @@ export class Step3Component implements OnInit {
       },
       {
         imgUrl: 'url(/img/svg/s3/ST2.svg)', label: 'Двойная', value: 1,
-        disabled:  this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2,
+        disabled: this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2,
         message: `Защита от ошибок: Секция не может быть более ${this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR}`
       },
     ]
@@ -157,6 +157,8 @@ export class Step3Component implements OnInit {
   isSavedCurrentSection = signal(false);
   isCompleteFillingEv = output<boolean>();
 
+  prevSection: any = null;
+
   sectionList = {
     groupName: "sectionList",
     options: [{
@@ -167,6 +169,10 @@ export class Step3Component implements OnInit {
 
   constructor(
     private destroyRef: DestroyRef) {
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log('ngOnChanges', changes)
   }
 
   ngOnInit(): void {
@@ -242,13 +248,40 @@ export class Step3Component implements OnInit {
 
 
         if (section) {
-          // let isBoss = confirm("сбросить настройки");
-          //
-          // alert( isBoss ); // true, если нажата OK
-          //
-          // if (!this.isSavedCurrentSection()) {
-          //   alert('not saved');
-          // }
+          debugger;
+          console.log(this.prevSection)
+          if (this.prevSection)  {
+            const savedSection =
+              this.cabinetConfiguratorService.getSavedFilingScheme().find((item: any) => +item.section === this.prevSection.section);
+
+            console.log('saveSectionSubject$', this.isSavedCurrentSection());
+            console.log('saveSectionSubject$', data, this.prevSection);
+
+            if (!this.isSavedCurrentSection() || this.isEditSectionAfterCompleteFiling()) {
+
+              console.log('if')
+              console.log(data)
+              console.log(section);
+              console.log(savedSection);
+              console.log(+this.openingDoorType.value);
+              console.log(+this.fillingOption.value);
+
+
+              if (savedSection) {
+                if (+savedSection.openingDoorType !== +this.prevSection.openingDoorType ||
+                  +savedSection.fillingOption !== +this.prevSection.fillingOption) {
+                  let message = confirm("сбросить настройки");
+                  alert(message); // true, если нажата OK
+                  if (message) {
+                    alert('saved');
+                  } else {
+                    alert('not saved');
+                  }
+                }
+              }
+            }
+          }
+
 
           this.isNewCurrentSection.set(false);
           console.log('if section', section);
@@ -257,6 +290,7 @@ export class Step3Component implements OnInit {
           this.fillingOption.setValue(+section.fillingOption);
           this.stepThreeForm.updateValueAndValidity();
           // this.threeHelperService.filingSection(+this.section.value + 1, data, +this.fillingOption.value);
+          this.prevSection = section;
           this.threeHelperService.selectSectionAndOpenDoors(section, this.isNewCurrentSection());
         } else {
           console.log('else section', section);
@@ -267,6 +301,7 @@ export class Step3Component implements OnInit {
           // this.isNewCurrentSection.set(true);
           this.threeHelperService.selectSectionAndOpenDoors(this.stepThreeForm.getRawValue(), this.isNewCurrentSection());
         }
+
 
         if (Number(this.wardrobe.SR_yaschiki_vneshnie) === 1) {
           const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
@@ -282,7 +317,6 @@ export class Step3Component implements OnInit {
             this.deSectionWithSRY()
           }
         }
-
       })
     ).subscribe();
 
@@ -384,8 +418,9 @@ export class Step3Component implements OnInit {
 
   editAfterFilingSection() {
     console.log('saveSection', this.stepThreeForm.getRawValue());
-    // this.isSavedCurrentSection.set(true);
+    this.isSavedCurrentSection.set(true);
     this.isEditSectionAfterCompleteFiling.set(false);
+    this.section.setValue(0)
     this.cabinetConfiguratorService.saveSection(this.stepThreeForm.getRawValue());
 
 

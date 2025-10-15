@@ -35,7 +35,7 @@ export class BlocksComponent implements OnInit {
       groupName: "drawers",
       options: [
         {imgUrl: 'url(/img/svg/b1_2.svg)', label: 'Два ящика', value: 2},
-        {imgUrl: 'url(/img/svg/not.svg)', label: 'Три ящика', value: 3},
+        {imgUrl: 'url(/img/svg/b1_3.svg)', label: 'Три ящика', value: 3},
       ]
     }
 

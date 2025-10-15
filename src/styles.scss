@@ -19,7 +19,6 @@ body {
   flex: 1;
 
 
-
 }
 
 * {
@@ -35,7 +34,7 @@ body {
   padding: 1rem;
 
   &--child {
-    background: #E5EEEC;
+    background: rgba(229, 238, 236, 1);
   }
 }
 
@@ -54,6 +53,11 @@ body {
   --p-slider-handle-hover-background: #FFC835;
   --p-slider-handle-content-hover-background: #FFC835;
 
+}
+
+p-selectitem {
+  --p-select-option-selected-background: #e2e8f0;
+  --p-select-option-selected-focus-background: #e2e8f0;
 }
 
 /*

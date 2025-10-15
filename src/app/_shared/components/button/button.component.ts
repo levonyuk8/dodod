@@ -29,7 +29,7 @@ import {NgClass} from '@angular/common';
   ]
 })
 export class ButtonComponent {
-  @Input() variant: 'primary' | 'secondary' | 'outline' | 'transparent' | 'bg-transparent' = 'primary';
+  @Input() variant: 'primary' | 'secondary' | 'outline' | 'transparent' | 'white' | 'bg-transparent' = 'primary';
   @Input() size: 'small' | 'medium' | 'large' = 'medium';
   @Input() disabled = false;
   @Input() type: 'button' | 'submit' | 'reset' = 'button';

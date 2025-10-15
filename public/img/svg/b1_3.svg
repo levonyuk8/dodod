@@ -1,0 +1,13 @@
+<svg width="70" height="150" viewBox="0 0 70 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.5" y="0.5" width="69" height="149" fill="#F1F1F1" stroke="#191919"/>
+<path d="M0 141H70" stroke="#191919"/>
+<path d="M0 121H70" stroke="#191919"/>
+<path d="M0 101H70" stroke="#191919"/>
+<path d="M0 81H70" stroke="#191919"/>
+<path d="M5 141V150" stroke="#191919"/>
+<path d="M65 141V150" stroke="#191919"/>
+<path d="M35 0V81" stroke="#191919"/>
+<rect x="33" y="110" width="4" height="4" rx="2" fill="#464646"/>
+<rect x="33" y="90" width="4" height="4" rx="2" fill="#464646"/>
+<rect x="33" y="130" width="4" height="4" rx="2" fill="#464646"/>
+</svg>

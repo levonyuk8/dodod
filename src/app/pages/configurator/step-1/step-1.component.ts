@@ -31,7 +31,6 @@ export class Step1Component implements OnInit {
   fb = inject(FormBuilder);
   wps = inject(WardrobeParamsService);
   ccs = inject(CabinetConfiguratorService);
-  threeHelper = inject(ThreeHelperService);
   destroyRef = inject(DestroyRef);
 
   formCorrectionService = inject(FormCorrectionService);

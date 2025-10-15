@@ -22,6 +22,8 @@ export class FormCorrectionService {
     return value;
   }
 
+
+
   setupRangeCorrection(
     form: FormGroup,
     controlName: string,
@@ -32,7 +34,7 @@ export class FormCorrectionService {
 
     control?.valueChanges
       .pipe(
-        debounceTime(1000),
+        debounceTime(2000),
       )
       .subscribe(value => {
       if (value !== null && value !== undefined) {

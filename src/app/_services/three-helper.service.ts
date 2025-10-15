@@ -8,6 +8,9 @@ import {Wardrobe} from '../_models/wardrobe.model';
 import {Block} from '../_models/block.model';
 import {FillingSectionsService} from './ filling-sections.service';
 import {WardrobeParamsService} from './wardrobe-params.service';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +62,13 @@ export class ThreeHelperService {
   }
 
   initThreeJs() {
+
+
+
+
+// Использование
+
+
     this.getParentSize();
 
     this.scene = new THREE.Scene();
@@ -67,35 +77,47 @@ export class ThreeHelperService {
       return;
     }
 
-    this.camera = new THREE.PerspectiveCamera(75, this.parentSize?.width / this.parentSize?.height, 1, 4500);
-    this.camera.position.set(0, 0, 500);
+    this.camera = new THREE.PerspectiveCamera(75, this.parentSize?.width / this.parentSize?.height, 1, 5500);
+    this.camera.position.set(0, 0, 2100);
     this.renderer = new THREE.WebGLRenderer(
       {
         antialias: true,
         alpha: true
       }
     );
+
+    // this.renderer.localClippingEnabled = true;
+
+    // window.addEventListener('resize', () => {
+    //   if (lineMaterial && lineMaterial.resolution) {
+    //     lineMaterial.resolution.set(window.innerWidth, window.innerHeight);
+    //   }
+    // });
+
     this.renderer.setSize(this.parentSize.width, this.parentSize.height);
 
 //
-// Добавляем оси (красная - X, зеленая - Y, синяя - Z)
-//     const axesHelper = new THREE.AxesHelper(1000);
-//     this.scene.add(axesHelper);
-
-// Добавляем сетку
-//     const gridHelper = new THREE.GridHelper(120, 120); // Размер сетки, количество сегментов
+    // Добавляем оси (красная - X, зеленая - Y, синяя - Z)
+    const axesHelper = new THREE.AxesHelper(1000);
+    this.scene.add(axesHelper);
+//
+// // Добавляем сетку
+//     const gridHelper = new THREE.GridHelper(50, 50); // Размер сетки, количество сегментов
 //     this.scene.add(gridHelper);
 
     // Добавление управления камерой
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    // this.controls.enableDamping = true;
-    // this.controls.dampingFactor = 0.05;
-    // this.controls.maxZoom = 0.1;
-    this.controls.minDistance = 500;
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.05;
+    this.controls.maxZoom = 0.1;
+    this.controls.minDistance = 1000;
     this.controls.maxDistance = 3000;
 
 
     this.canvasContainerRef.nativeElement.appendChild(this.renderer.domElement);
+
+
+
 
     // const group = new THREE.Group();
     // const meshes: THREE.Mesh[] = [];
@@ -108,13 +130,102 @@ export class ThreeHelperService {
     //
     // this.scene.add(group);
 
+    const base = this.createBoxWithBorders(2, 30, 7,  0x8B4513);
+    const base2 = this.createBoxWithBorders(2, 30, 7,  0x8B4513);
+    const base3 = this.createBoxWithBorders(5.9, 2, 7,  0x8B4513);
+    // //
+    // base.position.set(4, 0, 0);
+    // base2.position.set(-4, 0, 0);
+    // this.group.add(base)
+    // this.group.add(base2)
+    // this.group.add(base3)
+
+
+    console.log(this.group)
+    console.log(base)
+
+    this.scene.add(this.group);
+
+    // this.center(base);
+
+    // this.group.position.set(15, 15, 0);
+
+    // this.center(base.children[0])
+
+    window.addEventListener('resize', this.onWindowResize, false);
 
     this.animate();
   }
 
+  private onWindowResize() {
+    const newWidth = window.innerWidth;
+    const newHeight = window.innerHeight;
+
+    this.camera.aspect = newWidth / newHeight;
+    this.camera.updateProjectionMatrix();
+
+    this.renderer.setSize(newWidth, newHeight);
+  }
+
+  private center(el: any) {
+    const box = new THREE.Box3().setFromObject(el);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const params = box.getParameter(new THREE.Vector3(), new THREE.Vector3());
+
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = this.camera.fov * (Math.PI / 180); // Convert FOV to radians
+    const cameraZ = Math.abs((maxDim / 2) / Math.tan(fov / 2));
+
+    debugger;
+
+    this.camera.position.set(center.x, center.y, center.z + cameraZ);
+    this.camera.lookAt(center);
+
+    this.controls.target.copy(center);
+    this.controls.update();
+  }
+
+  createBoxWithBorders(width: any, height: any, depth: any, color = 0x8B4513) {
+    const group = new THREE.Group();
+
+    // Параметры геометрии
+    const geometry = new THREE.BoxGeometry(width, height, depth);
+
+
+
+    // Основной материал
+    const boxMaterial = new THREE.MeshPhongMaterial({
+      color: 0xFF0000,
+      // transparent: true,
+      // opacity: .9,
+      // shininess: 100
+    });
+
+    // Создание основного бокса
+    const box = new THREE.Mesh(geometry, boxMaterial);
+
+    // box.position.set(width/2, height / 2, 0);
+    group.add(box);
+
+    // this.center(box);
+
+    // Создание границ
+    const edges = new THREE.EdgesGeometry(geometry);
+    const borderMaterial = new THREE.LineBasicMaterial({
+      color: 0xFF0000,
+      linewidth: 100  // Толщина границ
+    });
+
+    const borders = new THREE.LineSegments(edges, borderMaterial);
+    group.add(borders);
+
+    return group;
+  }
+
   private animate(): void {
     requestAnimationFrame(() => this.animate());
-    this.controls.update(1)
+    this.controls.update();
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -123,7 +234,7 @@ export class ThreeHelperService {
 
     switch (step) {
       case Steps.one: {
-        this.scene.clear();
+        // this.scene.clear();
         this.createBaseCabinet()
         // this.scene.add(this.fillingSectionsService.createCylinder());
         // this.scene.add(this.fillingSectionsService.createY());
@@ -175,9 +286,7 @@ export class ThreeHelperService {
       //
     })
     group.add(...meshes);
-
-    // group.scale.set(.3, .3, .3);
-    this.scene.scale.set(.3, .3, .3);
+    this.camera.position.set(0, 0, data.srH);
     this.scene.add(group);
   }
 
@@ -216,7 +325,7 @@ export class ThreeHelperService {
 
     planki.forEach(planka => {
       planka.element.position.set(planka.position.x, planka.position.y, planka.position.z);
-      meshes.push(planka.element)
+      group.add(planka.element)
     })
 
     group.add(...meshes);
@@ -227,19 +336,35 @@ export class ThreeHelperService {
 
   private createPlanki(w: number, h: number, d: number, thickness: number, srK: number, data: Wardrobe) {
     const res = [];
+
+    let plankaVCenterW = w;
+    let plankaVCenterXPos = 0;
+
+    if (data?.SR_H_PLANKA_BOK_PRAV) {
+      console.log('data?.SR_H_PLANKA_BOK_PRAV', data?.SR_H_PLANKA_BOK_PRAV)
+      plankaVCenterW += thickness;
+      plankaVCenterXPos += thickness;
+    }
+    if (data?.SR_H_PLANKA_BOK_LEV) {
+      console.log('data?.SR_H_PLANKA_BOK_LEV', data?.SR_H_PLANKA_BOK_LEV)
+      plankaVCenterW += thickness;
+      plankaVCenterXPos -= thickness;
+    }
+    console.log(plankaVCenterW)
+
     if (data?.SR_PLANKA_VERH_CHENTR) {
       res.push(
         {
           name: 'верхняя потолок крепёж',
-          element: this.createCube(w - thickness * 4, data.SR_H_PLANKA_VERH, thickness, 1, false, 0xFFA500),
+          element: this.createCube(w - thickness * 4, data.SR_H_PLANKA_VERH, thickness),
           position: {x: 0, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: (d + thickness) / 2 - thickness},
         },
       );
       res.push(
         {
           name: 'верхняя потолок',
-          element: this.createCube(w, data.SR_H_PLANKA_VERH, thickness),
-          position: {x: 0, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: (d + thickness) / 2},
+          element: this.createCube(plankaVCenterW, data.SR_H_PLANKA_VERH, thickness),
+          position: {x: plankaVCenterXPos / 2, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: (d + thickness) / 2},
         },
       );
     }
@@ -247,7 +372,7 @@ export class ThreeHelperService {
       res.push(
         {
           name: 'левая потолок крепёж',
-          element: this.createCube(thickness, data.SR_H_PLANKA_VERH, d, 1, false, 0xFFA500),
+          element: this.createCube(thickness, data.SR_H_PLANKA_VERH, d),
           position: {x: (-w / 2) + thickness / 2 + thickness, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: -1},
         },
       );
@@ -263,7 +388,7 @@ export class ThreeHelperService {
       res.push(
         {
           name: 'правая потолок крепёж',
-          element: this.createCube(thickness, data.SR_H_PLANKA_VERH, d, 1, false, 0xFFA500),
+          element: this.createCube(thickness, data.SR_H_PLANKA_VERH, d),
           position: {x: (w / 2) - thickness / 2 - thickness, y: h / 2 + data.SR_H_PLANKA_VERH / 2, z: -1},
         },
       );
@@ -479,9 +604,10 @@ export class ThreeHelperService {
     doors.forEach(door => {
       door.element.position.set(door.position.x, door.position.y, door.position.z);
       door.element.name = door.name;
-      meshes.push(door.element)
+      group.add(door.element)
     })
     group.add(...meshes);
+    console.log('addDoorsToCabinet', doors);
     this.scene.add(group);
 
   }
@@ -578,6 +704,8 @@ export class ThreeHelperService {
   private openAntisoleDoors(selectedSection: any) {
 
     let {section, sectionType, openingDoorType} = selectedSection;
+
+    if (+section === 0) return;
     const {wSect, SR_H_antr} = this.cabinetConfiguratorService.getWardrobe();
 
     const addDoorPos = this.cabinetConfiguratorService.nextSectionNumber(section);
@@ -665,7 +793,7 @@ export class ThreeHelperService {
     child.setRotationFromQuaternion(quaternion);
   }
 
-  private createCube(w: number, h: number, d: number, opacity = 1, test = true, color = 0xffffff): THREE.Mesh {
+  private createCube(w: number, h: number, d: number, opacity = 1, test = true, color = 0xffffff) {
     const textureMaterial = test ? new THREE.MeshBasicMaterial({map: this.texture}) :
       new THREE.MeshBasicMaterial({color: color});
 
@@ -815,14 +943,14 @@ export class ThreeHelperService {
 
     const res: any = [];
 
-    switch (SR_tsokol) {
-      case '0':
+    switch (+SR_tsokol) {
+      case 0:
         res.push(...this.cololZero(w, h, d, thickness));
         break;
-      case '1':
+      case 1:
         res.push(...this.cocolOne(w, h, d, thickness));
         break;
-      case '2':
+      case 2:
         res.push(
           {
             name: 'цоколь п',
@@ -852,17 +980,12 @@ export class ThreeHelperService {
       },
       {
         name: 'верхняя',
-        element: this.createCube(w - 2 * thickness, thickness, d),
-        position: {x: 0, y: h / 2 - thickness / 2, z: 0},
-      },
-      {
-        name: 'верхняя',
-        element: this.createCube(w - 2 * thickness, thickness, d),
+        element: this.createCube(w - 2 * thickness- 4, thickness, d),
         position: {x: 0, y: h / 2 - thickness / 2, z: 0},
       },
       {
         name: 'нижняя',
-        element: this.createCube(lowerPartW, thickness, d),
+        element: this.createCube(lowerPartW - 4, thickness, d),
         position: {x: 0, y: -(h / 2 - thickness / 2 - this.plinth), z: 0},
       },
     ]
@@ -985,7 +1108,7 @@ export class ThreeHelperService {
     });
     const sprite = new THREE.Sprite(material);
     sprite.position.copy(position);
-    sprite.scale.set(size * 2.5, size * 0.7, 1);
+    sprite.scale.set(size * 4, size , 1);
 
     return sprite;
   }
@@ -1003,12 +1126,14 @@ export class ThreeHelperService {
   private dimensionsGroup: THREE.Group = new THREE.Group();
   private dimensionsViewGroup!: THREE.Group;
 
-  createDimensions(offset = 200) {
+  createDimensions(offsetX = 200, offsetY = 200) {
     const data = this.cabinetConfiguratorService.getWardrobe();
 
     // Удаляем старые размеры если есть
 
-    this.resetSizes();
+    // this.resetSizes();
+    this.scene.remove(this.dimensionsGroup);
+    this.dimensionsGroup.clear();
     // if (this.dimensionsGroup) {
     //   this.scene.remove(this.dimensionsGroup);
     //   this.dimensionsGroup.children.forEach(child => {
@@ -1021,17 +1146,17 @@ export class ThreeHelperService {
 
     // ШИРИНА (X)
     const widthLine = this.createOuterDimensionLine(
-      new THREE.Vector3(-data.srL / 2, -data.srH / 2 - offset, data.srG / 2),
-      new THREE.Vector3(data.srL / 2, -data.srH / 2 - offset, data.srG / 2),
-      offset,
+      new THREE.Vector3(-data.srL / 2, -data.srH / 2 - offsetX, data.srG / 2),
+      new THREE.Vector3(data.srL / 2, -data.srH / 2 - offsetX, data.srG / 2),
+      offsetX,
       0x000
     );
     this.dimensionsGroup.add(widthLine);
 
 
     const widthLabel = this.createTextLabel(
-      `${data.srL}mm`,
-      new THREE.Vector3(0, -data.srH / 2 - offset + 50, data.srG / 2),
+      `${data.srL}`,
+      new THREE.Vector3(0, -data.srH / 2 - offsetX + 50, data.srG / 2),
       0x000
     );
     if (widthLabel) {
@@ -1040,10 +1165,10 @@ export class ThreeHelperService {
 
     // ВЫСОТА
     const heightLine = this.createOuterDimensionLine(
-      new THREE.Vector3(-data.srL / 2 - offset, -data.srH / 2, data.srG / 2),
-      new THREE.Vector3(-data.srL / 2 - offset, data.srH / 2, data.srG / 2),
+      new THREE.Vector3(-data.srL / 2 - offsetY, -data.srH / 2, data.srG / 2),
+      new THREE.Vector3(-data.srL / 2 - offsetY, data.srH / 2, data.srG / 2),
       // new THREE.Vector3(this.cubeSize/2 + offset, this.cubeSize/2 + offset, this.cubeSize/2 + offset/2),
-      offset,
+      offsetY,
       0x000,
       false
       // 0x44ff44
@@ -1051,8 +1176,8 @@ export class ThreeHelperService {
     this.dimensionsGroup.add(heightLine);
 
     const heightLabel = this.createTextLabel(
-      `${data.srH}mm`,
-      new THREE.Vector3(-data.srL / 2 - offset - 50, 0, data.srG / 2),
+      `${data.srH}`,
+      new THREE.Vector3(-data.srL / 2 - offsetY - 50, 0, data.srG / 2),
       0x000,
       200,
       false
@@ -1069,8 +1194,8 @@ export class ThreeHelperService {
     this.dimensionsGroup = new THREE.Group();
     const offset = 150;
 
-    this.createDimensions(450);
-    this.createBaseDimension(data);
+    this.createDimensions(300, 450);
+    // this.createBaseDimension(data);
     this.createCabinetHDimension(data);
     this.createSectionHDimension(data)
 
@@ -1103,7 +1228,7 @@ export class ThreeHelperService {
 
 
       const sWidthLabel = this.createTextLabel(
-        `${wSectLabel}mm`,
+        `${wSectLabel}`,
         new THREE.Vector3((-data.srL + data.wSect) / 2 + data.wSect * i, -data.srH / 2 - offset + 50, data.srG / 2),
         0x000
       );
@@ -1129,7 +1254,7 @@ export class ThreeHelperService {
     this.dimensionsGroup.add(widthLine);
 
     const widthLabel = this.createTextLabel(
-      `${data.srL - qwe * 2}mm`,
+      `${data.srL - qwe * 2}`,
       new THREE.Vector3(0, -data.srH / 2 - offset + 50, data.srG / 2),
       0x000
     );
@@ -1246,18 +1371,16 @@ export class ThreeHelperService {
     const heightLine = this.createOuterDimensionLine(
       new THREE.Vector3(-data.srL / 2 - offset, -data.srH / 2 + this.plinth, data.srG / 2),
       new THREE.Vector3(-data.srL / 2 - offset, data.srH / 2, data.srG / 2),
-      // new THREE.Vector3(this.cubeSize/2 + offset, this.cubeSize/2 + offset, this.cubeSize/2 + offset/2),
       offset,
       0x000,
       false
-      // 0x44ff44
     );
     this.dimensionsGroup.add(heightLine);
 
     if (withoutLabel) return;
 
     const heightLabel = this.createTextLabel(
-      `${data.srH - this.plinth}mm`,
+      `${data.srH - this.plinth}`,
       new THREE.Vector3(-data.srL / 2 - offset - 50, 0, data.srG / 2),
       0x000,
       200,
@@ -1268,9 +1391,10 @@ export class ThreeHelperService {
     }
   }
 
-  resetSizes() {
-    this.scene.remove(this.dimensionsGroup);
-    this.dimensionsGroup.clear();
+  resetSizes(visible: boolean) {
+    // this.scene.remove(this.dimensionsGroup);
+    // this.dimensionsGroup.clear();
+    this.dimensionsGroup.visible  = visible;
     // this.dimensionsGroup.children.forEach(child => {})
   }
 }
