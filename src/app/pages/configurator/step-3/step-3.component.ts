@@ -1,12 +1,28 @@
-import {Component, DestroyRef, inject, OnChanges, OnInit, output, Output, signal, SimpleChanges} from '@angular/core';
+import {Component, DestroyRef, inject, OnChanges, OnInit, output, signal} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
-import {IGroupData, RadioGroupComponent} from '../../../_shared/components/radio-group/radio-group.component';
+import {
+  IGroupData,
+  ITestOption,
+  RadioGroupComponent
+} from '../../../_shared/components/radio-group/radio-group.component';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
-import {combineLatest, distinctUntilChanged, map, skip, startWith, tap} from 'rxjs';
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged, EMPTY,
+  filter,
+  map,
+  of,
+  startWith,
+  Subject,
+  switchMap,
+  take,
+  takeUntil,
+  tap
+} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {ThreeHelperService} from '../../../_services/three-helper.service';
-import {ButtonComponent} from '../../../_shared/components/button/button.component';
 import {Block} from '../../../_models/block.model';
 import {WardrobeParamsService} from '../../../_services/wardrobe-params.service';
 
@@ -14,35 +30,44 @@ import {WardrobeParamsService} from '../../../_services/wardrobe-params.service'
   selector: 'app-step-3',
   imports: [
     ReactiveFormsModule,
-    RadioGroupComponent,
-    ButtonComponent
+    RadioGroupComponent
   ],
   templateUrl: './step-3.component.html',
   styleUrl: './step-3.component.scss'
 })
-export class Step3Component implements OnInit, OnChanges {
+export class Step3Component implements OnInit {
   private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
   private threeHelperService = inject(ThreeHelperService);
   private cabinetConfiguratorService = inject(CabinetConfiguratorService);
   private wardrobeParamsService = inject(WardrobeParamsService);
 
+
+  private testS = new Subject<any>();
+  private variable: any;
+
   stepThreeForm: FormGroup = this.createAndPatchForm();
 
-  sectionType$ =
-    this.sectionType.valueChanges.pipe(startWith(this.stepThreeForm.get('sectionType')?.value));
   section$ =
     this.section.valueChanges.pipe(startWith(this.stepThreeForm.get('section')?.value));
 
-  openingDoorType$ =
-    this.openingDoorType.valueChanges.pipe(startWith(this.stepThreeForm.get('openingDoorType')?.value));
+  sectionType$ =
+    this.sectionType.valueChanges.pipe(
+      distinctUntilChanged(),
+      startWith(this.stepThreeForm.get('sectionType')?.value));
 
-  // all$ = this.a1$.pipe(combineLatestWith(this.a2$)).pipe(
-  //   combineLatestWith(this.a3$)
-  // )
-  all$ = combineLatest({
-    sectionType: this.sectionType$, section: this.section$, openingDoorType: this.openingDoorType$
-  });
+  openingDoorType$ =
+    this.openingDoorType.valueChanges.pipe(distinctUntilChanged(), startWith(this.stepThreeForm.get('openingDoorType')?.value));
+
+  filingOption$ =
+    this.fillingOption.valueChanges.pipe(distinctUntilChanged(), startWith(this.stepThreeForm.get('fillingOption')?.value));
+
+  all$ = combineLatest([
+    this.sectionType$, this.openingDoorType$, this.filingOption$
+  ]).pipe(filter(Boolean));
+
   wardrobe = this.cabinetConfiguratorService.getWardrobe();
+  wardrobeScheme = this.cabinetConfiguratorService.getWardrobeScheme();
 
 
   sectionTypes = {
@@ -161,50 +186,83 @@ export class Step3Component implements OnInit, OnChanges {
 
   sectionList = {
     groupName: "sectionList",
-    options: [{
-      label: '1',
-      value: 1,
-    }]
+    options: []
   } as IGroupData;
 
-  constructor(
-    private destroyRef: DestroyRef) {
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log('ngOnChanges', changes)
+  private createAndSaveSectionByWardrobeScheme() {
+
+    const sectionByDoors = this.createEmptySections();
+    sectionByDoors.forEach(section => {
+      const scheme = this.wardrobeScheme.find(item =>
+        item.startPos === this.cabinetConfiguratorService.nextSectionNumber(+section.value)
+      );
+      const filing = {
+        section: section.value,
+        sectionType: scheme ? 1 : 0,
+        openingDoorType: 0,
+        fillingOption: 1
+      }
+      this.saveSection(filing);
+    })
+    this.sectionList.options = sectionByDoors;
   }
 
   ngOnInit(): void {
-    // this.saveSection();
-    // this.createEmptySection();
-    this.isCompleteFillingEv.emit(this.isCompleteFilling())
+    this.createAndSaveSectionByWardrobeScheme();
 
-    this.cabinetConfiguratorService.saveSectionSubject$.pipe(
-      // distinctUntilChanged(),
+    // sectionType: this.sectionType$, openingDoorType: this.openingDoorType$, filingOption: this.filingOption$
+
+    // TODO
+    this.variable = this.all$.pipe(
+      // takeUntil(this.testS),
+      debounceTime(500),
+      distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
-      tap(() => {
-        debugger;
-        console.log('cabinetConfiguratorService saveSectionSubject$');
-        const nextDoorNumber = this.cabinetConfiguratorService.currentFilingAndSavedSection();
-        const {srK} = this.cabinetConfiguratorService.getWardrobe();
-        console.log('saveSectionSubject$', nextDoorNumber);
-        console.log('saveSectionSubject$', srK);
-        console.log('saveSectionSubject$', srK === nextDoorNumber);
-
-        if (+srK <= nextDoorNumber) {
-          this.isCompleteFilling.set(true);
-          this.isCompleteFillingEv.emit(this.isCompleteFilling());
-          this.section.setValue(null);
-        } else {
-
-          this.createEmptySection();
-
-          this.section.setValue(this.lastSectionIndex);
-          // this.section.setValue(nextDoorNumber);
+      switchMap(([sectionType, openingDoorType, filingOption]) => {
+        console.log('all$')
+        console.log(this.section.value)
+        console.log(this.section.getRawValue())
+        console.log({sectionType, openingDoorType, filingOption})
+        const filing = {
+          section: +this.section.getRawValue(),
+          sectionType: +sectionType,
+          openingDoorType: +openingDoorType,
+          fillingOption: +filingOption
         }
+
+        this.saveSection(filing);
+
+        return EMPTY;
       })
-    ).subscribe();
+    ).subscribe()
+
+    // this.isCompleteFillingEv.emit(this.isCompleteFilling())
+
+    // this.cabinetConfiguratorService.saveSectionSubject$.pipe(
+    //   // distinctUntilChanged(),
+    //   takeUntilDestroyed(this.destroyRef),
+    //   tap(() => {
+    //     console.log('cabinetConfiguratorService saveSectionSubject$');
+    //     const nextDoorNumber = this.cabinetConfiguratorService.currentFilingAndSavedSection();
+    //     const {srK} = this.cabinetConfiguratorService.getWardrobe();
+    //     console.log('saveSectionSubject$', nextDoorNumber);
+    //     console.log('saveSectionSubject$', srK);
+    //     console.log('saveSectionSubject$', srK === nextDoorNumber);
+    //
+    //     if (+srK <= nextDoorNumber) {
+    //       this.isCompleteFilling.set(true);
+    //       this.isCompleteFillingEv.emit(this.isCompleteFilling());
+    //       this.section.setValue(null);
+    //     } else {
+    //
+    //       this.createEmptySection();
+    //
+    //       this.section.setValue(this.lastSectionIndex);
+    //       // this.section.setValue(nextDoorNumber);
+    //     }
+    //   })
+    // ).subscribe();
 
     this.stepThreeForm?.valueChanges.pipe(
       startWith(this.stepThreeForm?.value),
@@ -212,7 +270,7 @@ export class Step3Component implements OnInit, OnChanges {
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
-        this.isSavedCurrentSection.set(false);
+        // this.isSavedCurrentSection.set(false);
         this.cabinetConfiguratorService.setWardrobe({}, Steps.three);
       })
     ).subscribe()
@@ -231,92 +289,46 @@ export class Step3Component implements OnInit, OnChanges {
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap(data => {
+        console.log('section$', data)
+        debugger;
         const filingList = this.cabinetConfiguratorService.getSavedFilingScheme();
         const section = filingList.find((item: any) => {
           if (+item.section === +data) {
             return item;
           }
         });
-
-        console.log('SR_yaschiki_vneshnie', this.wardrobe.SR_yaschiki_vneshnie);
-        console.log('SR_yaschiki_vneshnie', this.cabinetConfiguratorService.getWardrobeScheme());
-
-        if (+data !== 0 && this.isCompleteFilling()) {
-          this.isEditSectionAfterCompleteFiling.set(true);
-          this.isCompleteFillingEv.emit(false);
-        }
-
-
+        console.log(section)
         if (section) {
-          debugger;
-          console.log(this.prevSection)
-          if (this.prevSection)  {
-            const savedSection =
-              this.cabinetConfiguratorService.getSavedFilingScheme().find((item: any) => +item.section === this.prevSection.section);
+          console.log('path')
 
-            console.log('saveSectionSubject$', this.isSavedCurrentSection());
-            console.log('saveSectionSubject$', data, this.prevSection);
-
-            if (!this.isSavedCurrentSection() || this.isEditSectionAfterCompleteFiling()) {
-
-              console.log('if')
-              console.log(data)
-              console.log(section);
-              console.log(savedSection);
-              console.log(+this.openingDoorType.value);
-              console.log(+this.fillingOption.value);
-
-
-              if (savedSection) {
-                if (+savedSection.openingDoorType !== +this.prevSection.openingDoorType ||
-                  +savedSection.fillingOption !== +this.prevSection.fillingOption) {
-                  let message = confirm("сбросить настройки");
-                  alert(message); // true, если нажата OK
-                  if (message) {
-                    alert('saved');
-                  } else {
-                    alert('not saved');
-                  }
-                }
-              }
-            }
-          }
-
-
-          this.isNewCurrentSection.set(false);
-          console.log('if section', section);
-          this.sectionType.setValue(+section.sectionType);
-          this.openingDoorType.setValue(+section.openingDoorType);
-          this.fillingOption.setValue(+section.fillingOption);
-          this.stepThreeForm.updateValueAndValidity();
-          // this.threeHelperService.filingSection(+this.section.value + 1, data, +this.fillingOption.value);
-          this.prevSection = section;
-          this.threeHelperService.selectSectionAndOpenDoors(section, this.isNewCurrentSection());
-        } else {
-          console.log('else section', section);
-          this.sectionType.setValue(0);
-          this.openingDoorType.setValue(0);
-          this.fillingOption.setValue(1);
-          // // this.stepThreeForm.reset();
-          // this.isNewCurrentSection.set(true);
-          this.threeHelperService.selectSectionAndOpenDoors(this.stepThreeForm.getRawValue(), this.isNewCurrentSection());
-        }
-
-
-        if (Number(this.wardrobe.SR_yaschiki_vneshnie) === 1) {
-          const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
-          // @ts-ignore
-          const block = scheme.find((item: Block) => {
-            if (item.startPos <= +data && +data <= item.endPos) { //<= item.endPos
-              return item;
-            }
+          this.stepThreeForm.patchValue({
+            sectionType: +section.sectionType,
+            openingDoorType: +section.openingDoorType,
+            fillingOption: +section.fillingOption,
           });
-          if (block) {
-            this.sectionWithSRY(block);
-          } else {
-            this.deSectionWithSRY()
-          }
+          console.log(' end path')
+          // this.sectionType.setValue(+section.sectionType);
+          // this.openingDoorType.setValue(+section.openingDoorType);
+          // this.fillingOption.setValue(+section.fillingOption);
+          // this.stepThreeForm.updateValueAndValidity();
+          this.threeHelperService.selectSectionAndOpenDoors(section, false);
         }
+
+        console.log('section$ end')
+        // if (Number(this.wardrobe.SR_yaschiki_vneshnie) === 1) {
+        //   const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
+        //   // @ts-ignore
+        //   const block = scheme.find((item: Block) => {
+        //     if (item.startPos <= +data && +data <= item.endPos) { //<= item.endPos
+        //       return item;
+        //     }
+        //   });
+        //   if (block) {
+        //     this.sectionWithSRY(block);
+        //   } else {
+        //     this.deSectionWithSRY()
+        //   }
+        // }
       })
     ).subscribe();
 
@@ -407,13 +419,11 @@ export class Step3Component implements OnInit, OnChanges {
     return this.stepThreeForm.get('fillingOption') as FormControl;
   }
 
-  saveSection() {
-    console.log('saveSection', this.stepThreeForm.getRawValue());
-    this.isSavedCurrentSection.set(true);
-    this.cabinetConfiguratorService.saveSection(this.stepThreeForm.getRawValue());
-
-
-    this.isCompleteFillingEv.emit(this.isCompleteFilling());
+  saveSection(data: any) {
+    console.log('saveSection', data);
+    // this.isSavedCurrentSection.set(true);
+    this.cabinetConfiguratorService.saveSection(data);
+    // this.isCompleteFillingEv.emit(this.isCompleteFilling());
   }
 
   editAfterFilingSection() {
@@ -430,6 +440,15 @@ export class Step3Component implements OnInit, OnChanges {
   private createEmptySection() {
     this.lastSectionIndex++;
     this.sectionList.options.push({label: String(this.lastSectionIndex), value: this.lastSectionIndex});
-    // this.cdr.detectChanges();
+  }
+
+
+  createEmptySections() {
+    const res: ITestOption[] = []
+    const sectionCount = this.wardrobe.srK - this.wardrobeScheme.length;
+    for (let i = 1; i <= sectionCount; i++) {
+      res?.push(({label: i.toString(), value: i}) as ITestOption)
+    }
+    return res;
   }
 }

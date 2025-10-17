@@ -61,7 +61,7 @@ export class Step2Component implements OnInit {
       SR_antr_blok: new FormControl<number>(this.data.srH > this.wardrobeParamsService.SR_H_MAX_BOK ? 1 : 0),
 
       SR_PLANKA: new FormControl<number>(0),
-      SR_H_PLANKA_VERH: new FormControl<number>(200),
+      SR_H_PLANKA_VERH: new FormControl<number>(120),
       SR_PLANKA_VERH_CHENTR: new FormControl<boolean>(false),
       SR_PLANKA_VERH_LEV: new FormControl<boolean>(false),
       SR_PLANKA_VERH_PRAV: new FormControl<boolean>(false),
@@ -290,7 +290,6 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
     }
 
 
-  // 1800+(SR_H_TSOKOL_X)+(SR_G_ldsp)*2+(SR_H_MIN_ANTR)
   items3: IGroupData =
     {
       groupName: "test3",
@@ -323,17 +322,6 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
         },
       ]
     }
-
-  // items7: IGroupData =
-  //   {
-  //     groupName: "test7",
-  //     options: [
-  //       {imgUrl: 'url(/img/svg/G46.svg)', label: 'Нет', value: 0},
-  //       {imgUrl: 'url(/img/svg/G47.svg)', label: 'Да', value: 1},
-  //     ]
-  //   }
-
-
 
   srPlankaVerhLev = {imgUrl: 'url(/img/svg/s2/fp_v_l.svg)', label: 'Слева', value: false};
   srPlankaVerhCentr = {imgUrl: 'url(/img/svg/s2/fp_v_v.svg)', label: 'Спереди', value: false};

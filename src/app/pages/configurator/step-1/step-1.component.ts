@@ -35,7 +35,7 @@ export class Step1Component implements OnInit {
 
   formCorrectionService = inject(FormCorrectionService);
   private readonly defaultSrL = 1600;
-  private readonly defaultSrH = 2100;
+  private readonly defaultSrH = 2600;
   private readonly defaultSrG = 520;
 
   public stepOneForm: FormGroup = this.fb.group({});

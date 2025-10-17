@@ -11,7 +11,7 @@ export interface IGroupData {
 export interface ITestOption {
   imgUrl?: string;
   label: string;
-  value: unknown;
+  value: number;
   disabled?: boolean;
   message?: string;
 }
