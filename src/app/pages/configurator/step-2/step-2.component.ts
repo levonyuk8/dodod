@@ -206,7 +206,6 @@ export class Step2Component implements OnInit {
             }
           ]
         };
-        debugger;
         this.changeDetectorRef.detectChanges();
       })
     ).subscribe()
@@ -220,6 +219,9 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
 
 
   externalDrawersMessageByCondition() {
+    if ( this.data.srL <= 600) {
+      return  `this.data.srL <= 600`;
+    }
     if (this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK) {
       return this.externalDrawersErrMesG;
     }
@@ -230,8 +232,6 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
   }
 
   private baseMessageByCondition() {
-    console.log(this.cabinetConfiguratorService.getWardrobe())
-    console.log(this.cabinetConfiguratorService.getWardrobe()?.SR_yaschiki_vneshnie)
     if (+this.cabinetConfiguratorService.getWardrobe()?.SR_yaschiki_vneshnie === 1) {
       return `Защита от ошибок: Недопустимо при наличии внешних выдвижных ящиков`;
     }

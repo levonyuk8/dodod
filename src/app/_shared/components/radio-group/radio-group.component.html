@@ -1,9 +1,12 @@
 <div class="group_radio_btn">
-  @for (item of data.options; track item; let idx = $index) {
+  @for (item of data.options; track item.value; let idx = $index) {
 
     <div class="form_radio_btn">
+      {{item.value}}
+      {{value}}
       <input (change)="onInputChange($event)"
-             [disabled]="item?.disabled" [checked]="item.value === value"
+             [disabled]="item?.disabled"
+             [checked]="item.value === value"
              id="{{ind + idx + data.groupName}}"
              type="radio" name="{{data.groupName}}}"
              value="{{item.value}}">

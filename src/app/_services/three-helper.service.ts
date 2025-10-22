@@ -118,8 +118,6 @@ export class ThreeHelperService {
     const fov = this.camera.fov * (Math.PI / 180); // Convert FOV to radians
     const cameraZ = Math.abs((maxDim / 2) / Math.tan(fov / 2));
 
-    debugger;
-
     this.camera.position.set(center.x, center.y, center.z + cameraZ);
     this.camera.lookAt(center);
 
@@ -195,11 +193,12 @@ export class ThreeHelperService {
         this.addVYToCabinet();
         this.addAntresoli();
         this.addSrPlanka();
-        // this.scene.add(this.fillingSectionsService.createY());
         this.addSectionsToCabinet();
         break;
       }
       case Steps.three: {
+        // this.createStepThreeDimensions()
+        break;
         // this.scene.clear();
         // this.createBaseCabinet()
         // this.addSectionsToCabinet();
@@ -244,9 +243,6 @@ export class ThreeHelperService {
     const meshes: THREE.Mesh[] = [];
     const sections = this.createSections(data.srL, data.srH, data.srG, this.depth, data.srK, scheme, doorW);
     sections.forEach((section: any, index) => {
-      if (index === sections.length - 1) {
-        section.element.visible = false;
-      }
       section.element.position.set(section.position.x, section.position.y, section.position.z);
       meshes.push(section.element)
     })
@@ -499,6 +495,19 @@ export class ThreeHelperService {
     return doors;
   }
 
+  public getSectionFillingWBySection(section: any) {
+    const {srL, SR_G_fasad, srK} = this.cabinetConfiguratorService.getWardrobe();
+    const depth = SR_G_fasad === 'ldsp16' ? 16 : 18;
+
+    let sectionW = ((srL - (depth * 2) - (depth * (srK - 1))) / srK);
+
+    if (+section.sectionType === 1) {
+      sectionW += sectionW + depth;
+    }
+
+    return sectionW
+  }
+
   // External drawers
   private addVYToCabinet() {
     const data = this.cabinetConfiguratorService.getWardrobe();
@@ -555,32 +564,38 @@ export class ThreeHelperService {
   // step 3
 
   filingSection(sectionNumber: number, sectionType: number, filing: number, isNew = false) {
+    const {srL} = this.cabinetConfiguratorService.getWardrobe();
     this.removeFilingBySection(sectionNumber);
-    this.scene.add(this.fillingSectionsService.addFillingToSection(sectionNumber, filing, +sectionType === 1))
+    const filling = this.fillingSectionsService.addFillingToSection(sectionNumber, filing, +sectionType === 1)
+    this.scene.add(filling)
     const pos = this.cabinetConfiguratorService.nextSectionNumber(sectionNumber)
-    const testFiling: any = this.scene.children.find(object =>
-      object.name === "Filling" + sectionNumber);
+    // const testFiling: any = this.scene.children.find(object =>
+    //   object.name === "Filling" + sectionNumber);
     const sections: any = this.scene.children.find((child: THREE.Object3D) =>
       child.name === 'Sections');
     const section: any = sections?.children[pos];
+    this.dimensionsGroupFilling.clear();
     if (+filing === 1) return;
 
+
+
+    debugger;
+    const posX = section ? section.position.x : (srL - this.depth) / 2
     if (+sectionType === 1) {
-      const section: any = sections?.children[pos];
-      testFiling.position.x = section.position.x + this.depth / 2 - 4;
+      filling.position.x = posX + this.depth / 2 - 4;
     } else {
-      const section: any = sections?.children[pos];
-      testFiling.position.x = section.position.x - testFiling.userData.sectionW / 2 - this.depth / 2 - 4;
+      filling.position.x = posX - filling.userData['sectionW'] / 2 - this.depth / 2 - 4;
     }
 
-    //
+
+    this.createStepThreeDimensions(filling, sectionNumber, filing)
+
+
   }
 
   public removeFilingBySection(sectionNumber: number) {
     const oldFiling = this.scene.children.find(object =>
       object.name === "Filling" + sectionNumber);
-
-
     if (oldFiling) this.scene.remove(oldFiling);
     // this.scene.children.forEach(object => {
     //   if (object.name === "Filling" + sectionNumber) {
@@ -679,6 +694,7 @@ export class ThreeHelperService {
       this.openDoor(mainDoor, "Down");
       if (+sectionType === 1 && addDoor) {
         this.openDoor(addDoor, 'Down');
+        // todo add section to antr
       }
     } else {
       this.openDoor(mainDoor, +openingDoorType === 0 ? 'Left' : 'Right');
@@ -695,8 +711,6 @@ export class ThreeHelperService {
   }
 
   private openDoor(child: any, side: 'Left' | 'Right' | 'Down' = 'Left') {
-
-    debugger;
     const wSect = child.geometry.parameters.width;
     const hSect = child.geometry.parameters.height;
     const angle = 90 * (Math.PI / 180);
@@ -774,7 +788,7 @@ export class ThreeHelperService {
   createSections(w: number, h: number, d: number, thickness: number, srK: number, scheme: Block[], doorW: any) {
     let listS: any[] = []; // = scheme;
 
-    for (let i = 1; i <= srK; i++) {
+    for (let i = 1; i < srK; i++) {
       const sect = {
         bloc: i,
         section: i,
@@ -984,14 +998,14 @@ export class ThreeHelperService {
   }
 
 //   size
-  createOuterDimensionLine(start: any, end: any, extension = 0.3, color = 0x000000, isHorizontal = true) {
+  createOuterDimensionLine(start: any, end: any, extension = 0.3, color = 0x030303, isHorizontal = true, isExtension = true) {
     const group = new THREE.Group();
 
     // Основная линия
     const mainPoints = [start, end];
     const mainGeometry = new THREE.BufferGeometry().setFromPoints(mainPoints);
     const mainMaterial = new THREE.LineBasicMaterial({
-      color: color,
+      color: 0x757575,
       linewidth: 3
     });
     const mainLine = new THREE.Line(mainGeometry, mainMaterial);
@@ -1001,44 +1015,46 @@ export class ThreeHelperService {
     }
 
     // Выносные линии
-    const createExtensionLine = (position: any) => {
-      const points = [
-        new THREE.Vector3(position.x, position.y, position.z),
-        new THREE.Vector3(
-          isHorizontal ? position.x : position.x + extension,
-          isHorizontal ? position.y + extension : position.y, position.z)
-      ];
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      const material = new THREE.LineBasicMaterial({color: color});
-      return new THREE.Line(geometry, material);
-    };
+    if (isExtension) {
+      const createExtensionLine = (position: any) => {
+        const points = [
+          new THREE.Vector3(position.x, position.y, position.z),
+          new THREE.Vector3(
+            isHorizontal ? position.x : position.x + extension,
+            isHorizontal ? position.y + extension : position.y, position.z)
+        ];
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const material = new THREE.LineBasicMaterial({color: 0x757575});
+        return new THREE.Line(geometry, material);
+      };
 
-    group.add(createExtensionLine(start));
-    group.add(createExtensionLine(end));
+      group.add(createExtensionLine(start));
+      group.add(createExtensionLine(end));
+    }
 
     return group;
   }
 
-  createTextLabel(text: string, position: any, color = 0xffffff, size = 200, isHorizontal = true) {
+  createTextLabel(text: string, position: any, color = 0xf0f0f0, size = 200, isHorizontal = true) {
     const canvas = document.createElement('canvas');
     let context = canvas.getContext('2d');
 
     if (!context) return;
-    canvas.width = 256;
-    canvas.height = 64;
+    canvas.width = 128;
+    canvas.height = 32;
 
     // canvas.translate = 'translate(0, 90px)';
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.font = '30px Arial';
-    context.fillStyle = `rgb(${(color >> 16) & 0xff}, ${(color >> 8) & 0xff}, ${color & 0xff})`;
+    context.fillStyle = `rgb(3, 3, 3)`; //${(color >> 16) & 0xff}, ${(color >> 8) & 0xff}, ${color & 0xff})`;
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillText(text, canvas.width / 2, canvas.height / 2);
 
-    context.strokeStyle = 'black';
-    context.lineWidth = 2;
-    context.strokeText(text, canvas.width / 2, canvas.height / 2);
+    // context.strokeStyle = 'black';
+    // context.lineWidth = 2;
+    // context.strokeText(text, canvas.width / 2, canvas.height / 2);
 
     const texture = new THREE.CanvasTexture(canvas);
     const material = new THREE.SpriteMaterial({
@@ -1048,7 +1064,7 @@ export class ThreeHelperService {
     });
     const sprite = new THREE.Sprite(material);
     sprite.position.copy(position);
-    sprite.scale.set(size * 4, size, 1);
+    sprite.scale.set(size * 4 * .4, size * .4, .4);
 
     return sprite;
   }
@@ -1064,24 +1080,14 @@ export class ThreeHelperService {
   // }
 
   private dimensionsGroup: THREE.Group = new THREE.Group();
+  private dimensionsGroupFilling: THREE.Group = new THREE.Group();
   private dimensionsViewGroup!: THREE.Group;
 
   createDimensions(offsetX = 200, offsetY = 200) {
     const data = this.cabinetConfiguratorService.getWardrobe();
 
-    // Удаляем старые размеры если есть
-
-    // this.resetSizes();
     this.scene.remove(this.dimensionsGroup);
     this.dimensionsGroup.clear();
-    // if (this.dimensionsGroup) {
-    //   this.scene.remove(this.dimensionsGroup);
-    //   this.dimensionsGroup.children.forEach(child => {
-    //     // if (child?.geometry) child?.geometry.dispose();
-    //     // if (child?.material) child?.material.dispose();
-    //   });
-    // }
-
     this.dimensionsGroup = new THREE.Group();
 
     // ШИРИНА (X)
@@ -1127,6 +1133,200 @@ export class ThreeHelperService {
     }
 
     this.scene.add(this.dimensionsGroup);
+  }
+
+  compareNumbers(a: any, b: any) {
+    return a.position.y - b.position.y;
+  }
+
+
+  private dimPolkaB(xPos: number, data: any, distance = this.fillingSectionsService.SR_H_NIGN_POLKA) {
+
+    const labelText = this.createTextLabel(
+      `${distance}`,
+      new THREE.Vector3(
+        xPos, // filling.position.x,
+        (-data.srH / 2) + (distance + this.plinth + this.depth) / 2 + 50,
+        data.srG / 2 - 150),
+      0x000,
+      200,
+      false
+    );
+    if (labelText) {
+      this.dimensionsGroupFilling.add(labelText);
+    }
+  }
+
+  private dimPolkaFist(xPos: number, data: any, hDem: number, shelfH: number, startYPos = 0) {
+    const distance = hDem + startYPos;
+
+    const depth = data.SR_G_fasad === 'ldsp16' ? 16 : 18;
+
+    const labelText = this.createTextLabel(
+      `${Math.trunc(shelfH)}`,
+      new THREE.Vector3(
+        xPos, // filling.position.x,
+        ((-data.srH - this.plinth + this.depth) / 2) + distance,
+        data.srG / 2 - 150),
+      0x000,
+      200,
+      false
+    );
+    if (labelText) {
+      this.dimensionsGroupFilling.add(labelText);
+    }
+  }
+
+  private dimTryba(data: any, posX: number, H_VERHN_TRYBA = this.fillingSectionsService.SR_H_VERHN_TRYBA) {
+    const distance = H_VERHN_TRYBA + 60;
+
+    const textLabelTryba = this.createTextLabel(
+      `${distance}`,
+      new THREE.Vector3(posX, (-data.srH / 2) + (distance + this.plinth + this.depth) / 2, data.srG / 2 - 150),
+      0x000,
+      200,
+      false
+    );
+    if (textLabelTryba) {
+      this.dimensionsGroupFilling.add(textLabelTryba);
+    }
+  }
+
+  dimShelves(shelves: any, filling: any, data: any, addH: number = 0, shelfH = 0) {
+    shelves.forEach((child: any, index: number) => {
+      if (shelves[index + 1]) {
+        const distance = child.position.distanceTo(shelves[index + 1].position);
+        const heightLabel = this.createTextLabel(
+          `${Math.trunc(+distance)}`,
+          new THREE.Vector3(filling.position.x, child.position.y + distance / 2, data.srG / 2 - 150),
+          0x000,
+          200,
+          false
+        );
+        if (heightLabel) {
+          this.dimensionsGroupFilling.add(heightLabel);
+        }
+      }
+    });
+  }
+
+  private calcAddH(sectionNumber: number, hWithoutShelves: number = 0, addCount = 0) {
+    let sH = this.fillingSectionsService.calcSectionHeight(sectionNumber);
+    let shelvesH = sH - hWithoutShelves;
+    const shelvesCount = this.fillingSectionsService.calcShelvesCount(shelvesH) + addCount;
+    if (shelvesCount === 0) {
+      return {add: 0, shelfH: shelvesH};
+    }
+    const shelfH = shelvesH / shelvesCount;
+    const add = shelvesH - Math.trunc(shelfH) * shelvesCount;
+    return {add, shelfH};
+  }
+
+  createStepThreeDimensions(filling: any, sectionNumber: number, naFilling: number) {
+    const data = this.cabinetConfiguratorService.getWardrobe();
+    const {sectionW} = filling.userData;
+    let sH = this.fillingSectionsService.calcSectionHeight(sectionNumber);
+
+    let startYPos = 0;
+
+    if (Number(data.SR_yaschiki_vneshnie) === 1) {
+      const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
+      // @ts-ignore
+      const block = scheme.find((item: Block) => {
+        if (item.endPos === +sectionNumber) { //<= item.endPos
+          return item;
+        }
+      });
+      debugger;
+      if (block) {
+        startYPos = block.SR_yaschiki_vneshnie_kol === 2 ? 400 : 600;
+      }
+    }
+
+    const offsetY = -data.wSect / 2;
+    const heightLine = this.createOuterDimensionLine(
+      new THREE.Vector3(filling.position.x + 40, (-data.srH / 2) + this.plinth + this.depth + startYPos, data.srG / 2 - 150),
+      new THREE.Vector3(filling.position.x + 40, (-data.srH / 2) + this.plinth + this.depth + sH + startYPos, data.srG / 2 - 150),
+      offsetY,
+      0x000,
+      false,
+      false
+    );
+    this.dimensionsGroupFilling.add(heightLine);
+
+    const shelves = filling?.children.filter((child: any) => child.name === 'Shelf').sort(this.compareNumbers);
+
+    switch (naFilling) {
+      case 2: {
+        this.dimTryba(data, filling.position.x);
+        const {add, shelfH} = this.calcAddH(sectionNumber, this.fillingSectionsService.SR_H_VERHN_TRYBA + 60);
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        break;
+      }
+      case 6: {
+        this.dimTryba(data, filling.position.x);
+        const {add, shelfH} = this.calcAddH(sectionNumber, this.fillingSectionsService.SR_H_VERHN_TRYBA + 60);
+
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        break;
+      }
+      case 3:
+      case 4:
+      case 5: {
+        this.dimShelves(shelves, filling, data);
+        this.dimPolkaB(filling.position.x, data)
+        break;
+      }
+      case 7: {
+        this.dimTryba(data, filling.position.x, this.fillingSectionsService.SR_H_SREDN_TRYBA);
+        const {add, shelfH} = this.calcAddH(sectionNumber, this.fillingSectionsService.SR_H_SREDN_TRYBA);
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        break;
+      }
+      case 8: {
+        this.dimTryba(data, filling.position.x, this.fillingSectionsService.SR_H_NIGN_TRYBA);
+        const {add, shelfH} = this.calcAddH(sectionNumber, this.fillingSectionsService.SR_H_NIGN_TRYBA);
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        break;
+      }
+      case 9: {
+        this.dimPolkaB(filling.position.x, data, 408);
+        const {add, shelfH} = this.calcAddH(sectionNumber, this.fillingSectionsService.SR_H_VERHN_TRYBA + 60);
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        break;
+      }
+      case 10: {
+        this.dimPolkaB(filling.position.x, data, 178);
+        const {add, shelfH} = this.calcAddH(sectionNumber, this.fillingSectionsService.SR_H_VERHN_TRYBA + 60);
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        break;
+      }
+      case 11: {
+        this.dimPolkaB(filling.position.x, data, 408);
+        const {add, shelfH} = this.calcAddH(sectionNumber, this.fillingSectionsService.SR_H_VNUTR_YASHCHIK);
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        break;
+      }
+      case 12: {
+        this.dimPolkaB(filling.position.x, data, 178);
+        const {add, shelfH} = this.calcAddH(sectionNumber, this.fillingSectionsService.SR_H_VNUTR_YASHCHIK);
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        break;
+      }
+      case 13: {
+        const {add, shelfH} = this.calcAddH(sectionNumber, 0, 0);
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        this.dimPolkaFist(filling.position.x, data, shelfH, shelfH, startYPos);
+        break;
+      }
+      case 14: {
+        const {add, shelfH} = this.calcAddH(sectionNumber, 0, -1);
+        this.dimShelves(shelves, filling, data, add, shelfH);
+        this.dimPolkaFist(filling.position.x, data, shelfH, shelfH, startYPos);
+        break;
+      }
+    }
+    this.scene.add(this.dimensionsGroupFilling);
   }
 
   createStepTwoDimensions() {
@@ -1223,6 +1423,8 @@ export class ThreeHelperService {
           x1: this.yvH
         }
 
+        console.log(dimensionYaschikiData)
+
         this.createDem(dimensionYaschikiData);
       }
 
@@ -1265,7 +1467,7 @@ export class ThreeHelperService {
     const vector = this.createOuterDimensionLine(
       new THREE.Vector3(x, y, z),
       new THREE.Vector3(x, y + x1, z),
-      450,
+      150,
       0x000,
       false
     );
@@ -1314,6 +1516,7 @@ export class ThreeHelperService {
     // this.scene.remove(this.dimensionsGroup);
     // this.dimensionsGroup.clear();
     this.dimensionsGroup.visible = visible;
+    this.dimensionsGroupFilling.visible = visible;
     // this.dimensionsGroup.children.forEach(child => {})
   }
 }

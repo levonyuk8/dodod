@@ -1,4 +1,4 @@
-import {Component, DestroyRef, inject, OnChanges, OnInit, output, signal} from '@angular/core';
+import {ChangeDetectorRef, Component, DestroyRef, inject, OnInit, output, signal} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {
   IGroupData,
@@ -6,20 +6,7 @@ import {
   RadioGroupComponent
 } from '../../../_shared/components/radio-group/radio-group.component';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
-import {
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged, EMPTY,
-  filter,
-  map,
-  of,
-  startWith,
-  Subject,
-  switchMap,
-  take,
-  takeUntil,
-  tap
-} from 'rxjs';
+import {combineLatest, debounceTime, distinctUntilChanged, EMPTY, filter, startWith, switchMap, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {ThreeHelperService} from '../../../_services/three-helper.service';
@@ -38,13 +25,11 @@ import {WardrobeParamsService} from '../../../_services/wardrobe-params.service'
 export class Step3Component implements OnInit {
   private fb = inject(FormBuilder);
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
   private threeHelperService = inject(ThreeHelperService);
   private cabinetConfiguratorService = inject(CabinetConfiguratorService);
   private wardrobeParamsService = inject(WardrobeParamsService);
 
-
-  private testS = new Subject<any>();
-  private variable: any;
 
   stepThreeForm: FormGroup = this.createAndPatchForm();
 
@@ -69,19 +54,23 @@ export class Step3Component implements OnInit {
   wardrobe = this.cabinetConfiguratorService.getWardrobe();
   wardrobeScheme = this.cabinetConfiguratorService.getWardrobeScheme();
 
+  sectionWithYV = false;
+  isLastSection = false;
+  nextSectionWithYV = false;
+
+
+  prevSection: any;
 
   sectionTypes = {
     groupName: "sectionTypes",
     options: [
       {
         imgUrl: 'url(/img/svg/s3/ST1.svg)', label: 'Одинарная', value: 0,
-        disabled: Number(this.wardrobe.SR_yaschiki_vneshnie) === 1,
-        message: `Неподходящий вариант`
+        message: `Защита от ошибок: Секция не может быть одинарной`
       },
       {
         imgUrl: 'url(/img/svg/s3/ST2.svg)', label: 'Двойная', value: 1,
-        disabled: this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2,
-        message: `Защита от ошибок: Секция не может быть более ${this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR}`
+        message: `Защита от ошибок: Секция не может быть двойной`
       },
     ]
   }
@@ -182,8 +171,6 @@ export class Step3Component implements OnInit {
   isSavedCurrentSection = signal(false);
   isCompleteFillingEv = output<boolean>();
 
-  prevSection: any = null;
-
   sectionList = {
     groupName: "sectionList",
     options: []
@@ -194,18 +181,43 @@ export class Step3Component implements OnInit {
 
     const sectionByDoors = this.createEmptySections();
     sectionByDoors.forEach(section => {
-      const scheme = this.wardrobeScheme.find(item =>
-        item.startPos === this.cabinetConfiguratorService.nextSectionNumber(+section.value)
+
+
+      const scheme = this.wardrobeScheme.find(item => {
+          console.log('item.startPos', item.startPos)
+          console.log('item.nextSectionNumber', this.cabinetConfiguratorService.nextSectionNumber(+section.value))
+        return item.startPos === this.cabinetConfiguratorService.nextSectionNumber(+section.value)
+      }
+
       );
-      const filing = {
+      const filling = {
         section: section.value,
         sectionType: scheme ? 1 : 0,
         openingDoorType: 0,
         fillingOption: 1
       }
-      this.saveSection(filing);
+      console.log(filling)
+      this.saveSection(filling);
     })
     this.sectionList.options = sectionByDoors;
+
+    console.log(this.cabinetConfiguratorService.getSavedFilingScheme())
+
+
+  }
+
+  private disabledDoubleDoorType() {
+    console.log(this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2)
+    console.log(this.nextSectionWithYV)
+    return this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2 ||
+      this.nextSectionWithYV ||
+      this.isLastSection;
+  }
+
+  private disabledSingleDoorType() {
+    console.log(this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2)
+    console.log(this.nextSectionWithYV)
+    return this.sectionWithYV;
   }
 
   ngOnInit(): void {
@@ -213,56 +225,23 @@ export class Step3Component implements OnInit {
 
     // sectionType: this.sectionType$, openingDoorType: this.openingDoorType$, filingOption: this.filingOption$
 
-    // TODO
-    this.variable = this.all$.pipe(
+    this.all$.pipe(
       // takeUntil(this.testS),
       debounceTime(500),
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       switchMap(([sectionType, openingDoorType, filingOption]) => {
-        console.log('all$')
-        console.log(this.section.value)
-        console.log(this.section.getRawValue())
-        console.log({sectionType, openingDoorType, filingOption})
+        console.log('$all')
         const filing = {
           section: +this.section.getRawValue(),
           sectionType: +sectionType,
           openingDoorType: +openingDoorType,
           fillingOption: +filingOption
         }
-
         this.saveSection(filing);
-
         return EMPTY;
       })
     ).subscribe()
-
-    // this.isCompleteFillingEv.emit(this.isCompleteFilling())
-
-    // this.cabinetConfiguratorService.saveSectionSubject$.pipe(
-    //   // distinctUntilChanged(),
-    //   takeUntilDestroyed(this.destroyRef),
-    //   tap(() => {
-    //     console.log('cabinetConfiguratorService saveSectionSubject$');
-    //     const nextDoorNumber = this.cabinetConfiguratorService.currentFilingAndSavedSection();
-    //     const {srK} = this.cabinetConfiguratorService.getWardrobe();
-    //     console.log('saveSectionSubject$', nextDoorNumber);
-    //     console.log('saveSectionSubject$', srK);
-    //     console.log('saveSectionSubject$', srK === nextDoorNumber);
-    //
-    //     if (+srK <= nextDoorNumber) {
-    //       this.isCompleteFilling.set(true);
-    //       this.isCompleteFillingEv.emit(this.isCompleteFilling());
-    //       this.section.setValue(null);
-    //     } else {
-    //
-    //       this.createEmptySection();
-    //
-    //       this.section.setValue(this.lastSectionIndex);
-    //       // this.section.setValue(nextDoorNumber);
-    //     }
-    //   })
-    // ).subscribe();
 
     this.stepThreeForm?.valueChanges.pipe(
       startWith(this.stepThreeForm?.value),
@@ -280,8 +259,14 @@ export class Step3Component implements OnInit {
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap(data => {
-        this.threeHelperService.selectSectionAndOpenDoors(this.stepThreeForm.getRawValue(), this.isNewCurrentSection())
+        this.threeHelperService.selectSectionAndOpenDoors(this.stepThreeForm.getRawValue(), false)
         this.threeHelperService.filingSection(+this.section.value, +this.sectionType.value, +this.fillingOption.value);
+
+        if (!this.sectionWithYV) {
+          this.disabledFillingByWidthSection(this.stepThreeForm.getRawValue());
+        }
+        this.calcSectionCount();
+
       })
     ).subscribe();
 
@@ -289,46 +274,76 @@ export class Step3Component implements OnInit {
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap(data => {
-        console.log('section$', data)
-        debugger;
         const filingList = this.cabinetConfiguratorService.getSavedFilingScheme();
+        console.log(filingList)
         const section = filingList.find((item: any) => {
           if (+item.section === +data) {
             return item;
           }
         });
-        console.log(section)
+        debugger;
+        console.log('section$', section);
         if (section) {
-          console.log('path')
-
           this.stepThreeForm.patchValue({
             sectionType: +section.sectionType,
             openingDoorType: +section.openingDoorType,
             fillingOption: +section.fillingOption,
           });
-          console.log(' end path')
           // this.sectionType.setValue(+section.sectionType);
           // this.openingDoorType.setValue(+section.openingDoorType);
           // this.fillingOption.setValue(+section.fillingOption);
           // this.stepThreeForm.updateValueAndValidity();
           this.threeHelperService.selectSectionAndOpenDoors(section, false);
+          this.prevSection = data;
+
+
         }
 
-        console.log('section$ end')
-        // if (Number(this.wardrobe.SR_yaschiki_vneshnie) === 1) {
-        //   const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
-        //   // @ts-ignore
-        //   const block = scheme.find((item: Block) => {
-        //     if (item.startPos <= +data && +data <= item.endPos) { //<= item.endPos
-        //       return item;
-        //     }
-        //   });
-        //   if (block) {
-        //     this.sectionWithSRY(block);
-        //   } else {
-        //     this.deSectionWithSRY()
-        //   }
-        // }
+        console.log(filingList.length);
+        console.log(data);
+
+        console.log(filingList.length === +data);
+        // disabled st === 1
+        const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
+
+
+        if (+this.wardrobe.SR_yaschiki_vneshnie === 1 && scheme.length) {
+
+          const currentBlock = scheme.find((block: any) => {
+            if (+data === block.endPos) { //<= item.endPos
+              return block;
+            }
+          });
+
+          const nextBlock = scheme.find((block: any) => {
+            if (+data === block.startPos) { //<= item.endPos
+              return block;
+            }
+          });
+
+          this.nextSectionWithYV = !!nextBlock
+          this.sectionWithYV = !!currentBlock
+        }
+        this.isLastSection = filingList.length === +data
+
+        console.log(this.isLastSection, this.sectionWithYV, this.nextSectionWithYV);
+
+        this.sectionTypes.options = this.sectionTypes.options.map((i: any) => {
+          if (i.value === 0) {
+            return {
+              ...i,
+              disabled: this.disabledSingleDoorType()
+            }
+          } else if (i.value === 1) {
+            return {
+              ...i,
+              disabled: this.disabledDoubleDoorType()
+            }
+          }
+
+        })
+        this.sectionWithSRY();
+        this.disabledFillingByWidthSection(section);
       })
     ).subscribe();
 
@@ -352,30 +367,95 @@ export class Step3Component implements OnInit {
 
   }
 
-  private sectionWithSRY(section: Block) {
-    console.log('sectionWithSRY', section);
-    const message = 'Неподходящий вариант';
-    const arr = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  calcSectionCount() {
+    if (!this.sectionType.dirty) return;
+    if (this.section.value !== this.prevSection) return;
+    let newScheme = [];
+    let scheme = this.cabinetConfiguratorService.getSavedFilingScheme();
+    const reIndexStart = +this.section.value + 1;
+    if (+this.sectionType.value === 1) {
+      scheme.splice(this.section.value, 1);
+      newScheme = scheme.map(
+        item => {
+          if (reIndexStart < +item.section) {
+            return {
+              ...item,
+              section: item.section - 1,
+            };
+          }
+          return item;
+        }
+      )
+
+
+    } else if (+this.sectionType.value === 0) {
+      newScheme = scheme.map(
+        item => {
+          if (reIndexStart <= +item.section) {
+            return {
+              ...item,
+              section: +item.section + 1,
+            };
+          }
+          return item;
+
+        }
+      )
+      newScheme.splice(+this.section.value, 0, {
+        section: reIndexStart,
+        sectionType: 0,
+        openingDoorType: 0,
+        fillingOption: 1,
+      });
+    }
+
+    this.cabinetConfiguratorService.setSavedFilingScheme(newScheme);
+
+    this.sectionList = {
+      groupName: "sectionList",
+      options: this.updateSectionCount(),
+    };
+    this.section.updateValueAndValidity();
+  }
+
+  private sectionWithSRY() {
+    console.log('sectionWithSRY', this.sectionWithYV);
+    const message = 'Неподходящий вариант внешние ящики';
+    const arr = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
     this.fillingOptionList.options = this.fillingOptionList.options.map(
       (item: any) => {
         if (arr.includes(item.value)) {
-          return {...item, disabled: true, message};
+          return {...item, disabled: this.sectionWithYV, message};
         }
         return item;
       }
     );
 
-    this.sectionTypes.options = this.sectionTypes.options.map((i: any) => i);
-
-    this.sectionType.setValue(1);
-    this.openingDoorType.setValue(0);
+    // this.sectionTypes.options = this.sectionTypes.options.map((i: any) => i);
+    //
+    // this.sectionType.setValue(1);
+    // this.openingDoorType.setValue(0);
 
   }
 
-  private deSectionWithSRY() {
+  private disabledFillingByWidthSection(section: any, block: Block | null = null) {
+    if (this.sectionWithYV) return;
+    console.log('disabledFillingByWidthSection', this.sectionWithYV);
+    const message = 'Неподходящий вариант ширина секции';
+    const fillingW = this.threeHelperService.getSectionFillingWBySection(section)
+    const arr = [9, 10, 11, 12];
+    this.fillingOptionList.options = this.fillingOptionList.options.map(
+      (item: any) => {
+        if (arr.includes(item.value)) {
+          return {...item, disabled: fillingW < 400, message};
+        }
+        return item;
+      }
+    );
+  }
 
-    console.log('deSectionWithSRY')
+  private deSectionWithSRY() {
     this.fillingOptionList.options = this.fillingOptionList.options.map(
       (item: any) => {
         delete item.disabled;
@@ -384,11 +464,11 @@ export class Step3Component implements OnInit {
       }
     );
 
-    this.sectionTypes.options = this.sectionTypes.options.map((i: any) => {
-      delete i.disabled;
-      delete i.message;
-      return i;
-    });
+    // this.sectionTypes.options = this.sectionTypes.options.map((i: any) => {
+    //   delete i.disabled;
+    //   delete i.message;
+    //   return i;
+    // });
 
     // this.sectionType.setValue(1);
     // this.openingDoorType.setValue(0);
@@ -420,14 +500,10 @@ export class Step3Component implements OnInit {
   }
 
   saveSection(data: any) {
-    console.log('saveSection', data);
-    // this.isSavedCurrentSection.set(true);
     this.cabinetConfiguratorService.saveSection(data);
-    // this.isCompleteFillingEv.emit(this.isCompleteFilling());
   }
 
   editAfterFilingSection() {
-    console.log('saveSection', this.stepThreeForm.getRawValue());
     this.isSavedCurrentSection.set(true);
     this.isEditSectionAfterCompleteFiling.set(false);
     this.section.setValue(0)
@@ -446,6 +522,16 @@ export class Step3Component implements OnInit {
   createEmptySections() {
     const res: ITestOption[] = []
     const sectionCount = this.wardrobe.srK - this.wardrobeScheme.length;
+    for (let i = 1; i <= sectionCount; i++) {
+      res?.push(({label: i.toString(), value: i}) as ITestOption)
+    }
+    return res;
+  }
+
+  updateSectionCount() {
+    // this.sectionList.options.;
+    const res: ITestOption[] = []
+    const sectionCount = this.cabinetConfiguratorService.getSavedFilingScheme().length;
     for (let i = 1; i <= sectionCount; i++) {
       res?.push(({label: i.toString(), value: i}) as ITestOption)
     }

@@ -51,7 +51,8 @@ export class RadioGroupComponent implements ControlValueAccessor {
     this.onChange(this._value);
   }
 
-  onChange: any = () => {};
+  onChange: any = () => {
+  };
   onTouched: any = () => {};
 
   writeValue(obj: any): void {

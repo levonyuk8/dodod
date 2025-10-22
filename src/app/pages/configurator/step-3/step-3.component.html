@@ -6,6 +6,8 @@
     <app-radio-group [formControlName]="'section'" [isRound]="true" [data]="sectionList"></app-radio-group>
   </div>
 
+  {{section.value}}
+
   @if (!isCompleteFilling() || isEditSectionAfterCompleteFiling()) {
     <div class="sizing-container panel">
       <label class="text text-normal">Вид секции</label>

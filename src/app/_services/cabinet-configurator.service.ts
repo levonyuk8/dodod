@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {BehaviorSubject, count, Subject} from 'rxjs';
 import {WardrobeParamsService} from './wardrobe-params.service';
 import {Wardrobe} from '../_models/wardrobe.model';
 import {Steps} from '../_shared/components/stepper/stepper.component';
@@ -9,10 +9,9 @@ import {Block} from '../_models/block.model';
   providedIn: 'root'
 })
 export class CabinetConfiguratorService {
-
   private data = new Wardrobe();
   private wardrobeScheme: Block[] = [];
-  private savedFilingScheme: any[] = [];
+  private _savedFilingScheme: any[] = [];
 
   dataUpdatedSubject$ = new BehaviorSubject<Steps | null>(null);
   saveSectionSubject$ = new Subject<void>();
@@ -28,7 +27,11 @@ export class CabinetConfiguratorService {
   }
 
   getSavedFilingScheme() {
-    return this.savedFilingScheme;
+    return this._savedFilingScheme;
+  }
+
+  setSavedFilingScheme(value: any[]) {
+    this._savedFilingScheme = value;
   }
 
   getWardrobeScheme() {
@@ -87,45 +90,40 @@ export class CabinetConfiguratorService {
   }
 
   saveSection(val: any) {
-    const editElement = this.savedFilingScheme.find((el: any) => el.section === val.section);
-    debugger;
+    const editElement = this._savedFilingScheme.find((el: any) => el.section === val.section);
     if (!editElement) {
-      this.savedFilingScheme.push(val);
+      this._savedFilingScheme.push(val);
     } else {
-      this.savedFilingScheme = this.savedFilingScheme.map(s => {
+      this._savedFilingScheme = this._savedFilingScheme.map(s => {
         if (s.section === val.section) {
           return val;
         }
         return s;
       });
     }
-    debugger;
     this.saveSectionSubject$.next();
   }
 
   nextSectionNumber(sectionNA: number): number {
     let count = 0;
 
-    if (!this.savedFilingScheme.length) return count;
+    if (!this._savedFilingScheme.length) return count;
 
     for (let i = 0; i < sectionNA - 1; i++) {
-      debugger;
       ++count;
-      if (+this.savedFilingScheme[i].sectionType === 1) {
-        console.log('add')
+      if (+this._savedFilingScheme[i].sectionType === 1) {
         ++count;
       }
     }
-    console.log('nextSectionNumber', count);
     return count;
   }
 
   currentFilingAndSavedSection(): number {
     let count = 0;
 
-    for (let i = 0; i < this.savedFilingScheme?.length; i++) {
+    for (let i = 0; i < this._savedFilingScheme?.length; i++) {
       ++count
-      if (+this.savedFilingScheme[i].sectionType === 1) ++count;
+      if (+this._savedFilingScheme[i].sectionType === 1) ++count;
     }
     return count;
   }
