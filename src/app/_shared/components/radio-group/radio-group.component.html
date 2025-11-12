@@ -1,9 +1,6 @@
 <div class="group_radio_btn">
   @for (item of data.options; track item.value; let idx = $index) {
-
     <div class="form_radio_btn">
-      {{item.value}}
-      {{value}}
       <input (change)="onInputChange($event)"
              [disabled]="item?.disabled"
              [checked]="item.value === value"

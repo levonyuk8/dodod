@@ -14,7 +14,7 @@ export class FillingSectionsService {
   // 7
   private readonly SR_H_NISHA_CENTR_STANDART = 1800;
   public readonly SR_H_SREDN_TRYBA = 1100;
-  public readonly SR_H_MIN_POLKA = 280;
+  public readonly SR_H_MIN_POLKA = 250;
 
   // 8
   public readonly SR_H_NIGN_TRYBA = 870;
@@ -231,24 +231,18 @@ export class FillingSectionsService {
     }
   }
 
-
   createFilling2(sectionNumber: number, isDual = false, sectionW = 0) {
     const cr = this.createCylinder(isDual, sectionW);
-
-    const shelf = this.createShelf(isDual, sectionW);
-
-    const {SR_G_fasad} = this.data;
-    const depth = SR_G_fasad === 'ldsp16' ? 16 : 18;
-
-    this.setPosY(shelf, this.SR_H_NISHA_CENTR_STANDART);
-
-    // this.setPosX(cr, sectionNumber);
+    const {SR_G_fasad, srH} = this.data;
+    if (srH > this.SR_H_NISHA_CENTR_STANDART + this.SR_H_MIN_POLKA + 80) {
+      const shelf = this.createShelf(isDual, sectionW);
+      this.setPosY(shelf, this.SR_H_NISHA_CENTR_STANDART);
+      this.group.add(shelf);
+    }
     this.setPosY(cr, this.SR_H_VERHN_TRYBA - 40);
-    // group.name = 'Filling' + sectionNumber;
-    this.group.add(cr, shelf);
+    this.group.add(cr);
     this.additionalShelves(sectionNumber, isDual, this.SR_H_VERHN_TRYBA, sectionW);
   }
-
 
   createFilling3(sectionNumber: number, isDual = false, sectionW = 0) {
 

@@ -8,6 +8,10 @@ $btn-icon-height: 1.5rem;
 .btn {
   @include button.button-base;
 
+  &-img {
+    @include button.button-variant(transparent, #005840, transparent, #005840);
+  }
+
   &-primary {
     @include button.button-variant(#005840, #fff, #3700b3, #005840);
   }
@@ -56,6 +60,6 @@ $btn-icon-height: 1.5rem;
   }
 
   &-200 {
-    @include button.button-w(200px);
+    @include button.button-w(210px);
   }
 }

@@ -1,19 +1,13 @@
 <form [formGroup]="stepThreeForm">
   <label class="text text-medium mb-4">Внутреннее наполнение</label>
-
   <div class="sizing-container panel">
     <label class="text text-normal">Секции</label>
     <app-radio-group [formControlName]="'section'" [isRound]="true" [data]="sectionList"></app-radio-group>
   </div>
-
-  {{section.value}}
-
   @if (!isCompleteFilling() || isEditSectionAfterCompleteFiling()) {
     <div class="sizing-container panel">
       <label class="text text-normal">Вид секции</label>
       <app-radio-group class="mt-8" [formControlName]="'sectionType'" [data]="sectionTypes"></app-radio-group>
-
-      {{ +sectionType.value }}
       @if (+sectionType.value === 0) {
         <div class="panel panel--child">
           <label class="text text-normal">Открывание двери</label>
@@ -28,20 +22,9 @@
         </div>
       }
     </div>
-
     <div class="sizing-container panel">
       <label class="text text-normal">Варианты наполнения</label>
       <app-radio-group class="mt-8" [formControlName]="'fillingOption'" [data]="fillingOptionList"></app-radio-group>
     </div>
-
-<!--    <div class="action-btn-container">-->
-
-<!--      @if (!isCompleteFilling()) {-->
-<!--        <app-button [width]="'100'" (click)="saveSection()" [variant]="'bg-transparent'">Сохранить</app-button>-->
-<!--      }-->
-<!--      @if (isEditSectionAfterCompleteFiling()) {-->
-<!--        <app-button [width]="'100'" (click)="editAfterFilingSection()" [variant]="'bg-transparent'">Сохранить</app-button>-->
-<!--      }-->
-<!--    </div>-->
   }
 </form>

@@ -81,12 +81,14 @@ export class CabinetConfiguratorService {
 
   // SR_K_min=(SR_L/600) и округлить в большую сторону	Формула для минимального кол-ва дверей
   private minCalcNumberOfDoors(width: number) {
-    return Math.round(width / this.wps.SR_L_MAX_FASAD);
+    return Math.ceil(width / this.wps.SR_L_MAX_FASAD);
   }
 
   // SR_K_max=(SR_L/SR_L_MIN) и округлить в большую сторону	Формула для максимального кол-ва дверей
   private maxCalcNumberOfDoors(width: number) {
-    return Math.round(width / this.wps.SR_L_MIN);
+    console.log(width / this.wps.SR_L_MIN)
+    console.log(Math.round(width / this.wps.SR_L_MIN))
+    return Math.floor(width / this.wps.SR_L_MIN);
   }
 
   saveSection(val: any) {

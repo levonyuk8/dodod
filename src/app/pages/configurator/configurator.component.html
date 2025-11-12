@@ -32,12 +32,13 @@
       }
     </div>
 
-    <div class="action-btn-container mb-4">
+    <div class="action-btn-container mb-8">
 <!--      @if (currentStep() === Steps.three) {-->
         <!--        <app-button [width]="'100'" (click)="saveSection()" [variant]="'bg-transparent'">Сохранить</app-button>-->
 <!--      }-->
 <!--      @if (nextStepVisible()) {-->
-        <app-button [width]="'100'" (click)="nextStep()" [variant]="'primary'">Далее</app-button>
+        <app-button [disabled]="currentStep() === Steps.one" [width]="'100'" (click)="prevStep()" [variant]="'primary'">prevStep</app-button>
+        <app-button [disabled]="currentStep() === Steps.three" [width]="'100'" (click)="nextStep()" [variant]="'primary'">Далее</app-button>
 <!--      }-->
 
 

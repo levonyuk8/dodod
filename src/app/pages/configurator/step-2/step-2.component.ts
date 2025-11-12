@@ -85,7 +85,7 @@ export class Step2Component implements OnInit {
 
     this.stepTwoForm.get('SR_PLANKA_VERH_CHENTR')?.valueChanges.pipe(
       tap(data => {
-        if (data && this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.value) {
+        if (data) {
           this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.setValue(false);
           this.stepTwoForm.get('SR_H_PLANKA_BOK_LEV')?.setValue(false);
           this.stepTwoForm.get('SR_H_PLANKA_BOK_PRAV')?.setValue(false);
@@ -95,7 +95,7 @@ export class Step2Component implements OnInit {
 
     this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.valueChanges.pipe(
       tap(data => {
-        if (data && this.stepTwoForm.get('SR_PLANKA_VERH_CHENTR')?.value) {
+        if (data) {
           this.stepTwoForm.get('SR_PLANKA_VERH_CHENTR')?.setValue(false);
           this.stepTwoForm.get('SR_PLANKA_VERH_LEV')?.setValue(false);
           this.stepTwoForm.get('SR_PLANKA_VERH_PRAV')?.setValue(false);
@@ -105,23 +105,29 @@ export class Step2Component implements OnInit {
 
     this.stepTwoForm.get('SR_PLANKA_VERH_LEV')?.valueChanges.pipe(
       tap(data => {
-        if (data && this.stepTwoForm.get('SR_H_PLANKA_BOK_LEV')?.value) {
+        if (data) {
+          this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.setValue(false);
           this.stepTwoForm.get('SR_H_PLANKA_BOK_LEV')?.setValue(false);
+          this.stepTwoForm.get('SR_H_PLANKA_BOK_PRAV')?.setValue(false);
         }
       })
     ).subscribe()
 
     this.stepTwoForm.get('SR_H_PLANKA_BOK_LEV')?.valueChanges.pipe(
       tap(data => {
-        if (data && this.stepTwoForm.get('SR_PLANKA_VERH_LEV')?.value) {
+        if (data) {
+          this.stepTwoForm.get('SR_PLANKA_VERH_CHENTR')?.setValue(false);
           this.stepTwoForm.get('SR_PLANKA_VERH_LEV')?.setValue(false);
+          this.stepTwoForm.get('SR_PLANKA_VERH_PRAV')?.setValue(false);
         }
       })
     ).subscribe()
 
     this.stepTwoForm.get('SR_PLANKA_VERH_PRAV')?.valueChanges.pipe(
       tap(data => {
-        if (data && this.stepTwoForm.get('SR_H_PLANKA_BOK_PRAV')?.value) {
+        if (data) {
+          this.stepTwoForm.get('SR_PLANKA_BOK_CHENTR')?.setValue(false);
+          this.stepTwoForm.get('SR_H_PLANKA_BOK_LEV')?.setValue(false);
           this.stepTwoForm.get('SR_H_PLANKA_BOK_PRAV')?.setValue(false);
         }
       })
@@ -129,7 +135,9 @@ export class Step2Component implements OnInit {
 
     this.stepTwoForm.get('SR_H_PLANKA_BOK_PRAV')?.valueChanges.pipe(
       tap(data => {
-        if (data && this.stepTwoForm.get('SR_PLANKA_VERH_PRAV')?.value) {
+        if (data) {
+          this.stepTwoForm.get('SR_PLANKA_VERH_CHENTR')?.setValue(false);
+          this.stepTwoForm.get('SR_PLANKA_VERH_LEV')?.setValue(false);
           this.stepTwoForm.get('SR_PLANKA_VERH_PRAV')?.setValue(false);
         }
       })
@@ -150,8 +158,8 @@ export class Step2Component implements OnInit {
             {
               imgUrl: 'url(/img/svg/ED2.svg)', label: 'Да', value: 1,
               disabled: this.data.srL <= 600
-                || this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK
-                || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,
+                || this.data.srG < this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK
+                || this.data.wSect > this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,
               message: this.externalDrawersMessageByCondition()
             },
           ]
@@ -189,7 +197,7 @@ export class Step2Component implements OnInit {
           // alert('alarm');
           this.stepTwoForm.get('SR_niz_dveri')?.setValue(0);
         }
-        this.updateScheme([]);
+        // this.updateScheme([]);
         // todo
         console.log(this.cabinetConfiguratorService.getWardrobe())
         this.base = {
@@ -367,6 +375,10 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
 
   updateScheme(data: any) {
     this.cabinetConfiguratorService.setWardrobeScheme(data, Steps.two);
+    console.log(data)
+    if (data.length <= 0) {
+      this.stepTwoForm.get('SR_yaschiki_vneshnie')?.patchValue(0);
+    }
   }
 
 

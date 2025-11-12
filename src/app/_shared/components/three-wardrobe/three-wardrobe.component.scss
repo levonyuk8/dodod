@@ -15,7 +15,14 @@
 
     > app-button {
       top: 2rem;
-      right: 2rem;
+      right: 1rem;
+      position: absolute;
+      z-index: 1;
+    }
+
+    > app-button:nth-child(2) {
+      top: 6rem;
+      right: 1rem;
       position: absolute;
       z-index: 1;
     }

@@ -15,8 +15,9 @@ import {ButtonComponent} from '../button/button.component';
 export class ThreeWardrobeComponent implements AfterViewInit {
 
   size = signal(false);
+  isHideDoors = signal(false);
 
-  sizeBtnLabel = ` ${this.size() ? 'Скрыть' : 'Показать'} размеры`;
+  // sizeBtnLabel = ` ${this.size() ? 'Скрыть' : 'Показать'} размеры`;
 
   @ViewChild('canvasContainer') containerRef!: ElementRef;
 
@@ -49,6 +50,11 @@ export class ThreeWardrobeComponent implements AfterViewInit {
   resetSizes() {
     this.threeHelper.resetSizes(this.size());
     this.size.update(v => !this.size());
+  }
+
+  hideDoors() {
+    this.threeHelper.hideDoors(this.isHideDoors());
+    this.isHideDoors.set(!this.isHideDoors());
   }
 
 }

@@ -31,6 +31,11 @@ export class ConfiguratorComponent {
   constructor(private cabinetConfiguratorService: CabinetConfiguratorService) {
   }
 
+  prevStep() {
+    this.currentStep.update((v) => --v);
+  }
+
+
   nextStep() {
     this.currentStep.update((v) => ++v);
   }

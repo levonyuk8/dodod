@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ButtonComponent} from '../../../../_shared/components/button/button.component';
 import {IGroupData, RadioGroupComponent} from '../../../../_shared/components/radio-group/radio-group.component';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgTemplateOutlet} from '@angular/common';
 
 @Component({
@@ -65,13 +65,15 @@ export class BlocksComponent implements OnInit {
     if (!this.blockList.length) {
       return 0;
     }
-    let arr: any = [0, +this.doorCount];
+    let arr: any = [0, +this.doorCount - 1];
     this.blockList.forEach(item => {
       const {endPos, startPos} = item;
       arr.push(startPos, endPos);
     });
 
     arr.sort();
+
+    console.log(arr)
 
     for (let i = 1; i < arr.length; i++) {
       const diff = arr[i] - arr[i - 1];
@@ -89,7 +91,11 @@ export class BlocksComponent implements OnInit {
   }
 
   isDisabledAddBlock(): boolean {
-    return Math.floor(this.doorCount / 2) <= this.blockList.length;
+    console.log('isDisabledAddBlock',  this.isEnoughSpaceForNewBlock())
+    // return Math.floor(this.doorCount / 2) <= this.blockList.length;
+    const res  = this.isEnoughSpaceForNewBlock();
+    console.log('isDisabledAddBlock', !(res === 0 ||res === -1))
+    return  res === -1;
   }
 
   private createNewBlock(startPos: number) {

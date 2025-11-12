@@ -9,7 +9,6 @@ import {Material, WardrobeParamsService} from '../../../_services/wardrobe-param
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {FormCorrectionService} from '../../../_services/form-correction.service';
-import {ThreeHelperService} from '../../../_services/three-helper.service';
 import {NgOptimizedImage} from '@angular/common';
 import {ConfirmationService, MessageService} from 'primeng/api';
 
@@ -35,7 +34,7 @@ export class Step1Component implements OnInit {
 
   formCorrectionService = inject(FormCorrectionService);
   private readonly defaultSrL = 1600;
-  private readonly defaultSrH = 2600;
+  private readonly defaultSrH = 2200;
   private readonly defaultSrG = 520;
 
   public stepOneForm: FormGroup = this.fb.group({});
@@ -100,6 +99,7 @@ export class Step1Component implements OnInit {
       // distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
+        console.log(change)
         this.ccs.setWardrobe(change, Steps.one);
         // this.ccs.setWardrobe(change, Steps.one);
       })

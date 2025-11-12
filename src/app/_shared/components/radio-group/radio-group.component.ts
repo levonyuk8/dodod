@@ -1,5 +1,5 @@
 import {Component, forwardRef, Input} from '@angular/core';
-import {NgClass, NgStyle} from '@angular/common';
+import {NgStyle} from '@angular/common';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Tooltip} from 'primeng/tooltip';
 
@@ -10,7 +10,7 @@ export interface IGroupData {
 
 export interface ITestOption {
   imgUrl?: string;
-  label: string;
+  label?: string;
   value: number;
   disabled?: boolean;
   message?: string;
