@@ -52,7 +52,8 @@ export class FillingSectionsService {
 
   private group = new THREE.Group();
 
-  private texture = new THREE.TextureLoader().load('img/qwe.jpg');
+  // private texture = new THREE.TextureLoader().load('img/qwe.jpg');
+  private texture = new THREE.TextureLoader().load('img/f.jpg');
 
   private data = this.cabinetConfiguratorService.getWardrobe();
 
@@ -416,7 +417,6 @@ export class FillingSectionsService {
           return item;
         }
       });
-      debugger;
       if (block) {
         startYPos = block.SR_yaschiki_vneshnie_kol === 2 ? 400 : 600;
       }

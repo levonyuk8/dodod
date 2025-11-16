@@ -13,9 +13,10 @@ import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {BlocksComponent} from './blocks/blocks.component';
 import {Slider} from 'primeng/slider';
 import {InputText} from 'primeng/inputtext';
-import {WardrobeParamsService} from '../../../_services/wardrobe-params.service';
+import {Material, WardrobeParamsService} from '../../../_services/wardrobe-params.service';
 import {CheckboxComponent} from '../../../_shared/components/checkbox-group/checkbox.component';
 import {FormCorrectionService} from '../../../_services/form-correction.service';
+import {Select} from 'primeng/select';
 
 @Component({
   selector: 'app-step-2',
@@ -27,7 +28,8 @@ import {FormCorrectionService} from '../../../_services/form-correction.service'
     BlocksComponent,
     Slider,
     InputText,
-    CheckboxComponent
+    CheckboxComponent,
+    Select
   ],
   templateUrl: './step-2.component.html',
   styleUrl: './step-2.component.scss',
@@ -47,6 +49,11 @@ export class Step2Component implements OnInit {
   numberOfDoors: IGroupData = this.createCountDoorsSliderData();
 
   srHMaxAntr = this.cabinetConfiguratorService.calcMaxHAntr();
+
+  backWallMaterials: Material[] = [
+    {name: 'ДВП', code: '1'},
+    {name: 'ХДФ', code: '2'},
+  ];
 
   private createAndPatchForm(): void {
     this.stepTwoForm = this.fb.group({
@@ -193,13 +200,15 @@ export class Step2Component implements OnInit {
     this.stepTwoForm.get('SR_yaschiki_vneshnie')?.valueChanges.pipe(
       takeUntilDestroyed(this.destroyRef),
       tap((val) => {
-        if (val !== 0) {
+        if (+val !== 0) {
           // alert('alarm');
+
           this.stepTwoForm.get('SR_niz_dveri')?.setValue(0);
+        } else {
+          this.updateScheme([]);
         }
-        // this.updateScheme([]);
+        //
         // todo
-        console.log(this.cabinetConfiguratorService.getWardrobe())
         this.base = {
           groupName: "base",
           options: [
@@ -375,8 +384,7 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
 
   updateScheme(data: any) {
     this.cabinetConfiguratorService.setWardrobeScheme(data, Steps.two);
-    console.log(data)
-    if (data.length <= 0) {
+    if (data.length <= 0 && +this.stepTwoForm.get('SR_yaschiki_vneshnie')?.value !== 0) {
       this.stepTwoForm.get('SR_yaschiki_vneshnie')?.patchValue(0);
     }
   }

@@ -100,7 +100,7 @@ export class Step3Component implements OnInit {
     groupName: "openingDoorTypes",
     options: [
       {
-        imgUrl: 'url(/img/svg/s3/ODT1.svg)', label: 'Двери', value: 0,
+        imgUrl: 'url(/img/svg/s3/ST2.svg)', label: 'Двери', value: 0,
         disabled: false,
         message: ``
       },
@@ -179,36 +179,27 @@ export class Step3Component implements OnInit {
 
 
   private createAndSaveSectionByWardrobeScheme() {
-
     const sectionByDoors = this.createEmptySections();
-    sectionByDoors.forEach(section => {
+    sectionByDoors.forEach((section, index) => {
 
+      const isLeftOpening = this.cabinetConfiguratorService.getWardrobe().srK / 2 >= index;
 
       const scheme = this.wardrobeScheme.find(item => {
-          console.log('item.startPos', item.startPos)
-          console.log('item.nextSectionNumber', this.cabinetConfiguratorService.nextSectionNumber(+section.value))
           return item.startPos === this.cabinetConfiguratorService.nextSectionNumber(+section.value)
         }
       );
       const filling = {
         section: section.value,
         sectionType: scheme ? 1 : 0,
-        openingDoorType: 0,
+        openingDoorType: scheme || isLeftOpening ? 0 : 2,
         fillingOption: 1
       }
-      console.log(filling)
       this.saveSection(filling);
     })
     this.sectionList.options = sectionByDoors;
-
-    console.log(this.cabinetConfiguratorService.getSavedFilingScheme())
-
-
   }
 
   private disabledDoubleDoorType() {
-    console.log(this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2)
-    console.log(this.nextSectionWithYV)
     return this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2 ||
       this.nextSectionWithYV ||
       this.isLastSection ||
@@ -216,16 +207,11 @@ export class Step3Component implements OnInit {
   }
 
   private disabledSingleDoorType() {
-    console.log(this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2)
-    console.log(this.nextSectionWithYV)
     return this.sectionWithYV;
   }
 
   ngOnInit(): void {
     this.createAndSaveSectionByWardrobeScheme();
-
-    // sectionType: this.sectionType$, openingDoorType: this.openingDoorType$, filingOption: this.filingOption$
-
     this.all$.pipe(
       // takeUntil(this.testS),
       debounceTime(500),
@@ -239,6 +225,7 @@ export class Step3Component implements OnInit {
           openingDoorType: +openingDoorType,
           fillingOption: +filingOption
         }
+        this.threeHelperService.doorHandleChange()
         this.saveSection(filing);
         return EMPTY;
       })
@@ -279,7 +266,6 @@ export class Step3Component implements OnInit {
       takeUntilDestroyed(this.destroyRef),
       tap(data => {
         const filingList = this.cabinetConfiguratorService.getSavedFilingScheme();
-        console.log(filingList)
         const section = filingList.find((item: any) => {
           if (+item.section === +data) {
             return item;
@@ -293,8 +279,6 @@ export class Step3Component implements OnInit {
 
         this.nextSectionDual = nextSection && nextSection.sectionType === 1;
 
-        debugger;
-        console.log('section$', section);
         if (section) {
           this.stepThreeForm.patchValue({
             sectionType: +section.sectionType,
@@ -310,12 +294,6 @@ export class Step3Component implements OnInit {
 
 
         }
-
-        console.log(filingList.length);
-        console.log(data);
-
-        console.log(filingList.length === +data);
-        // disabled st === 1
         const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
 
 
@@ -337,9 +315,6 @@ export class Step3Component implements OnInit {
           this.sectionWithYV = !!currentBlock
         }
         this.isLastSection = filingList.length === +data
-
-        console.log(this.isLastSection, this.sectionWithYV, this.nextSectionWithYV);
-
         this.sectionTypes.options = this.sectionTypes.options.map((i: any) => {
           if (i.value === 0) {
             return {
@@ -356,14 +331,10 @@ export class Step3Component implements OnInit {
         })
         this.sectionWithSRY();
         this.disabledFillingByWidthSection(section);
-
-        console.log(this.wardrobe.srK / 2)
-        console.log(this.wardrobe.srK / 2)
-
-        if (this.wardrobe.srK / 2 <= section.section && section.sectionType !== 1) {
-          this.openingDoorType.setValue(2);
-          // this.openingDoorTypes
-        }
+        // if (this.wardrobe.srK / 2 <= section.section && section.sectionType !== 1) {
+        //   this.openingDoorType.setValue(2);
+        //   // this.openingDoorTypes
+        // }
       })
     ).subscribe();
 
@@ -439,7 +410,6 @@ export class Step3Component implements OnInit {
   }
 
   private sectionWithSRY() {
-    console.log('sectionWithSRY', this.sectionWithYV);
     const message = 'Неподходящий вариант внешние ящики';
     const arr = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -461,7 +431,6 @@ export class Step3Component implements OnInit {
 
   private disabledFillingByWidthSection(section: any, block: Block | null = null) {
     if (this.sectionWithYV) return;
-    console.log('disabledFillingByWidthSection', this.sectionWithYV);
     const message = 'Неподходящий вариант ширина секции';
     const fillingW = this.threeHelperService.getSectionFillingWBySection(section)
     const arr = [9, 10, 11, 12];

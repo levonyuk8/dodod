@@ -86,8 +86,6 @@ export class CabinetConfiguratorService {
 
   // SR_K_max=(SR_L/SR_L_MIN) и округлить в большую сторону	Формула для максимального кол-ва дверей
   private maxCalcNumberOfDoors(width: number) {
-    console.log(width / this.wps.SR_L_MIN)
-    console.log(Math.round(width / this.wps.SR_L_MIN))
     return Math.floor(width / this.wps.SR_L_MIN);
   }
 

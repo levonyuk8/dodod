@@ -42,7 +42,6 @@ export class Step1Component implements OnInit {
   ngOnInit(): void {
     this.createAndPatchForm();
     this.changeForm();
-
     this.correctionFormValue();
   }
 
@@ -99,9 +98,7 @@ export class Step1Component implements OnInit {
       // distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
-        console.log(change)
         this.ccs.setWardrobe(change, Steps.one);
-        // this.ccs.setWardrobe(change, Steps.one);
       })
     ).subscribe()
   }

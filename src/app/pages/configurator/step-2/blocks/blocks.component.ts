@@ -65,19 +65,16 @@ export class BlocksComponent implements OnInit {
     if (!this.blockList.length) {
       return 0;
     }
-    let arr: any = [0, +this.doorCount - 1];
+    let arr: any = [0, +this.doorCount];
     this.blockList.forEach(item => {
       const {endPos, startPos} = item;
       arr.push(startPos, endPos);
     });
 
     arr.sort();
-
-    console.log(arr)
-
     for (let i = 1; i < arr.length; i++) {
       const diff = arr[i] - arr[i - 1];
-      if (diff >= 2) {
+      if (diff > 2) {
         return arr[i - 1] === 0 ? arr[i - 1] : arr[i - 1] + 1;
       }
     }
@@ -91,10 +88,8 @@ export class BlocksComponent implements OnInit {
   }
 
   isDisabledAddBlock(): boolean {
-    console.log('isDisabledAddBlock',  this.isEnoughSpaceForNewBlock())
     // return Math.floor(this.doorCount / 2) <= this.blockList.length;
     const res  = this.isEnoughSpaceForNewBlock();
-    console.log('isDisabledAddBlock', !(res === 0 ||res === -1))
     return  res === -1;
   }
 
