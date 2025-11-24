@@ -7,7 +7,7 @@ import {
   RadioGroupComponent
 } from '../../../_shared/components/radio-group/radio-group.component';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
-import {distinctUntilChanged, startWith, tap} from 'rxjs';
+import {debounceTime, distinctUntilChanged, startWith, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {BlocksComponent} from './blocks/blocks.component';
@@ -51,13 +51,15 @@ export class Step2Component implements OnInit {
   srHMaxAntr = this.cabinetConfiguratorService.calcMaxHAntr();
 
   backWallMaterials: Material[] = [
-    {name: 'ДВП', code: '1'},
-    {name: 'ХДФ', code: '2'},
+    {name: 'Без задней стенки', code: '1'},
+    {name: 'В накладку', code: '2'},
+    {name: 'В четверть', code: '3'},
   ];
 
   private createAndPatchForm(): void {
     this.stepTwoForm = this.fb.group({
-      srK: new FormControl<number>(this.data.SR_K_min),
+      backWallMaterial: new FormControl<number>(1),
+      srK: new FormControl<number>(this.data.SR_K_max),
       SR_yaschiki_vneshnie: new FormControl<number>(0),
       // SR_yaschiki_vneshnie_kol: new FormControl<number>(2),
       SR_tsokol: new FormControl<number>(0),
@@ -239,9 +241,10 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
     if ( this.data.srL <= 600) {
       return  `this.data.srL <= 600`;
     }
-    if (this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK) {
-      return this.externalDrawersErrMesG;
-    }
+    // if (this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK) {
+    //   return this.externalDrawersErrMesG;
+    // }
+    debugger;
     if (this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2) {
       return this.externalDrawersErrMesWF;
     }
@@ -266,7 +269,6 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
         {
           imgUrl: 'url(/img/svg/ED2.svg)', label: 'Да', value: 1,
           disabled: this.data.srL <= 600
-            || this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK
             || this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,//??
           message: this.externalDrawersMessageByCondition()
         }, // todo
@@ -354,7 +356,7 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
 
     this.stepTwoForm?.valueChanges.pipe(
       startWith(this.stepTwoForm?.value),
-      // debounceTime(800),
+      // debounceTime(100),
       distinctUntilChanged(), // Игнорировать повторяющиеся значения
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {

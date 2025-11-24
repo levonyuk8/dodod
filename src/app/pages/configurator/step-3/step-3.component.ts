@@ -12,6 +12,7 @@ import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {ThreeHelperService} from '../../../_services/three-helper.service';
 import {Block} from '../../../_models/block.model';
 import {WardrobeParamsService} from '../../../_services/wardrobe-params.service';
+import {FillingSectionsService} from '../../../_services/ filling-sections.service';
 
 @Component({
   selector: 'app-step-3',
@@ -27,6 +28,7 @@ export class Step3Component implements OnInit {
   private destroyRef = inject(DestroyRef);
   private cdr = inject(ChangeDetectorRef);
   private threeHelperService = inject(ThreeHelperService);
+  private FillingSectionsService = inject(FillingSectionsService);
   private cabinetConfiguratorService = inject(CabinetConfiguratorService);
   private wardrobeParamsService = inject(WardrobeParamsService);
 
@@ -182,7 +184,7 @@ export class Step3Component implements OnInit {
     const sectionByDoors = this.createEmptySections();
     sectionByDoors.forEach((section, index) => {
 
-      const isLeftOpening = this.cabinetConfiguratorService.getWardrobe().srK / 2 >= index;
+      const isLeftOpening = this.cabinetConfiguratorService.getWardrobe().srK / 2 > index;
 
       const scheme = this.wardrobeScheme.find(item => {
           return item.startPos === this.cabinetConfiguratorService.nextSectionNumber(+section.value)
@@ -192,14 +194,20 @@ export class Step3Component implements OnInit {
         section: section.value,
         sectionType: scheme ? 1 : 0,
         openingDoorType: scheme || isLeftOpening ? 0 : 2,
-        fillingOption: 1
+        fillingOption: 1,
+        sectionWithVY: scheme ? 1 : 0,
       }
       this.saveSection(filling);
-    })
+    });
+
+    console.log(this.cabinetConfiguratorService.getSavedFilingScheme())
+
+
     this.sectionList.options = sectionByDoors;
   }
 
   private disabledDoubleDoorType() {
+    if (this.sectionWithYV) return false;
     return this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2 ||
       this.nextSectionWithYV ||
       this.isLastSection ||
@@ -214,18 +222,18 @@ export class Step3Component implements OnInit {
     this.createAndSaveSectionByWardrobeScheme();
     this.all$.pipe(
       // takeUntil(this.testS),
-      debounceTime(500),
+      debounceTime(100),
       distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       switchMap(([sectionType, openingDoorType, filingOption]) => {
-        console.log('$all')
         const filing = {
           section: +this.section.getRawValue(),
           sectionType: +sectionType,
           openingDoorType: +openingDoorType,
           fillingOption: +filingOption
         }
-        this.threeHelperService.doorHandleChange()
+        console.log('all', filing);
+        this.threeHelperService.doorHandleChange();
         this.saveSection(filing);
         return EMPTY;
       })
@@ -297,24 +305,27 @@ export class Step3Component implements OnInit {
         const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
 
 
-        if (+this.wardrobe.SR_yaschiki_vneshnie === 1 && scheme.length) {
+        this.sectionWithYV = !!section.sectionWithVY
 
-          const currentBlock = scheme.find((block: any) => {
-            if (+data === block.endPos) { //<= item.endPos
-              return block;
-            }
-          });
+        // if (+this.wardrobe.SR_yaschiki_vneshnie === 1 && scheme.length) {
+        //
+        //   const currentBlock = scheme.find((block: any) => {
+        //     if (+data === block.endPos) { //<= item.endPos
+        //       return block;
+        //     }
+        //   });
+        //
+        //   const nextBlock = scheme.find((block: any) => {
+        //     if (+data === block.startPos) { //<= item.endPos
+        //       return block;
+        //     }
+        //   });
+        //
+        //   this.nextSectionWithYV = !!nextBlock
+        //   this.sectionWithYV = !!currentBlock
+        // }
+        this.isLastSection = filingList.length === +data;
 
-          const nextBlock = scheme.find((block: any) => {
-            if (+data === block.startPos) { //<= item.endPos
-              return block;
-            }
-          });
-
-          this.nextSectionWithYV = !!nextBlock
-          this.sectionWithYV = !!currentBlock
-        }
-        this.isLastSection = filingList.length === +data
         this.sectionTypes.options = this.sectionTypes.options.map((i: any) => {
           if (i.value === 0) {
             return {
@@ -328,7 +339,8 @@ export class Step3Component implements OnInit {
             }
           }
 
-        })
+        });
+
         this.sectionWithSRY();
         this.disabledFillingByWidthSection(section);
         // if (this.wardrobe.srK / 2 <= section.section && section.sectionType !== 1) {

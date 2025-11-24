@@ -1,7 +1,10 @@
 <div class="stepper-container">
   <div class="stepper-container__header">
-    <app-button [width]="'w-full'" [variant]="'primary'" [imageUrl]="'/img/svg/Play.svg'">Видео-инструкция</app-button>
-    <app-button (click)="restart.emit()" [width]="'w-full'" [variant]="'bg-transparent'" [imageUrl]="'/img/svg/Vector.svg'">Начать заново</app-button>
+    <app-button [width]="'w-full'" [variant]="'primary'" [imageUrl]="'/img/svg/Play.svg'">
+      <span style="margin-left: .5rem">Видео-инструкция </span></app-button>
+    <app-button (click)="restart.emit()" [width]="'w-full'" [variant]="'bg-transparent'"
+                [imageUrl]="'/img/svg/Vector.svg'">
+      <span style="margin-left: .5rem">Начать заново</span></app-button>
   </div>
   <div class="stepper-container__steps">
     @for (item of stepList; track item) {

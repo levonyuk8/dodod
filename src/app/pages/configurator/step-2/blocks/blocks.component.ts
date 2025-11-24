@@ -65,12 +65,11 @@ export class BlocksComponent implements OnInit {
     if (!this.blockList.length) {
       return 0;
     }
-    let arr: any = [0, +this.doorCount];
+    let arr: any = [-1, +this.doorCount];
     this.blockList.forEach(item => {
       const {endPos, startPos} = item;
       arr.push(startPos, endPos);
     });
-
     arr.sort();
     for (let i = 1; i < arr.length; i++) {
       const diff = arr[i] - arr[i - 1];

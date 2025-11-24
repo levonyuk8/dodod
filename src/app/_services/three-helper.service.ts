@@ -519,68 +519,60 @@ export class ThreeHelperService {
       meshes.push(yv.element)
     })
 
-
-    group.add(...meshes);
-    this.scene.add(group);
+    if (meshes && meshes.length > 0) {
+      group.add(...meshes);
+      this.scene.add(group);
+    }
   }
 
   private qwe = new Group();
 
   public doorHandleChange() {
-    this.scene.remove(this.qwe)
+    console.log('doorHandleChange')
+    // this.scene.remove(this.qwe)
     const {wSect, srH} = this.cabinetConfiguratorService.getWardrobe();
-    console.log(this.scene)
     const doors = this.scene.children.find((child: THREE.Object3D) =>
       child.name === 'Doors');
-    console.log(doors)
-
     const hands = doors?.children.find((child: THREE.Object3D) => {
-      console.log(child)
       return  child.name = 'qwe';
+
+
     })
-    console.log('hands', hands)
-    // this.scene.remove(...hands.children);
-    console.log(this.cabinetConfiguratorService.getSavedFilingScheme())
     const scheme = this.cabinetConfiguratorService.getSavedFilingScheme();
     let count = 0;
     scheme.forEach( (sect: any, index: number) => {
       doors?.children[count]?.remove(doors?.children[count]?.getObjectByName('qwe')!)
-      console.log(sect);
       const hand = this.createDoorHandle();
       if (+sect.sectionType === 0) {
-        console.log('sectionType 0 ')
         if (+sect.openingDoorType === 0) {
-          console.log('openingDoorType 0 ')
           hand.position.x += wSect / 2 - 45 - 10;
           hand.position.setY(-srH / 2 + 1000);
-          this.qwe.add(hand);
+          // this.qwe.add(hand);
           doors?.children[count]?.add(hand);
           // const doorW = doors?.children[index]?.['geometry'].parameters.width;
         ++count;
           // doors?.children[index]?.element.add(this.createDoorHandle());
         } else if (+sect.openingDoorType === 2) {
-          console.log('openingDoorType 2 ')
           hand.position.x += -wSect / 2 + 45 + 10;
           hand.position.setY(-srH / 2 + 1000);
-          this.qwe.add(hand);
+          // this.qwe.add(hand);
           doors?.children[count]?.add(hand);
           ++count;
         }
       } else {
-        console.log('sectionType else ')
         hand.position.x += wSect / 2 - 45 - 10;
         hand.position.setY(-srH / 2 + 1000);
-        this.qwe.add(hand);
+        // this.qwe.add(hand);
         doors?.children[count]?.add(hand);
         const addHand = this.createDoorHandle();
         addHand.position.x += -wSect / 2 + 45 + 10;
         addHand.position.setY(-srH / 2 + 1000);
-        this.qwe.add(addHand);
+        // this.qwe.add(addHand);
         doors?.children[count + 1]?.add(addHand);
         count = count +  2;
       }
 
-      console.log(count)
+      // console.log(count)
 
 
     })
@@ -588,7 +580,7 @@ export class ThreeHelperService {
     //   this.openingDoorType.setValue(2);
       // this.openingDoorTypes
     // }
-    console.log(doors);
+    // console.log(doors);
   }
 
   createDoorHandle() {

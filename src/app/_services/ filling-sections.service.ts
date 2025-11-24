@@ -77,6 +77,7 @@ export class FillingSectionsService {
     quaternion.setFromAxisAngle(axis, angle);
     const cylinder = new THREE.Mesh(geometry, material);
     cylinder.setRotationFromQuaternion(quaternion);
+    cylinder.name = 'cylinder';
     return cylinder;
   }
 
@@ -211,6 +212,10 @@ export class FillingSectionsService {
     }
   }
 
+  getFilingByName(sectionNumber: number) {
+    return  this.group.getObjectByName('Filling' + sectionNumber);
+  }
+
   private createAddShelves(sectionNumber: number, addYPos: number = this.SR_H_SREDN_TRYBA, isDual = false, sectionW = 0, addCount = 0) {
     const {SR_G_fasad} = this.data;
     const depth = SR_G_fasad === 'ldsp16' ? 16 : 18;
@@ -278,13 +283,8 @@ export class FillingSectionsService {
   createFilling6(sectionNumber: number, isDual = false, sectionW = 0) {
     this.createFilling2(sectionNumber, isDual, sectionW);
     const cr = this.createCylinder(isDual, sectionW);
-    // this.setPosX(cr2, sectionNumber);
     this.setPosY(cr, this.SR_H_NIGN_TRYBA - 40);
-    // const group = new THREE.Group();
-    // group.name = 'Filling' + sectionNumber;
     this.group.add(cr);
-    // gr.add(cr2);
-    // return gr;
   }
 
   createFilling7(sectionNumber: number, isDual = false, addYPos: number, sectionW: number) {
