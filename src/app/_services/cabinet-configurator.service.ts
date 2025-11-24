@@ -42,7 +42,8 @@ export class CabinetConfiguratorService {
     Object.assign(this.data, data);
     if (step === Steps.one) {
       this.calcNumberOfDoors();
-      this.data.wSect = ((this.data.srL) / this.data.srK);
+
+      // this.data.wSect = ((this.data.srL) / this.data.srK);
     }
 
     if (step === Steps.two) {
@@ -96,7 +97,8 @@ export class CabinetConfiguratorService {
     } else {
       this._savedFilingScheme = this._savedFilingScheme.map(s => {
         if (s.section === val.section) {
-          return val;
+          console.log(Object.assign(s, val))
+          return Object.assign(s, val);
         }
         return s;
       });

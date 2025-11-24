@@ -77,6 +77,7 @@ export class FillingSectionsService {
     quaternion.setFromAxisAngle(axis, angle);
     const cylinder = new THREE.Mesh(geometry, material);
     cylinder.setRotationFromQuaternion(quaternion);
+    cylinder.name = 'cylinder';
     return cylinder;
   }
 
@@ -211,6 +212,10 @@ export class FillingSectionsService {
     }
   }
 
+  getFilingByName(sectionNumber: number) {
+    return this.group.getObjectByName('Filling' + sectionNumber);
+  }
+
   private createAddShelves(sectionNumber: number, addYPos: number = this.SR_H_SREDN_TRYBA, isDual = false, sectionW = 0, addCount = 0) {
     const {SR_G_fasad} = this.data;
     const depth = SR_G_fasad === 'ldsp16' ? 16 : 18;
@@ -234,7 +239,7 @@ export class FillingSectionsService {
 
   createFilling2(sectionNumber: number, isDual = false, sectionW = 0) {
     const cr = this.createCylinder(isDual, sectionW);
-    const {SR_G_fasad, srH} = this.data;
+    const {srH} = this.data;
     if (srH > this.SR_H_NISHA_CENTR_STANDART + this.SR_H_MIN_POLKA + 80) {
       const shelf = this.createShelf(isDual, sectionW);
       this.setPosY(shelf, this.SR_H_NISHA_CENTR_STANDART);
@@ -246,7 +251,6 @@ export class FillingSectionsService {
   }
 
   createFilling3(sectionNumber: number, isDual = false, sectionW = 0) {
-
     this.createFilling2(sectionNumber, isDual, sectionW);
     const shelf = this.createShelf(isDual, sectionW);
     this.setPosY(shelf, this.SR_H_NIGN_POLKA);
@@ -254,203 +258,91 @@ export class FillingSectionsService {
   }
 
   createFilling4(sectionNumber: number, isDual = false, sectionW = 0) {
-    // this.createFilling2(sectionNumber, isDual, sectionW);
     this.createFilling3(sectionNumber, isDual, sectionW);
     const s2 = this.createShelf(isDual, sectionW)
-    // this.setPosX(s2, sectionNumber);
     this.setPosY(s2, this.SR_H_NIGN_POLKA * 2);
     this.group.add(s2);
-    // gr.add(s2);
-    // return gr;
   }
 
   createFilling5(sectionNumber: number, isDual = false, sectionW = 0) {
-    // this.createFilling2(sectionNumber, isDual, sectionW);
     this.createFilling4(sectionNumber, isDual, sectionW)
     const s2 = this.createShelf(isDual, sectionW)
-    // this.setPosX(s2, sectionNumber);
     this.setPosY(s2, this.SR_H_NIGN_POLKA * 3);
-    // gr.add(s1);
     this.group.add(s2);
-    // return gr;
   }
 
   createFilling6(sectionNumber: number, isDual = false, sectionW = 0) {
     this.createFilling2(sectionNumber, isDual, sectionW);
     const cr = this.createCylinder(isDual, sectionW);
-    // this.setPosX(cr2, sectionNumber);
     this.setPosY(cr, this.SR_H_NIGN_TRYBA - 40);
-    // const group = new THREE.Group();
-    // group.name = 'Filling' + sectionNumber;
     this.group.add(cr);
-    // gr.add(cr2);
-    // return gr;
   }
 
   createFilling7(sectionNumber: number, isDual = false, addYPos: number, sectionW: number) {
-    // let group = new THREE.Group();
-    // group.name = 'Filling' + sectionNumber;
     const cr = this.createCylinder(isDual, sectionW);
-    // this.setPosX(cr2, sectionNumber);
     this.setPosY(cr, addYPos - 100);
-
     const shelf = this.createShelf(isDual, sectionW);
-
-    // const {SR_G_fasad} = this.data;
-    // const depth = SR_G_fasad === 'ldsp16' ? 16 : 18;
-
     this.setPosY(shelf, addYPos);
-
     this.group.add(cr, shelf);
-    // const sH = this.calcSectionHeight(sectionNumber) - addYPos - 60;
-    // const shelvesCount = this.calcShelvesCount(sH);
-    // const shelvesH = sH / shelvesCount;
-    // if (shelvesCount > 1) {
-    //   const shelfBase = this.createShelf(isDual, sectionW)
-    //   // this.setPosX(shelfBase, sectionNumber)
-    //   this.setPosY(shelfBase, addYPos + 60);
-    //   for (let i = 1; i < shelvesCount; i++) {
-    //     const shelf = this.createShelf(isDual, sectionW)
-    //     // this.setPosX(shelf, sectionNumber);
-    //     this.setPosY(shelf, addYPos + 60 + shelvesH * i);
-    //     this.group.add(shelf);
-    //   }
-    //   this.group.add(shelfBase);
-    // }
-
     this.createAddShelves(sectionNumber, addYPos, isDual, sectionW);
-
-    // return group;
   }
 
   createFilling8(sectionNumber: number, isDual = false, sectionW = 0) {
-    // let group = new THREE.Group();
-    // group.name = 'Filling' + sectionNumber;
     const cr = this.createCylinder(isDual, sectionW);
-    // this.setPosX(cr2, sectionNumber);
     this.setPosY(cr, this.SR_H_NIGN_TRYBA);
     this.group.add(cr);
-
     this.setPosY(cr, this.SR_H_NIGN_TRYBA - 100);
-
     const shelf = this.createShelf(isDual, sectionW);
-
-    // const {SR_G_fasad} = this.data;
-    // const depth = SR_G_fasad === 'ldsp16' ? 16 : 18;
-
     this.setPosY(shelf, this.SR_H_NIGN_TRYBA);
-
     this.group.add(cr, shelf);
-
-    // const sH = this.calcSectionHeight(sectionNumber) - this.SR_H_NIGN_TRYBA - 60;
-    // const shelvesCount = this.calcShelvesCount(sH);
-    // const shelvesH = sH / shelvesCount;
-    // if (shelvesCount > 1) {
-    //   const shelfBase = this.createShelf(isDual, sectionW)
-    //   // this.setPosX(shelfBase, sectionNumber)
-    //   this.setPosY(shelfBase, this.SR_H_NIGN_TRYBA + 60);
-    //   for (let i = 1; i < shelvesCount; i++) {
-    //     const shelf = this.createShelf(isDual, sectionW)
-    //     // this.setPosX(shelf, sectionNumber);
-    //     this.setPosY(shelf, this.SR_H_NIGN_TRYBA + 60 + shelvesH * i);
-    //     this.group.add(shelf);
-    //   }
-    //   this.group.add(shelfBase);
-    // }
-
     this.createAddShelves(sectionNumber, this.SR_H_NIGN_TRYBA, isDual, sectionW);
   }
 
   createFilling9And10(sectionNumber: number, isDual = false, yCount = 2, sectionW = 0) {
     let group = new THREE.Group();
-    // group.name = 'Filling' + sectionNumber;
     this.createFilling2(sectionNumber, isDual, sectionW);
-    // t group.add(cr);
     this.createY(yCount, isDual, sectionW);
-    // this.setPosX(y, sectionNumber);
-    // group.add(y);
     return group;
   }
 
   createFilling11And12(sectionNumber: number, isDual = false, yCount = 2, sectionW = 0) {
     let group = new THREE.Group();
-    // group.name = 'Filling' + sectionNumber;
     this.createY(yCount, isDual, sectionW);
-    // this.setPosX(y, sectionNumber);
-    // group.add(y);
     this.createAddShelves(sectionNumber, this.SR_H_VNUTR_YASHCHIK, isDual, sectionW);
-    // return group;
   }
 
   createFilling13And14(sectionNumber: number, isDual = false, addCount = 0, sectionW = 0) {
-    // let group = new THREE.Group();
-    // group.name = 'Filling' + sectionNumber;
-
-    // if (Number(SR_yaschiki_vneshnie) === 1) {
-    //   const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
-    //   // @ts-ignore
-    //   const block = scheme.find((item: Block) => {
-    //     if (item.endPos === +sectionNumber) { //<= item.endPos
-    //       return item;
-    //     }
-    //   });
-    //   if (block) {
-    //     yH = block.SR_yaschiki_vneshnie_kol === 2 ? 462 : 692;
-    //     emptySectionH -= yH;
-    //   }
-    // }
-
-
     let sH = this.calcSectionHeight(sectionNumber);
     const shelvesCount = this.calcShelvesCount(sH) + addCount;
     const shelvesH = sH / (shelvesCount);
-
     let startYPos = 0;
-
-    const {SR_yaschiki_vneshnie} = this.data;
-
-    if (Number(SR_yaschiki_vneshnie) === 1) {
-      const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
-      // @ts-ignore
-      const block = scheme.find((item: Block) => {
-        if (item.endPos === +sectionNumber) { //<= item.endPos
-          return item;
-        }
-      });
-      if (block) {
-        startYPos = block.SR_yaschiki_vneshnie_kol === 2 ? 400 : 600;
-      }
+    const fScheme = this.cabinetConfiguratorService.getSavedFilingScheme();
+    const sect = fScheme.find((item: any) => item.section === +sectionNumber);
+    if (sect && sect.sectionWithVY > 0) {
+      startYPos =  sect.sectionWithVY * 200;
     }
-
     for (let i = 1; i <= shelvesCount; i++) {
       const test = this.createShelf(isDual, sectionW)
-      // this.setPosX(test, sectionNumber);
       if (i === shelvesCount) test.visible = false;
       this.setPosY(test, startYPos + shelvesH * i);
       this.group.add(test);
     }
-    // return group;
   }
-
   public calcSectionHeight(sectionNumber: number) {
-    const {srH, SR_antr, SR_H_antr, SR_yaschiki_vneshnie} = this.data;
+    const {srH, SR_antr, SR_H_antr} = this.data;
     const depth = this.data.SR_G_fasad === 'ldsp16' ? 16 : 18;
     let emptySectionH = srH - 80 - depth * 2;
     let yH = 0;
 
-    if (Number(SR_yaschiki_vneshnie) === 1) {
-      const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
-      // @ts-ignore
-      const block = scheme.find((item: Block) => {
-        if (item.endPos === +sectionNumber) { //<= item.endPos
-          return item;
-        }
-      });
-      if (block) {
-        yH = block.SR_yaschiki_vneshnie_kol === 2 ? 400 : 600;
-        emptySectionH -= yH;
-      }
+    const fScheme = this.cabinetConfiguratorService.getSavedFilingScheme();
+
+    const sect = fScheme.find((item: any) => item.section === +sectionNumber);
+
+    if (sect && sect.sectionWithVY > 0) {
+      yH = sect.sectionWithVY * 200;
+      emptySectionH -= yH;
     }
+
     if (SR_antr) emptySectionH -= SR_H_antr;
     return emptySectionH;
   }
@@ -469,9 +361,6 @@ export class FillingSectionsService {
     let par = obj.geometry.type === 'CylinderGeometry' ? 'height' : 'width';
     const sW = obj.geometry.parameters[par];
     group.position.x = ((-this.data.srL + sW + 4) / 2) + ((sectionW + depth) * pos) + depth;
-
-
-    // group.position.x = ((-this.data.srL + this.data.wSect + depth) / 2) + (pos * (this.data.wSect));
   }
 
   private setPosY(group: any, addYPos: number) {

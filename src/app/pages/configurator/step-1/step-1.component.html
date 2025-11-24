@@ -17,11 +17,10 @@
       <p-slider
         [min]="wps.SR_L_MIN"
         [max]="wps.SR_L_MAX"
-        [ngModel]="stepOneForm.get('srL')?.value"
-        (ngModelChange)="stepOneForm.get('srL')?.setValue($event)"
-        [ngModelOptions]="{standalone:true}"
+        formControlName="srL"
         class="gradient-slider w-full"/>
       <input
+        type="number"
         class="input"
         formControlName="srL"
         [style.width.px]="100"/>
@@ -35,10 +34,9 @@
       <p-slider
         [min]="wps.SR_H_MIN"
         [max]="wps.SR_H_MAX"
-        [ngModel]="stepOneForm.get('srH')?.value"
-        (ngModelChange)="stepOneForm.get('srH')?.setValue($event)"
-        [ngModelOptions]="{standalone:true}"/>
-      <input class="input" formControlName="srH" [style.width.px]="100"/>
+        formControlName="srH"
+      />
+      <input type="number" class="input" formControlName="srH" [style.width.px]="100"/>
     </div>
 
     <div>
@@ -49,10 +47,8 @@
       <p-slider
         [min]="wps.SR_G_MIN"
         [max]="wps.SR_G_MAX"
-        [ngModel]="stepOneForm.get('srG')?.value"
-        (ngModelChange)="stepOneForm.get('srG')?.setValue($event)"
-        [ngModelOptions]="{standalone:true}"/>
-      <input class="input" formControlName="srG" [style.width.px]="100"/>
+        formControlName="srG"/>
+      <input type="number" class="input" formControlName="srG" [style.width.px]="100"/>
     </div>
 
   </div>

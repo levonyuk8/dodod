@@ -3,6 +3,7 @@ import {ThreeHelperService} from '../../../_services/three-helper.service';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
 import {filter} from 'rxjs';
 import {ButtonComponent} from '../button/button.component';
+import {Steps} from '../stepper/stepper.component';
 
 @Component({
   selector: 'app-three-wardrobe',
@@ -16,6 +17,8 @@ export class ThreeWardrobeComponent implements AfterViewInit {
 
   size = signal(false);
   isHideDoors = signal(false);
+
+  currentStep = signal(Steps.one);
 
   // sizeBtnLabel = ` ${this.size() ? 'Скрыть' : 'Показать'} размеры`;
 
@@ -42,6 +45,7 @@ export class ThreeWardrobeComponent implements AfterViewInit {
       )
       .subscribe(
         data => {
+          this.currentStep.set(data)
           this.threeHelper.createCabinet(data);
         }
       )
@@ -57,4 +61,5 @@ export class ThreeWardrobeComponent implements AfterViewInit {
     this.isHideDoors.set(!this.isHideDoors());
   }
 
+  protected readonly Steps = Steps;
 }

@@ -519,101 +519,93 @@ export class ThreeHelperService {
       meshes.push(yv.element)
     })
 
-
-    group.add(...meshes);
-    this.scene.add(group);
+    if (meshes && meshes.length > 0) {
+      group.add(...meshes);
+      this.scene.add(group);
+    }
   }
 
-  private qwe = new Group();
-
   public doorHandleChange() {
-    this.scene.remove(this.qwe)
+    console.log('doorHandleChange')
     const {wSect, srH} = this.cabinetConfiguratorService.getWardrobe();
-    console.log(this.scene)
     const doors = this.scene.children.find((child: THREE.Object3D) =>
       child.name === 'Doors');
-    console.log(doors)
-
-    const hands = doors?.children.find((child: THREE.Object3D) => {
-      console.log(child)
-      return  child.name = 'qwe';
-    })
-    console.log('hands', hands)
-    // this.scene.remove(...hands.children);
-    console.log(this.cabinetConfiguratorService.getSavedFilingScheme())
     const scheme = this.cabinetConfiguratorService.getSavedFilingScheme();
     let count = 0;
-    scheme.forEach( (sect: any, index: number) => {
-      doors?.children[count]?.remove(doors?.children[count]?.getObjectByName('qwe')!)
-      console.log(sect);
+    scheme.forEach((sect: any, index: number) => {
       const hand = this.createDoorHandle();
+      console.log()
+      hand.position.y = (-srH / 2 + 1000);
       if (+sect.sectionType === 0) {
-        console.log('sectionType 0 ')
         if (+sect.openingDoorType === 0) {
-          console.log('openingDoorType 0 ')
           hand.position.x += wSect / 2 - 45 - 10;
-          hand.position.setY(-srH / 2 + 1000);
-          this.qwe.add(hand);
+          // hand.position.y = (-srH / 2 + 1000);
+          // this.qwe.add(hand);
+          const objectToRemove = doors?.children[count].getObjectByName("handle");
+          if (objectToRemove) {
+            console.log('objectToRemove')
+            doors?.children[count]?.remove(objectToRemove);
+          }
           doors?.children[count]?.add(hand);
-          // const doorW = doors?.children[index]?.['geometry'].parameters.width;
-        ++count;
-          // doors?.children[index]?.element.add(this.createDoorHandle());
+          ++count;
         } else if (+sect.openingDoorType === 2) {
-          console.log('openingDoorType 2 ')
           hand.position.x += -wSect / 2 + 45 + 10;
-          hand.position.setY(-srH / 2 + 1000);
-          this.qwe.add(hand);
+          // hand.position.y = (-srH / 2 + 1000);
+          // this.qwe.add(hand);
+          const objectToRemove = doors?.children[count].getObjectByName("handle");
+          if (objectToRemove) {
+            console.log('objectToRemove')
+            doors?.children[count]?.remove(objectToRemove);
+          }
           doors?.children[count]?.add(hand);
           ++count;
         }
       } else {
-        console.log('sectionType else ')
         hand.position.x += wSect / 2 - 45 - 10;
-        hand.position.setY(-srH / 2 + 1000);
-        this.qwe.add(hand);
+        hand.position.y -= (200 * sect.sectionWithVY) / 2;
+        const objectToRemove = doors?.children[count].getObjectByName("handle");
+        if (objectToRemove) {
+          console.log('objectToRemove')
+          doors?.children[count]?.remove(objectToRemove);
+        }
+
         doors?.children[count]?.add(hand);
         const addHand = this.createDoorHandle();
         addHand.position.x += -wSect / 2 + 45 + 10;
-        addHand.position.setY(-srH / 2 + 1000);
-        this.qwe.add(addHand);
+        addHand.position.setY(-srH / 2 + 1000 - (200 * sect.sectionWithVY) / 2);
+        const addObjectToRemove = doors?.children[count + 1].getObjectByName("handle");
+        if (addObjectToRemove) {
+          doors?.children[count + 1]?.remove(addObjectToRemove);
+        }
         doors?.children[count + 1]?.add(addHand);
-        count = count +  2;
+        count = count + 2;
       }
-
-      console.log(count)
-
-
     })
-    // if (this.cabinetConfiguratorService.getWardrobe().srK / 2 <= section.section && section.sectionType !== 1) {
-    //   this.openingDoorType.setValue(2);
-      // this.openingDoorTypes
-    // }
-    console.log(doors);
   }
 
   createDoorHandle() {
-      // const {srL, srH, srG, wSect, SR_G_fasad, srK} = this.data;
-      // const depth = SR_G_fasad === 'ldsp16' ? 16 : 18;
+    // const {srL, srH, srG, wSect, SR_G_fasad, srK} = this.data;
+    // const depth = SR_G_fasad === 'ldsp16' ? 16 : 18;
 
-      // const sectionW = (srL - (depth * 2) - (depth * (srK - 1))) / srK;
+    // const sectionW = (srL - (depth * 2) - (depth * (srK - 1))) / srK;
 
-      // const baseW = sectionW;
+    // const baseW = sectionW;
     const group = new THREE.Group();
-      const geometry = new THREE.CylinderGeometry(20, 10, 20);
-      const material = new THREE.MeshBasicMaterial({color: 'black'});
-      const axis = new THREE.Vector3(1, 0, 0);
-      const degrees = 90; //
-      const angle = degrees * (Math.PI / 180);
-      const quaternion = new THREE.Quaternion();
-      quaternion.setFromAxisAngle(axis, angle);
-      const cylinder = new THREE.Mesh(geometry, material);
-      cylinder.position.z += 20;
-    group.name = 'qwe';
-      group.add(cylinder);
-      cylinder.setRotationFromQuaternion(quaternion);
+    const geometry = new THREE.CylinderGeometry(20, 10, 20);
+    const material = new THREE.MeshBasicMaterial({color: 'black'});
+    const axis = new THREE.Vector3(1, 0, 0);
+    const degrees = 90; //
+    const angle = degrees * (Math.PI / 180);
+    const quaternion = new THREE.Quaternion();
+    quaternion.setFromAxisAngle(axis, angle);
+    const cylinder = new THREE.Mesh(geometry, material);
+    cylinder.position.z += 20;
+    group.name = 'handle';
+    group.add(cylinder);
+    cylinder.setRotationFromQuaternion(quaternion);
     // this.scene.add(cylinder);
     return group;
-      // return cylinder;
+    // return cylinder;
   }
 
 
@@ -941,8 +933,8 @@ export class ThreeHelperService {
             z: (d + thickness) / 2
           },
         }
-        const test = this.createDoorHandle();
-        sect.element.add(test);
+        const handleYV = this.createDoorHandle();
+        sect.element.add(handleYV);
         res.push(sect)
       }
     }
@@ -977,8 +969,6 @@ export class ThreeHelperService {
       const startX = (-w / 2) + (doorW / 2)
 
       const startY = data.SR_niz_dveri.toString() === '0' ? this.plinth : 10;
-
-
 
 
       const door = {
@@ -1050,7 +1040,7 @@ export class ThreeHelperService {
         position: {x: w / 2 - thickness / 2, y: boxwoodCupboardYPos, z: 0},
       },
       {
-        name: 'верхняя',
+        name: 'up',
         element: this.createCube(w - 2 * thickness - 4, thickness, d),
         position: {x: 0, y: h / 2 - thickness / 2, z: 0},
       },
@@ -1211,8 +1201,8 @@ export class ThreeHelperService {
 
     // const group = new THREE.Group();
 
-    const start =  new THREE.Vector3(data.srL / 2 , -data.srH / 2, data.srG / 2);
-    const start2 =  new THREE.Vector3(data.srL / 2 , -data.srH / 2, -data.srG / 2);
+    const start = new THREE.Vector3(data.srL / 2, -data.srH / 2, data.srG / 2);
+    const start2 = new THREE.Vector3(data.srL / 2, -data.srH / 2, -data.srG / 2);
     // const center = new THREE.Vector3(data.srL / 2 + 50, data.srH / 2 + 50, data.srG / 2);
     const end = new THREE.Vector3(data.srL / 2, -data.srH / 2 - 200, data.srG / 2);
     const end2 = new THREE.Vector3(data.srL / 2, -data.srH / 2 - 200, -data.srG / 2);
@@ -1331,12 +1321,12 @@ export class ThreeHelperService {
     }
   }
 
-  private dimTryba(data: any, posX: number, H_VERHN_TRYBA = this.fillingSectionsService.SR_H_VERHN_TRYBA) {
-    const distance = H_VERHN_TRYBA + 60;
+  private dimTryba(data: any, posX: number, H_VERHN_TRYBA = this.fillingSectionsService.SR_H_VERHN_TRYBA, hYV = 0) {
+    const distance = H_VERHN_TRYBA + 60 - hYV;
 
     const textLabelTryba = this.createTextLabel(
       `${distance}`,
-      new THREE.Vector3(posX, (-data.srH / 2) + (distance + this.plinth + this.depth) / 2, data.srG / 2 - 150),
+      new THREE.Vector3(posX, (-data.srH / 2) + (distance + this.plinth + this.depth + hYV) / 2, data.srG / 2 - 150),
       0x000,
       200,
       false
@@ -1360,6 +1350,20 @@ export class ThreeHelperService {
         if (heightLabel) {
           this.dimensionsGroupFilling.add(heightLabel);
         }
+      } else if (shelves.length === 1) {
+        console.log(this.scene.getObjectByName('up'))
+        debugger
+        const distance = child.position.distanceTo(this.scene.getObjectByName('up')?.position) - 8;
+        const heightLabel = this.createTextLabel(
+          `${Math.trunc(+distance)}`,
+          new THREE.Vector3(filling.position.x, child.position.y + distance / 2, data.srG / 2 - 150),
+          0x000,
+          200,
+          false
+        );
+        if (heightLabel) {
+          this.dimensionsGroupFilling.add(heightLabel);
+        }
       }
     });
   }
@@ -1368,6 +1372,7 @@ export class ThreeHelperService {
     let sH = this.fillingSectionsService.calcSectionHeight(sectionNumber);
     let shelvesH = sH - hWithoutShelves;
     const shelvesCount = this.fillingSectionsService.calcShelvesCount(shelvesH) + addCount;
+    debugger
     if (shelvesCount === 0) {
       return {add: 0, shelfH: shelvesH};
     }
@@ -1378,24 +1383,16 @@ export class ThreeHelperService {
 
   createStepThreeDimensions(filling: any, sectionNumber: number, naFilling: number) {
     const data = this.cabinetConfiguratorService.getWardrobe();
-    const {sectionW} = filling.userData;
+    // const {sectionW} = filling.userData;
     let sH = this.fillingSectionsService.calcSectionHeight(sectionNumber);
-
     let startYPos = 0;
-
-    if (Number(data.SR_yaschiki_vneshnie) === 1) {
-      const scheme = this.cabinetConfiguratorService.getWardrobeScheme();
-      // @ts-ignore
-      const block = scheme.find((item: Block) => {
-        if (item.endPos === +sectionNumber) { //<= item.endPos
-          return item;
-        }
-      });
-      if (block) {
-        startYPos = block.SR_yaschiki_vneshnie_kol === 2 ? 400 : 600;
-      }
+    let hYV = 0;
+    const fScheme = this.cabinetConfiguratorService.getSavedFilingScheme();
+    const sect = fScheme.find((item: any) => item.section === +sectionNumber);
+    if (sect && sect.sectionWithVY > 0) {
+      hYV = sect.sectionWithVY * 200;
+      startYPos =  hYV;
     }
-
     const offsetY = -data.wSect / 2;
     const heightLine = this.createOuterDimensionLine(
       new THREE.Vector3(filling.position.x + 40, (-data.srH / 2) + this.plinth + this.depth + startYPos, data.srG / 2 - 150),
@@ -1411,8 +1408,9 @@ export class ThreeHelperService {
 
     switch (naFilling) {
       case 2: {
-        this.dimTryba(data, filling.position.x);
+        this.dimTryba(data, filling.position.x, this.fillingSectionsService.SR_H_VERHN_TRYBA, hYV);
         const {add, shelfH} = this.calcAddH(sectionNumber, this.fillingSectionsService.SR_H_VERHN_TRYBA + 60);
+        debugger;
         this.dimShelves(shelves, filling, data, add, shelfH);
         break;
       }

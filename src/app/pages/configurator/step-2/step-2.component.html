@@ -66,7 +66,7 @@
           [ngModel]="stepTwoForm.get('SR_H_PLANKA_VERH')?.value"
           (ngModelChange)="stepTwoForm.get('SR_H_PLANKA_VERH')?.setValue($event)"
           [ngModelOptions]="{standalone:true}"/>
-        <input formControlName="SR_H_PLANKA_VERH" [style.width.px]="100" pInputText/>
+        <input type="number" formControlName="SR_H_PLANKA_VERH" [style.width.px]="100" pInputText/>
       </div>
     }
   </div>
@@ -88,7 +88,7 @@
     <div class="panel">
       <label class="text text-normal">Задняя стенка (ДВП/ХДФ)</label>
       <div class="mt-4">
-        <p-select style="width: 100%;" [options]="backWallMaterials" optionValue="code" optionLabel="name"
+        <p-select  style="width: 100%;" formControlName="backWallMaterial" [options]="backWallMaterials" optionValue="value" optionLabel="name"
                   placeholder="Выберите материал" class="w-full"/>
       </div>
 

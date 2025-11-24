@@ -19,7 +19,7 @@
   > svg {
     width: 1.5rem;
     height: 1.5rem;
-    margin-right: 0.5rem;
+    //margin-right: 0.5rem;
   }
 
   &:disabled {
@@ -34,10 +34,6 @@
   color: $color;
   transition: all .5s linear;
   border-color: $hover-color;
-
-  > svg {
-    margin-right: 0;
-  }
 
   &:active:not(:disabled) {
     transform: translateY(1px);

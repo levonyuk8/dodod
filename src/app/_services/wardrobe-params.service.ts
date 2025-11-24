@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 export interface Material {
   name: string;
-  code: string;
+  code?: string;
   value?: number;
 }
 

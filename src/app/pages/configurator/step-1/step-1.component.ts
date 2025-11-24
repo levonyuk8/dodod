@@ -12,7 +12,6 @@ import {FormCorrectionService} from '../../../_services/form-correction.service'
 import {NgOptimizedImage} from '@angular/common';
 import {ConfirmationService, MessageService} from 'primeng/api';
 
-
 @Component({
   selector: 'app-step-1',
   imports: [
@@ -95,7 +94,6 @@ export class Step1Component implements OnInit {
       filter(() => !this.stepOneForm?.invalid),
       startWith(this.stepOneForm.value),
       debounceTime(800),
-      // distinctUntilChanged(),
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
         this.ccs.setWardrobe(change, Steps.one);
