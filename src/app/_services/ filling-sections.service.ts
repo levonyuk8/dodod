@@ -212,10 +212,6 @@ export class FillingSectionsService {
     }
   }
 
-  getFilingByName(sectionNumber: number) {
-    return this.group.getObjectByName('Filling' + sectionNumber);
-  }
-
   private createAddShelves(sectionNumber: number, addYPos: number = this.SR_H_SREDN_TRYBA, isDual = false, sectionW = 0, addCount = 0) {
     const {SR_G_fasad} = this.data;
     const depth = SR_G_fasad === 'ldsp16' ? 16 : 18;

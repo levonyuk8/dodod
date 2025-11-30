@@ -244,6 +244,7 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
     // if (this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK) {
     //   return this.externalDrawersErrMesG;
     // }
+    debugger;
     if (this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2) {
       return this.externalDrawersErrMesWF;
     }

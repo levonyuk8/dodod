@@ -47,6 +47,7 @@ export class CabinetConfiguratorService {
     }
 
     if (step === Steps.two) {
+      debugger;
       this.data.wSect = ((this.data.srL) / this.data.srK);
     }
 
