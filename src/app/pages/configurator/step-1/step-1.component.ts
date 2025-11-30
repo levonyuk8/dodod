@@ -9,7 +9,6 @@ import {Material, WardrobeParamsService} from '../../../_services/wardrobe-param
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {FormCorrectionService} from '../../../_services/form-correction.service';
-import {NgOptimizedImage} from '@angular/common';
 import {ConfirmationService, MessageService} from 'primeng/api';
 
 @Component({
@@ -18,8 +17,7 @@ import {ConfirmationService, MessageService} from 'primeng/api';
     FormsModule,
     ReactiveFormsModule,
     Slider,
-    Select,
-    NgOptimizedImage
+    Select
   ],
   templateUrl: './step-1.component.html',
   styleUrl: './step-1.component.scss',
@@ -33,7 +31,7 @@ export class Step1Component implements OnInit {
 
   formCorrectionService = inject(FormCorrectionService);
   private readonly defaultSrL = 1600;
-  private readonly defaultSrH = 2200;
+  private readonly defaultSrH = 2400;
   private readonly defaultSrG = 520;
 
   public stepOneForm: FormGroup = this.fb.group({});

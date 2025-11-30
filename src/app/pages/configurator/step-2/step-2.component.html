@@ -86,9 +86,15 @@
 
   <div class="sizing-container panel">
     <div class="panel">
-      <label class="text text-normal">Задняя стенка (ДВП/ХДФ)</label>
+      <label class="h-field">
+        <label class="text text-normal">Задняя стенка (ДВП/ХДФ)</label>
+        <img [ngSrc]="'/img/svg/I.svg'" [width]="16" [height]="16" alt="qwe">
+      </label>
+
+
       <div class="mt-4">
-        <p-select  style="width: 100%;" formControlName="backWallMaterial" [options]="backWallMaterials" optionValue="value" optionLabel="name"
+        <p-select style="width: 100%;" formControlName="backWallMaterial" [options]="backWallMaterials"
+                  optionValue="value" optionLabel="name"
                   placeholder="Выберите материал" class="w-full"/>
       </div>
 

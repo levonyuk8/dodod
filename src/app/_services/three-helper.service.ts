@@ -552,7 +552,7 @@ export class ThreeHelperService {
           hand.position.x += -wSect / 2 + 45 + 10;
           // hand.position.y = (-srH / 2 + 1000);
           // this.qwe.add(hand);
-          const objectToRemove = doors?.children[count].getObjectByName("handle");
+          const objectToRemove = doors?.children[count]?.getObjectByName("handle");
           if (objectToRemove) {
             console.log('objectToRemove')
             doors?.children[count]?.remove(objectToRemove);
@@ -755,7 +755,8 @@ export class ThreeHelperService {
     if (!onlyDoorsEntr) return;
     const mainDoor = onlyDoorsEntr[section];
     const addDoor = onlyDoorsEntr[addDoorPos];
-    if (SR_H_antr > wSect + 35) {
+
+    if (SR_H_antr < wSect - 35) {
       this.openDoor(mainDoor, "Down");
       if (+sectionType === 1 && addDoor) {
         this.openDoor(addDoor, 'Down');

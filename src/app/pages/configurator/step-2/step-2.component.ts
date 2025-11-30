@@ -17,6 +17,7 @@ import {Material, WardrobeParamsService} from '../../../_services/wardrobe-param
 import {CheckboxComponent} from '../../../_shared/components/checkbox-group/checkbox.component';
 import {FormCorrectionService} from '../../../_services/form-correction.service';
 import {Select} from 'primeng/select';
+import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-step-2',
@@ -29,7 +30,8 @@ import {Select} from 'primeng/select';
     Slider,
     InputText,
     CheckboxComponent,
-    Select
+    Select,
+    NgOptimizedImage
   ],
   templateUrl: './step-2.component.html',
   styleUrl: './step-2.component.scss',
