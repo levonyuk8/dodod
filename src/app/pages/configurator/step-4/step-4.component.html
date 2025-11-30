@@ -1,0 +1,55 @@
+<div class="panel">
+  <label class="text text-medium mb-4">Документы, которые вы получите</label>
+  <ul>
+    @for (doc of docList; track doc) {
+      <li>
+
+        <label>{{ doc }}</label>
+      </li>
+    }
+  </ul>
+  <a href="">Скачать пример оформления документов</a>
+  <br>
+  <br>
+  <label>Стоимость: 750 RUB</label>
+  <br>
+  <br>
+  <app-button [width]="'w-full'" [variant]="'primary'" [imageUrl]="'/img/svg/basket.svg'">
+    <span style="margin-left: .5rem">Купить сейчас</span></app-button>
+</div>
+
+<div class="panel mt-4">
+  <label class="text text-medium mb-4">Инфо!!!</label>
+
+  <div class="panel panel--child">
+    <label class="text text-medium mb-4"> Габаритные размеры</label>
+    <br>
+    Ширина: {{ params.srL }}мм
+    <br>
+    Высота: {{ params.srH }}мм
+    <br>
+    Глубина: {{ params.srG }}мм
+    <br>
+  </div>
+
+  <div class="panel panel--child mt-4">
+    <label class="text text-medium mb-4"> Материалы </label>
+    <br>
+    Материал корпуса: {{ params.SR_G_ldsp }}мм
+    <br>
+    Материал дверей : {{ params.SR_G_fasad }}мм
+    <br>
+  </div>
+
+
+  <div class="panel panel--child mt-4">
+    <label class="text text-medium mb-4"> Фурнитура </label>
+    <br>
+    ???
+    <br>
+    ???
+    <br>
+  </div>
+
+
+</div>
