@@ -29,6 +29,11 @@
             <app-step-3 (isCompleteFillingEv)="handleCompleteFilling($event)"></app-step-3>
           }
         }
+        @case (Steps.four) {
+          @defer {
+            <app-step-4></app-step-4>
+          }
+        }
       }
     </div>
 

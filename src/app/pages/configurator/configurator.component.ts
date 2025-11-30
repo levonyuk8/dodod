@@ -4,20 +4,22 @@ import {StepperComponent, Steps} from "../../_shared/components/stepper/stepper.
 import {Step1Component} from './step-1/step-1.component';
 import {Step2Component} from './step-2/step-2.component';
 import {CabinetConfiguratorService} from '../../_services/cabinet-configurator.service';
-import {ThreeWardrobeComponent} from '../../_shared/components/three-wardrobe/three-wardrobe.component';
 import {NgTemplateOutlet} from '@angular/common';
 import {Step3Component} from './step-3/step-3.component';
+import {ThreeWardrobeComponent} from '../../_shared/components/three-wardrobe/three-wardrobe.component';
+import {Step4Component} from './step-4/step-4.component';
 
 @Component({
   selector: 'app-configurator',
   imports: [
     ButtonComponent,
-    StepperComponent,
     Step1Component,
     Step2Component,
-    ThreeWardrobeComponent,
     NgTemplateOutlet,
-    Step3Component
+    Step3Component,
+    StepperComponent,
+    ThreeWardrobeComponent,
+    Step4Component
   ],
   templateUrl: './configurator.component.html',
   styleUrl: './configurator.component.scss'

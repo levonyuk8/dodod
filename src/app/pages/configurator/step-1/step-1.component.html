@@ -11,13 +11,14 @@
     <div>
       <label class="h-field">
         <span class="text">Ширина</span>
-        <!--        <img [ngSrc]="'/img/svg/I.svg'" [width]="20" [height]="20" alt="qwe">-->
       </label>
 
       <p-slider
         [min]="wps.SR_L_MIN"
         [max]="wps.SR_L_MAX"
-        formControlName="srL"
+        [ngModel]="stepOneForm.get('srL')?.value"
+        (ngModelChange)="stepOneForm.get('srL')?.setValue($event)"
+        [ngModelOptions]="{standalone:true}"
         class="gradient-slider w-full"/>
       <input
         type="number"
@@ -29,13 +30,13 @@
     <div>
       <label class="h-field">
         <span class="text">Высота</span>
-        <!--        <img [ngSrc]="'/img/svg/I.svg'" [width]="20" [height]="20" alt="qwe">-->
       </label>
       <p-slider
         [min]="wps.SR_H_MIN"
         [max]="wps.SR_H_MAX"
-        formControlName="srH"
-      />
+        [ngModel]="stepOneForm.get('srH')?.value"
+        (ngModelChange)="stepOneForm.get('srH')?.setValue($event)"
+        [ngModelOptions]="{standalone:true}"/>
       <input type="number" class="input" formControlName="srH" [style.width.px]="100"/>
     </div>
 
@@ -47,7 +48,9 @@
       <p-slider
         [min]="wps.SR_G_MIN"
         [max]="wps.SR_G_MAX"
-        formControlName="srG"/>
+        [ngModel]="stepOneForm.get('srG')?.value"
+        (ngModelChange)="stepOneForm.get('srG')?.setValue($event)"
+        [ngModelOptions]="{standalone:true}"/>
       <input type="number" class="input" formControlName="srG" [style.width.px]="100"/>
     </div>
 
