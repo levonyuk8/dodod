@@ -6,7 +6,8 @@ export enum Steps {
   one = 1,
   two,
   three,
-  four
+  four,
+  five
 }
 
 @Component({
@@ -44,6 +45,11 @@ export class StepperComponent {
       name: 'Шаг 4',
       title: 'Дополнительные настройки',
       step: Steps.four,
+    },
+    {
+      name: 'Шаг 5',
+      title: 'Готовые документы',
+      step: Steps.five,
     }
   ]
 }

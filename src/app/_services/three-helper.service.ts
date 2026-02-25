@@ -7,7 +7,6 @@ import {Wardrobe} from '../_models/wardrobe.model';
 import {Block} from '../_models/block.model';
 import {FillingSectionsService} from './ filling-sections.service';
 import {WardrobeParamsService} from './wardrobe-params.service';
-import {Group} from 'three';
 
 @Injectable({
   providedIn: 'root'
@@ -92,7 +91,7 @@ export class ThreeHelperService {
     this.controls.minDistance = 1000;
     this.controls.maxDistance = 4000;
     // this.controls.minPolarAngle = Math.PI / 4; // 45 градусов
-    this.controls.maxPolarAngle = Math.PI / 1.6; // 90 градусов
+    // this.controls.maxPolarAngle = Math.PI / 1.6; // 90 градусов
 
     // Для горизонтального вращения
     this.controls.minAzimuthAngle = -Math.PI / 2; // -45 градусов
@@ -205,6 +204,7 @@ export class ThreeHelperService {
       }
       case Steps.three: {
         // this.createStepThreeDimensions()
+        // this.addSectionsToCabinet();
         break;
         // this.scene.clear();
         // this.createBaseCabinet()
@@ -670,6 +670,17 @@ export class ThreeHelperService {
     // })
   }
 
+  closeDoors() {
+    const doors = this.scene.children.find((child: THREE.Object3D) =>
+      child.name === 'Doors');
+    this.closeAllDoors(doors);
+    const doorsEntr = this.scene.children.find((child: THREE.Object3D) =>
+      child.name === 'EntresolList');
+    const onlyDoorsEntr = doorsEntr?.children.filter((child: THREE.Object3D) =>
+      child.name === 'Entresol');
+    this.closeAllAntr(onlyDoorsEntr);
+  }
+
   private closeAllAntr(list: any) {
     if (!list && !list?.length) return;
     list.forEach((child: any) => {
@@ -1063,7 +1074,7 @@ export class ThreeHelperService {
       {
         name: 'цоколь з',
         element: this.createCube(w - 2 * thickness, this.plinth, thickness),
-        position: {x: 0, y: -(h / 2 - this.plinth / 2), z: -(d / 2 - thickness / 2)},
+        position: {x: 0, y: -(h / 2 - this.plinth / 2), z: -(d / 2 - thickness / 2 - this.plinth)},
       },
     ]
   }
@@ -1081,7 +1092,7 @@ export class ThreeHelperService {
         element: this.createCube(thickness, this.plinth, d - 2 * thickness - plintus),
         // position: {x: (-w / 2) + thickness + thickness / 2 , y: -(h / 2 - this.plinth / 2), z: plintus},
         position: {
-          x: (-w / 2) + thickness + thickness / 2 + plintus,
+          x: (-w / 2) + thickness / 2 + plintus,
           y: -(h / 2 - this.plinth / 2),
           z: plintus / 2
         }
@@ -1089,7 +1100,10 @@ export class ThreeHelperService {
       {
         name: 'цоколь п',
         element: this.createCube(thickness, this.plinth, d - 2 * thickness - plintus),
-        position: {x: (w / 2) - thickness - thickness / 2 - plintus, y: -(h / 2 - this.plinth / 2), z: plintus / 2},
+        position: {
+          x: (w / 2)  - thickness / 2 - plintus,
+          y: -(h / 2 - this.plinth / 2),
+          z: plintus / 2},
       },
       {
         name: 'цоколь п',
@@ -1266,6 +1280,7 @@ export class ThreeHelperService {
     );
     this.dimensionsGroup.add(heightLine);
 
+    // todo подумать до 23.01 1.вариант 5 как srH_opora в 2 места ( общая высота и высота цоколя)
     const heightLabel = this.createTextLabel(
       `${data.srH}`,
       new THREE.Vector3(-data.srL / 2 - offsetY - 50, 0, data.srG / 2),
@@ -1392,7 +1407,7 @@ export class ThreeHelperService {
     const sect = fScheme.find((item: any) => item.section === +sectionNumber);
     if (sect && sect.sectionWithVY > 0) {
       hYV = sect.sectionWithVY * 200;
-      startYPos =  hYV;
+      startYPos = hYV;
     }
     const offsetY = -data.wSect / 2;
     const heightLine = this.createOuterDimensionLine(

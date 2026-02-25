@@ -8,6 +8,7 @@ import {NgTemplateOutlet} from '@angular/common';
 import {Step3Component} from './step-3/step-3.component';
 import {ThreeWardrobeComponent} from '../../_shared/components/three-wardrobe/three-wardrobe.component';
 import {Step4Component} from './step-4/step-4.component';
+import {Step5Component} from './step-5/step-5.component';
 
 @Component({
   selector: 'app-configurator',
@@ -19,7 +20,8 @@ import {Step4Component} from './step-4/step-4.component';
     Step3Component,
     StepperComponent,
     ThreeWardrobeComponent,
-    Step4Component
+    Step4Component,
+    Step5Component
   ],
   templateUrl: './configurator.component.html',
   styleUrl: './configurator.component.scss'
@@ -37,7 +39,6 @@ export class ConfiguratorComponent {
     this.currentStep.update((v) => --v);
   }
 
-
   nextStep() {
     this.currentStep.update((v) => ++v);
   }
@@ -50,5 +51,4 @@ export class ConfiguratorComponent {
   handleCompleteFilling(ev: boolean) {
     this.nextStepVisible.set(ev)
   }
-
 }

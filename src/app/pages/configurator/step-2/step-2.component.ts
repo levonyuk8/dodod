@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
@@ -7,17 +7,15 @@ import {
   RadioGroupComponent
 } from '../../../_shared/components/radio-group/radio-group.component';
 import {CabinetConfiguratorService} from '../../../_services/cabinet-configurator.service';
-import {debounceTime, distinctUntilChanged, startWith, tap} from 'rxjs';
+import {distinctUntilChanged, startWith, tap} from 'rxjs';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {BlocksComponent} from './blocks/blocks.component';
 import {Slider} from 'primeng/slider';
 import {InputText} from 'primeng/inputtext';
-import {Material, WardrobeParamsService} from '../../../_services/wardrobe-params.service';
+import {WardrobeParamsService} from '../../../_services/wardrobe-params.service';
 import {CheckboxComponent} from '../../../_shared/components/checkbox-group/checkbox.component';
 import {FormCorrectionService} from '../../../_services/form-correction.service';
-import {Select} from 'primeng/select';
-import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-step-2',
@@ -29,9 +27,7 @@ import {NgOptimizedImage} from '@angular/common';
     BlocksComponent,
     Slider,
     InputText,
-    CheckboxComponent,
-    Select,
-    NgOptimizedImage
+    CheckboxComponent
   ],
   templateUrl: './step-2.component.html',
   styleUrl: './step-2.component.scss',
@@ -52,15 +48,9 @@ export class Step2Component implements OnInit {
 
   srHMaxAntr = this.cabinetConfiguratorService.calcMaxHAntr();
 
-  backWallMaterials: Material[] = [
-    {name: 'Без задней стенки', value:  1},
-    {name: 'В накладку', value: 2},
-    {name: 'В четверть', value: 3},
-  ];
 
   private createAndPatchForm(): void {
     this.stepTwoForm = this.fb.group({
-      backWallMaterial: new FormControl<number>(2),
       srK: new FormControl<number>(this.data.SR_K_max),
       SR_yaschiki_vneshnie: new FormControl<number>(0),
       // SR_yaschiki_vneshnie_kol: new FormControl<number>(2),
@@ -168,7 +158,7 @@ export class Step2Component implements OnInit {
             {imgUrl: 'url(/img/svg/ED1.svg)', label: 'Нет', value: 0},
             {
               imgUrl: 'url(/img/svg/ED2.svg)', label: 'Да', value: 1,
-              disabled: this.data.srL <= 600
+              disabled: this.data.srL < 600
                 || this.data.srG < this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK
                 || this.data.wSect > this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,
               message: this.externalDrawersMessageByCondition()
@@ -233,20 +223,13 @@ export class Step2Component implements OnInit {
   }
 
   // Внешние выдвижные ящики
-  readonly externalDrawersErrMesG = `"Защита от ошибок: Нельзя сделать внешние ящики при глубине менее
-${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
-  readonly externalDrawersErrMesWF = `Защита от ошибок: Внешние ящики не могут быть более
-  ${this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK}`
+  readonly externalDrawersErrMesWF = `Недоступно при ширине двери более 450мм`
 
 
   externalDrawersMessageByCondition() {
-    if ( this.data.srL <= 600) {
-      return  `this.data.srL <= 600`;
+    if ( this.data.srL < 600) {
+      return  `Недоступно при ширине двери менее 600мм`;
     }
-    // if (this.data.srG <= this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK) {
-    //   return this.externalDrawersErrMesG;
-    // }
-    debugger;
     if (this.data.wSect >= this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2) {
       return this.externalDrawersErrMesWF;
     }
@@ -255,10 +238,10 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
 
   private baseMessageByCondition() {
     if (+this.cabinetConfiguratorService.getWardrobe()?.SR_yaschiki_vneshnie === 1) {
-      return `Защита от ошибок: Недопустимо при наличии внешних выдвижных ящиков`;
+      return `Недопустимо при наличии внешних выдвижных ящиков`;
     }
     if (+this.cabinetConfiguratorService.getWardrobe()?.SR_tsokol === 1) {
-      return 'Защита от ошибок: Недопустимо при наличии отступов под плинтус по 25 мм';
+      return 'Недопустимо при наличии отступов под плинтус';
     }
     return '';
   }
@@ -270,7 +253,7 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
         {imgUrl: 'url(/img/svg/ED1.svg)', label: 'Нет', value: 0},
         {
           imgUrl: 'url(/img/svg/ED2.svg)', label: 'Да', value: 1,
-          disabled: this.data.srL <= 600
+          disabled: this.data.srL < 600
             || this.data.wSect > this.wardrobeParamsService.SR_L_MAX_VNESH_YASHCHIK / 2,//??
           message: this.externalDrawersMessageByCondition()
         }, // todo
@@ -288,7 +271,7 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
         {
           imgUrl: 'url(/img/svg/B2.svg)', label: 'С отступами под плинтус по 25 мм', value: 1,
           disabled: this.data.srL > this.wardrobeParamsService.SR_H_MAX_BOK,
-          message: `Защита от ошибок: Недопустимо при ширине шкафа более ${this.wardrobeParamsService.SR_H_MAX_BOK} мм`,
+          message: `Недопустимо при ширине шкафа более ${this.wardrobeParamsService.SR_H_MAX_BOK} мм`,
         }
         // {imgUrl: 'url(/img/svg/B3.svg)', label: 'Цоколь спереди ножки 100 мм', value: 2},
       ]
@@ -318,12 +301,12 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
         {
           imgUrl: 'url(/img/svg/G42.svg)', label: 'Без антресоли', value: 0,
           disabled: this.data.srH >= this.wardrobeParamsService.SR_H_MAX_FASAD,
-          message: `Защита от ошибок: Большая высота. Сделать без антресоли нельзя`
+          message: `Большая высота. Сделать без антресоли нельзя`
         },
         {
           imgUrl: 'url(/img/svg/G43.svg)', label: 'С антресолью', value: 1,
-          disabled: this.data.srH <= this.wardrobeParamsService.SR_H_MIN_ANTR + this.wardrobeParamsService.SR_H_MIN,
-          message: `Защита от ошибок: Маленькая высота. Сделать с антресолью нельзя ${this.wardrobeParamsService.SR_H_MIN_ANTR + this.wardrobeParamsService.SR_H_MIN}`
+          disabled: this.data.srH < this.wardrobeParamsService.SR_H_MIN_ANTR + this.wardrobeParamsService.SR_H_MIN,
+          message: `Маленькая высота. Сделать с антресолью нельзя`
         },
       ]
     }
@@ -336,7 +319,7 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
         {
           imgUrl: 'url(/img/svg/G44.svg)', label: 'Общая со шкафом', value: 0,
           disabled: this.data.srH > this.wardrobeParamsService.SR_H_MAX_BOK,
-          message: `Защита от ошибок: Большая высота шкафа! Сделать антресоль общую со шкафом нельзя`
+          message: `Большая высота шкафа! Сделать антресоль общую со шкафом нельзя`
         },
         {
           imgUrl: 'url(/img/svg/G45.svg)', label: 'Отдельным блоком', value: 1
@@ -392,7 +375,6 @@ ${this.wardrobeParamsService.SR_G_MIN_VNESH_YASHCHIK} мм"`
       this.stepTwoForm.get('SR_yaschiki_vneshnie')?.patchValue(0);
     }
   }
-
 
   createCountDoorsSliderData() {
     let res: ITestOption[] = []

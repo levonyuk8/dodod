@@ -87,6 +87,7 @@ export class Step1Component implements OnInit {
     });
   }
 
+  // todo подумать до 23.01
   private changeForm(): void {
     this.stepOneForm?.valueChanges.pipe(
       filter(() => !this.stepOneForm?.invalid),
@@ -94,7 +95,7 @@ export class Step1Component implements OnInit {
       debounceTime(800),
       takeUntilDestroyed(this.destroyRef),
       tap((change: any) => {
-        this.ccs.setWardrobe(change, Steps.one);
+        this.ccs.setWardrobe({...change, srH: change.srH }, Steps.one); // 5 => высота скрытых опор (не отображается в проекте)
       })
     ).subscribe()
   }

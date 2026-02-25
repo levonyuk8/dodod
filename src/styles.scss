@@ -124,3 +124,8 @@ input[type='number'] {
     padding: 0;
   }
 }
+
+.p-popover:after,
+.p-popover:before {
+  display: none;
+}

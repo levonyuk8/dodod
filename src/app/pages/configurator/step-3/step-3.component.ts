@@ -69,11 +69,11 @@ export class Step3Component implements OnInit {
     options: [
       {
         imgUrl: 'url(/img/svg/s3/ST1.svg)', label: 'Одинарная', value: 0,
-        message: `Защита от ошибок: Секция не может быть одинарной`
+        message: `Секция не может быть одинарной`
       },
       {
         imgUrl: 'url(/img/svg/s3/ST2.svg)', label: 'Двойная', value: 1,
-        message: `Защита от ошибок: Секция не может быть двойной`
+        message: `Секция не может быть двойной`
       },
     ]
   }
@@ -208,7 +208,8 @@ export class Step3Component implements OnInit {
 
   private disabledDoubleDoorType() {
     if (this.sectionWithYV) return false;
-    return this.wardrobe.wSect >= this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2 ||
+    console.log(this.wardrobe.wSect)
+    return this.wardrobe.wSect > this.wardrobeParamsService.SR_L_MAX_SEKCII_VNUTR / 2 ||
       this.nextSectionWithYV ||
       this.isLastSection ||
       this.nextSectionDual;
@@ -220,6 +221,7 @@ export class Step3Component implements OnInit {
 
   ngOnInit(): void {
     this.createAndSaveSectionByWardrobeScheme();
+
     this.all$.pipe(
       // takeUntil(this.testS),
       debounceTime(100),

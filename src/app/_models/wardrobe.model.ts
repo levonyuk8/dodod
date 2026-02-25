@@ -25,6 +25,7 @@ export class Wardrobe {
   SR_PLANKA_BOK_CHENTR: number; // new FormControl<boolean>(false),
   SR_H_PLANKA_BOK_LEV: number; // new FormControl<boolean>(false),
   SR_H_PLANKA_BOK_PRAV: number; // new FormControl<boolean>(false),
+  backWallMaterial: number;
   // SR_PLANKA_VERH_LEV: new FormControl<boolean>(false),
   // SR_PLANKA_VERH_PRAV: new FormControl<boolean>(false),
   // SR_PLANKA_BOK_CHENTR: new FormControl<boolean>(false),
@@ -56,5 +57,6 @@ export class Wardrobe {
     this.SR_PLANKA_BOK_CHENTR = 0;
     this.SR_H_PLANKA_BOK_LEV = 0;
     this.SR_H_PLANKA_BOK_PRAV = 0;
+    this.backWallMaterial = 2;
   }
 }

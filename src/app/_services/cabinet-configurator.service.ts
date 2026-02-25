@@ -62,7 +62,7 @@ export class CabinetConfiguratorService {
   calcMaxHAntr() {
     const emptyH = this.data.srH - this.wps.SR_H_MIN;
 
-    return this.wps.SR_H_MIN_ANTR < emptyH && emptyH< this.wps.SR_H_MAX_ANTR ? emptyH : this.wps.SR_H_MAX_ANTR;
+    return this.wps.SR_H_MIN_ANTR < emptyH && emptyH < this.wps.SR_H_MAX_ANTR ? emptyH : this.wps.SR_H_MAX_ANTR;
     // this.wps.SR_H_MAX_ANTR = readonly SR_H_MIN_ANTR = 	340; //	Минимально возможная высота антресоли (зависит от толщины ЛДСП). Здесь зазоры не учитываем	Раньше считал это значение по формуле (SR_H_MIN_GL)+(SR_G_ldsp)+(SR_G_ldsp)/2
     // readonly SR_H_MAX_ANTR = 	635;
   }
@@ -129,5 +129,24 @@ export class CabinetConfiguratorService {
       if (+this._savedFilingScheme[i].sectionType === 1) ++count;
     }
     return count;
+  }
+
+  calcPrice() {
+    const {srL, srH} = this.data
+    let price = +srL * 0.2 + +srH * 0.2 + this.wardrobeScheme.length * 100;
+    price += this.data.SR_H_PLANKA_BOK_LEV * 50;
+    price += this.data.SR_H_PLANKA_BOK_PRAV * 50;
+    price += this.data.SR_PLANKA_BOK_CHENTR * 50;
+    price += this.data.SR_PLANKA_VERH_CHENTR * 50;
+    price += this.data.SR_PLANKA_VERH_LEV * 50;
+    price += this.data.SR_PLANKA_VERH_PRAV * 50;
+    price += +(this.data.backWallMaterial && this.data.backWallMaterial === 3) * 50;
+    price += +this.data.SR_antr * 100;
+    price += this._savedFilingScheme.length * 50;
+    this._savedFilingScheme.forEach((filingScheme: any) => {
+      price += +([9, 10, 11, 12].includes(filingScheme.fillingOption)) * 50;
+    })
+
+    return price;
   }
 }

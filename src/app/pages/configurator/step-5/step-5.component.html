@@ -1,0 +1,98 @@
+<div class="panel">
+  <label class="text text-medium mb-4">Документы, которые вы получите</label>
+  <ul class="list">
+    @for (doc of docList; track doc) {
+      <li>
+        <label>{{ doc }}</label>
+      </li>
+    }
+  </ul>
+  <a href="/downloads/downloads.rar" download="downloads.rar">Скачать пример оформления документов</a>
+  <br>
+  <br>
+  <div class="price">
+    <label>
+      Укажите почту для отправки документов
+    </label>
+    <div class="card flex justify-center">
+      <input type="text" pInputText/>
+    </div>
+    <label>Стоимость документов: {{ calc() }} RUB</label>
+    <app-button [width]="'w-full'" [variant]="'primary'" [imageUrl]="'/img/svg/basket.svg'">
+      <span style="margin-left: .5rem">Купить документы</span>
+    </app-button>
+    <span style="margin-left: auto;font-size: .8rem">
+      *срок готовности документов до 24 часов
+    </span>
+  </div>
+</div>
+
+<div class="panel mt-4">
+  <label class="text text-medium mb-4" style="display: flex;">Характеристики шкафа</label>
+
+  <div class="panel panel--child">
+    <label class="text text-medium mb-4" style=" text-decoration: underline"> Габаритные размеры</label>
+    <ul class="list">
+      <li><label>Ширина {{ params.srL }}мм</label></li>
+      <li><label>Высота {{ params.srH }}мм</label></li>
+      <li><label>Глубина {{ params.srG }}мм</label></li>
+    </ul>
+  </div>
+
+  <div class="panel panel--child mt-4">
+    <label class="text text-medium mb-4" style=" text-decoration: underline">Материалы</label>
+    <ul class="list">
+      <li><label>Фасады - {{ getDoorMaterialsLabel(params.SR_G_fasad)}}</label></li>
+      <li><label>Корпус - {{getHousingMaterialsLabel(params.SR_G_ldsp)}}</label></li>
+      <li><label>Задняя стенка (ХДФ) - N|A мм</label></li>
+    </ul>
+  </div>
+
+  <div class="panel panel--child mt-4">
+    <label class="text text-medium mb-4" style=" text-decoration: underline">Цвет</label>
+    <ul class="list">
+      <li><label>Фасады - Egger синий перламутр ST3092 N|A</label></li>
+      <li><label>Корпус - Сандал светлый N|A</label></li>
+    </ul>
+  </div>
+
+  <div class="panel panel--child mt-4">
+    <label class="text text-medium mb-4" style=" text-decoration: underline">Фурнитура</label>
+    <ul class="list">
+      <li><label>Направляющие для выдвижных ящиков - N|A</label></li>
+      <li><label>Петли (любого бренда) - N|A</label></li>
+      <li><label>Ручки - любые (отверстия под ручки не заданы)</label></li>
+      <li><label>Опоры - внутренние регулируемые</label></li>
+    </ul>
+  </div>
+
+  @if (params.SR_antr) {
+    <div class="panel panel--child mt-4">
+      <label class="text text-medium mb-4" style=" text-decoration: underline">Антресоль</label>
+      <ul class="list">
+        @if (params.SR_H_antr < params.wSect - 35) {
+          <li><label>Подъемный механизм на антресоли - газ-лифт</label></li>
+        }
+        <li><label>Открывание антресоли - от нажатия (tip-on)</label></li>
+      </ul>
+    </div>
+  }
+
+
+  <div class="price mt-4">
+    <label>
+      Укажите почту для отправки документов
+    </label>
+    <div class="card flex justify-center">
+      <input type="text" pInputText/>
+    </div>
+    <label>Стоимость документов: {{ calc() }} RUB</label>
+    <app-button [width]="'w-full'" [variant]="'primary'" [imageUrl]="'/img/svg/basket.svg'">
+      <span style="margin-left: .5rem">Купить документы</span>
+    </app-button>
+    <span style="margin-left: auto;font-size: .8rem">
+      *срок готовности документов до 24 часов
+    </span>
+  </div>
+
+</div>
