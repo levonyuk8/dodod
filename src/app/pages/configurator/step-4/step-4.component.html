@@ -1,6 +1,64 @@
 <form [formGroup]="stepFourForm">
+  <!--  <div class="sizing-container panel">-->
+  <!--    <label class="text text-normal">Внешние выдвижные ящики</label>-->
+  <!--    <app-radio-group class="mt-8" formControlName="SR_yaschiki_vneshnie" [data]="externalDrawers"></app-radio-group>-->
+  <!--    @if (stepTwoForm.get('SR_yaschiki_vneshnie')?.value > 0) {-->
+  <!--      <app-blocks (schemeChange)="updateScheme($event)" [doorCount]="stepTwoForm.get('srK')?.value"></app-blocks>-->
+  <!--    }-->
+  <!--  </div>-->
+
   <label class="text text-medium mb-4">Дополнительные настройки</label>
+  <!--  todo add filling-->
   <div class="sizing-container panel">
+    {{params.SR_yaschiki_vneshnie}}
+    @if (params.SR_yaschiki_vneshnie.toString() === '1') {
+      <div class="panel">
+        <label class="h-field">
+          <label class="text text-normal">Направляющие выдвижных ящиков</label>
+          <img style="cursor: pointer;" (click)="op.toggle($event)" [ngSrc]="'/img/svg/I.svg'" [width]="16"
+               [height]="16"
+               alt="qwe">
+        </label>
+        <div class="mt-4">
+          <p-select style="width: 100%;" formControlName="managers" [options]="list1"
+                    optionValue="value" optionLabel="name" class="w-full"/>
+        </div>
+      </div>
+
+      @if (stepFourForm.controls['managers'].value === 2) {
+        <div class="block panel panel--child mb-4">
+          <label class="h-field">
+            <label class="text text-normal">производитель и вид направляющих</label>
+            <img style="cursor: pointer;" (click)="op.toggle($event)" [ngSrc]="'/img/svg/I.svg'" [width]="16"
+                 [height]="16"
+                 alt="qwe">
+          </label>
+          <div class="mt-4">
+            <p-select style="width: 100%;" formControlName="backWallMaterial" [options]="list2"
+                      optionValue="code" optionLabel="name" class="w-full"/>
+          </div>
+        </div>
+      }
+    }
+  </div>
+  <div class="sizing-container">
+    <div class="panel">
+      <label class="h-field">
+        <label class="text text-normal">Крепление петель</label>
+        <img style="cursor: pointer;" (click)="op.toggle($event)" [ngSrc]="'/img/svg/I.svg'" [width]="16" [height]="16"
+             alt="qwe">
+      </label>
+
+      <div class="mt-4">
+        <p-select style="width: 100%;" formControlName="backWallMaterial" [options]="list3"
+                  optionValue="value" optionLabel="name" class="w-full"/>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="sizing-container">
     <div class="panel">
       <label class="h-field">
         <label class="text text-normal">Задняя стенка (ХДФ)</label>
@@ -16,39 +74,11 @@
 
     </div>
 
+  </div>
+  <div class="sizing-container">
     <div class="panel">
       <label class="h-field">
-        <label class="text text-normal">Задняя стенка (ХДФ)</label>
-        <img style="cursor: pointer;" (click)="op.toggle($event)" [ngSrc]="'/img/svg/I.svg'" [width]="16" [height]="16"
-             alt="qwe">
-      </label>
-
-      <div class="mt-4">
-        <p-select style="width: 100%;" formControlName="backWallMaterial" [options]="backWallMaterials"
-                  optionValue="value" optionLabel="name"
-                  placeholder="Выберите материал" class="w-full"/>
-      </div>
-
-    </div>
-
-    <div class="panel">
-      <label class="h-field">
-        <label class="text text-normal">Задняя стенка (ХДФ)</label>
-        <img style="cursor: pointer;" (click)="op.toggle($event)" [ngSrc]="'/img/svg/I.svg'" [width]="16" [height]="16"
-             alt="qwe">
-      </label>
-
-      <div class="mt-4">
-        <p-select style="width: 100%;" formControlName="backWallMaterial" [options]="backWallMaterials"
-                  optionValue="value" optionLabel="name"
-                  placeholder="Выберите материал" class="w-full"/>
-      </div>
-
-    </div>
-
-    <div class="panel">
-      <label class="h-field">
-        <label class="text text-normal">Задняя стенка (ХДФ)</label>
+        <label class="text text-normal">Цвет шкафа</label>
         <img style="cursor: pointer;" (click)="op.toggle($event)" [ngSrc]="'/img/svg/I.svg'" [width]="16" [height]="16"
              alt="qwe">
       </label>
