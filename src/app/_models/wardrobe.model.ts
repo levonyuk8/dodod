@@ -26,6 +26,12 @@ export class Wardrobe {
   SR_H_PLANKA_BOK_LEV: number; // new FormControl<boolean>(false),
   SR_H_PLANKA_BOK_PRAV: number; // new FormControl<boolean>(false),
   backWallMaterial: number;
+  managers?: number;
+  manufacturer?: string;
+  fastening?: number;
+  backWallMaterials?: number;
+  baseColor?: string;
+  facadeColor?: string;
   // SR_PLANKA_VERH_LEV: new FormControl<boolean>(false),
   // SR_PLANKA_VERH_PRAV: new FormControl<boolean>(false),
   // SR_PLANKA_BOK_CHENTR: new FormControl<boolean>(false),

@@ -4,6 +4,7 @@ import {CabinetConfiguratorService} from '../../../_services/cabinet-configurato
 import {InputText} from 'primeng/inputtext';
 import {Material} from '../../../_services/wardrobe-params.service';
 import {ThreeHelperService} from '../../../_services/three-helper.service';
+import {FileService} from '../../../_services/file.service';
 
 @Component({
   selector: 'app-step-5',
@@ -17,11 +18,13 @@ import {ThreeHelperService} from '../../../_services/three-helper.service';
 export class Step5Component implements OnInit {
   cabinetConfiguratorService = inject(CabinetConfiguratorService);
   threeHelperService = inject(ThreeHelperService);
+  fs = inject(FileService);
 
   calc = signal(this.cabinetConfiguratorService.calcPrice())
 
   ngOnInit(): void {
     this.threeHelperService.closeDoors();
+    console.log(this.cabinetConfiguratorService.getWardrobe());
   }
   params = this.cabinetConfiguratorService.getWardrobe();
 
@@ -53,5 +56,9 @@ export class Step5Component implements OnInit {
   getDoorMaterialsLabel(code: string): string {
     return this.doorMaterials.find(mat => mat.code === code)?.name || '';
 
+  }
+
+  generationFile() {
+    this.fs.getContent();
   }
 }

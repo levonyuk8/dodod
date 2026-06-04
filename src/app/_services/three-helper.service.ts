@@ -5,7 +5,7 @@ import {CabinetConfiguratorService} from './cabinet-configurator.service';
 import {Steps} from '../_shared/components/stepper/stepper.component';
 import {Wardrobe} from '../_models/wardrobe.model';
 import {Block} from '../_models/block.model';
-import {FillingSectionsService} from './ filling-sections.service';
+import {FillingSectionsService} from './filling-sections.service';
 import {WardrobeParamsService} from './wardrobe-params.service';
 
 @Injectable({
@@ -77,7 +77,7 @@ export class ThreeHelperService {
     this.renderer = new THREE.WebGLRenderer(
       {
         antialias: true,
-        // alpha: true
+        alpha: true
       }
     );
 
@@ -85,8 +85,9 @@ export class ThreeHelperService {
 
     // Добавление управления камерой
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    // this.controls.enableDamping = true;
-    // this.controls.dampingFactor = 0.05;
+    this.controls.enableDamping = true;
+    this.controls.autoRotate = false;
+    this.controls.dampingFactor = 0.05;
     // this.controls.maxZoom = 0.1;
     this.controls.minDistance = 1000;
     this.controls.maxDistance = 4000;
@@ -98,8 +99,12 @@ export class ThreeHelperService {
     this.controls.maxAzimuthAngle = Math.PI / 2; // +45 градусов
 
 
+
+
     this.canvasContainerRef.nativeElement.appendChild(this.renderer.domElement);
     this.scene.add(this.group);
+
+    this.center(this.group)
     // window.addEventListener('resize', this.onWindowResize, false);
     this.animate();
   }
@@ -125,7 +130,8 @@ export class ThreeHelperService {
     const fov = this.camera.fov * (Math.PI / 180); // Convert FOV to radians
     const cameraZ = Math.abs((maxDim / 2) / Math.tan(fov / 2));
 
-    this.camera.position.set(center.x, center.y, center.z + cameraZ);
+    this.camera.position.set(center.x , center.y, center.z + cameraZ);
+    // debugger
     this.camera.lookAt(center);
 
     this.controls.target.copy(center);
@@ -181,7 +187,7 @@ export class ThreeHelperService {
       case Steps.one: {
         // this.scene.clear();
 
-        this.camera.position.set(0, 0, data.srH);
+        this.camera.position.set(-1000, -500, data.srH);
         this.createBaseCabinet(data)
         // this.scene.add(this.fillingSectionsService.createCylinder());
         // this.scene.add(this.fillingSectionsService.createY());
@@ -421,6 +427,18 @@ export class ThreeHelperService {
       doors.push(door);
     }
 
+    doors.push(
+      {
+        name: 'sect shelf',
+        element: this.createCube(thickness,doorH - thickness, d),
+        position: {
+          x: 0,
+          y: h / 2 - doorH  / 2 - thickness,
+          z: 0
+        },
+      },
+    );
+
     if (data.SR_H_antr - thickness / 2 > this.wardrobeParamsService.SR_H_MIN_POLKA_ANTR * 2) {
       const shelf =
         {
@@ -483,6 +501,8 @@ export class ThreeHelperService {
           },
         },
       );
+
+
     }
     return doors;
   }
@@ -884,6 +904,7 @@ export class ThreeHelperService {
 
     return listS;
   }
+
 
   createAntrSections(w: number, h: number, d: number, thickness: number, srK: number, scheme: Block[], data: any) {
     let listS: any[] = []; // = scheme;

@@ -16,6 +16,7 @@ import {InputText} from 'primeng/inputtext';
 import {WardrobeParamsService} from '../../../_services/wardrobe-params.service';
 import {CheckboxComponent} from '../../../_shared/components/checkbox-group/checkbox.component';
 import {FormCorrectionService} from '../../../_services/form-correction.service';
+import {FileService} from '../../../_services/file.service';
 
 @Component({
   selector: 'app-step-2',

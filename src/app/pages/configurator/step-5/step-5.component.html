@@ -87,7 +87,7 @@
       <input type="text" pInputText/>
     </div>
     <label>Стоимость документов: {{ calc() }} RUB</label>
-    <app-button [width]="'w-full'" [variant]="'primary'" [imageUrl]="'/img/svg/basket.svg'">
+    <app-button (click)="generationFile()" [width]="'w-full'" [variant]="'primary'" [imageUrl]="'/img/svg/basket.svg'">
       <span style="margin-left: .5rem">Купить документы</span>
     </app-button>
     <span style="margin-left: auto;font-size: .8rem">

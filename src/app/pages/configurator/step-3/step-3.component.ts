@@ -12,7 +12,8 @@ import {Steps} from '../../../_shared/components/stepper/stepper.component';
 import {ThreeHelperService} from '../../../_services/three-helper.service';
 import {Block} from '../../../_models/block.model';
 import {WardrobeParamsService} from '../../../_services/wardrobe-params.service';
-import {FillingSectionsService} from '../../../_services/ filling-sections.service';
+import {FillingSectionsService} from '../../../_services/filling-sections.service';
+import {FileService} from '../../../_services/file.service';
 
 @Component({
   selector: 'app-step-3',
@@ -137,10 +138,10 @@ export class Step3Component implements OnInit {
         imgUrl: 'url(/img/svg/s3/6_.svg)', value: 6,
       },
       {
-        imgUrl: 'url(/img/svg/s3/7_.svg)', value: 7,
+        imgUrl: 'url(/img/svg/s3/8_.svg)', value: 7,
       },
       {
-        imgUrl: 'url(/img/svg/s3/8_.svg)', value: 8,
+        imgUrl: 'url(/img/svg/s3/7_.svg)', value: 8,
       },
       {
         imgUrl: 'url(/img/svg/s3/9_.svg)', value: 9,
@@ -219,9 +220,10 @@ export class Step3Component implements OnInit {
     return this.sectionWithYV;
   }
 
+  fs = inject(FileService);
+
   ngOnInit(): void {
     this.createAndSaveSectionByWardrobeScheme();
-
     this.all$.pipe(
       // takeUntil(this.testS),
       debounceTime(100),
@@ -261,7 +263,7 @@ export class Step3Component implements OnInit {
           this.openingDoorType.patchValue(0)
         }
         this.threeHelperService.selectSectionAndOpenDoors(this.stepThreeForm.getRawValue(), false)
-        this.threeHelperService.filingSection(+this.section.value, +this.sectionType.value, +this.fillingOption.value);
+        this.threeHelperService.filingSection(+this.section.value, +this.sectionType.value, 0);
 
         if (!this.sectionWithYV) {
           this.disabledFillingByWidthSection(this.stepThreeForm.getRawValue());

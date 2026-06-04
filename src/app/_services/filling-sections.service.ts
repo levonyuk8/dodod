@@ -57,7 +57,7 @@ export class FillingSectionsService {
 
   private data = this.cabinetConfiguratorService.getWardrobe();
 
-  private readonly hY = 200;
+  private readonly hY = 190;
 
   public createCylinder(isDual = false, sectionW = 0) {
     // Создание цилиндра 30, 30, 400
@@ -218,6 +218,7 @@ export class FillingSectionsService {
     const sH = this.calcSectionHeight(sectionNumber) - addYPos - depth;
     const shelvesCount = this.calcShelvesCount(sH) + addCount;
     const shelvesH = sH / shelvesCount;
+    debugger
     if (shelvesCount > 1) {
       for (let i = 1; i <= shelvesCount; i++) {
         const shelf = this.createShelf(isDual, sectionW)
