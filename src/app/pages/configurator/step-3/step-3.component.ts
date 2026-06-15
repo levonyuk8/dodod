@@ -417,6 +417,7 @@ export class Step3Component implements OnInit {
     }
 
     this.cabinetConfiguratorService.setSavedFilingScheme(newScheme);
+    console.log('updateSectionCount', this.updateSectionCount())
 
     this.sectionList = {
       groupName: "sectionList",

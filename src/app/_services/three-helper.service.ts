@@ -561,7 +561,7 @@ export class ThreeHelperService {
           hand.position.x += wSect / 2 - 45 - 10;
           // hand.position.y = (-srH / 2 + 1000);
           // this.qwe.add(hand);
-          const objectToRemove = doors?.children[count].getObjectByName("handle");
+          const objectToRemove = doors?.children[count]?.getObjectByName("handle");
           if (objectToRemove) {
             console.log('objectToRemove')
             doors?.children[count]?.remove(objectToRemove);
